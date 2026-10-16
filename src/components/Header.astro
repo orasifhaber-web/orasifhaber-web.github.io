@@ -1,0 +1,45 @@
+---
+import { site } from '../data/site';
+const path = Astro.url.pathname;
+const nav = [
+  { href: '/#work', label: 'Work', active: path.startsWith('/work') },
+  { href: '/about/', label: 'About', active: path.startsWith('/about') },
+  { href: '#contact', label: 'Contact', active: false },
+];
+---
+<header class="hdr">
+  <div class="hdr__in wrap">
+    <a href="/" class="hdr__name" aria-label={`${site.name} — home`}>
+      <span>Or Asif-Haber</span>
+    </a>
+    <p class="hdr__status label" aria-hidden="true"><span class="dot"></span>{site.availability}</p>
+    <nav aria-label="Main">
+      <ul class="hdr__nav">
+        {nav.map((n) => (
+          <li><a href={n.href} class="link label" aria-current={n.active ? 'page' : undefined}>{n.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .hdr {
+    position: fixed; inset: 0 0 auto 0; z-index: 50;
+    mix-blend-mode: difference; color: #fff;
+    pointer-events: none;
+  }
+  .hdr__in { display: flex; align-items: center; justify-content: space-between; gap: var(--s-5); padding-block: var(--s-2); }
+  .hdr a, .hdr p { pointer-events: auto; }
+  .hdr__name {
+    display: inline-flex; align-items: center; min-height: 44px;
+    font-weight: 800; font-variation-settings: 'wdth' 62; text-transform: uppercase;
+    font-size: 1.35rem; letter-spacing: 0.01em; line-height: 1;
+  }
+  .hdr__status { color: inherit; display: none; align-items: center; gap: var(--s-2); margin-right: auto; margin-left: var(--s-7); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .hdr__nav { display: flex; gap: clamp(var(--s-4), 2.4vw, var(--s-6)); }
+  .hdr__nav .label { color: inherit; }
+  .hdr__nav [aria-current='page']::after { transform: scaleX(1); }
+  @media (min-width: 900px) { .hdr__status { display: inline-flex; } }
+</style>

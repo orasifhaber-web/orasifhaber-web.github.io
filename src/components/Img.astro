@@ -1,0 +1,36 @@
+---
+import { image } from '../lib/img';
+
+interface Props {
+  id: string;
+  alt: string;
+  sizes?: string;
+  eager?: boolean;
+  class?: string;
+  fit?: 'cover' | 'contain';
+  ratio?: string; // force an aspect ratio (crop); default is the image's own
+  reveal?: boolean;
+  i?: number;
+  style?: string;
+}
+const { id, alt, sizes = '100vw', eager = false, class: cls = '', fit = 'cover', ratio, reveal = true, i = 0, style = '' } = Astro.props;
+const img = image(id);
+const ar = ratio ?? `${img.w} / ${img.h}`;
+---
+<div
+  class:list={['media', fit === 'contain' && 'contain', cls]}
+  style={`aspect-ratio:${ar};background-image:url(${img.lqip});--i:${i};${style}`}
+  data-reveal={reveal ? 'mask' : undefined}
+>
+  <img
+    src={img.src}
+    srcset={img.srcset}
+    sizes={sizes}
+    width={img.w}
+    height={img.h}
+    alt={alt}
+    loading={eager ? 'eager' : 'lazy'}
+    fetchpriority={eager ? 'high' : undefined}
+    decoding="async"
+  />
+</div>

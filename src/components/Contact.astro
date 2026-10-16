@@ -1,0 +1,52 @@
+---
+import { site } from '../data/site';
+---
+<section id="contact" class="contact" aria-labelledby="contact-title">
+  <div class="wrap">
+    <div class="contact__top">
+      <p class="label" data-reveal>Contact</p>
+      <p class="contact__note muted" data-reveal style="--i:1">
+        Party branding, line-up posters, cover art or a brand identity — send a short brief and your dates.
+        Based in {site.location}, working with clients locally and abroad.
+      </p>
+    </div>
+    <h2 id="contact-title" class="sr-only">Contact</h2>
+    <a class="contact__mail" href={`mailto:${site.email}`} data-reveal style="--i:2">
+      <span class="contact__mail-text">{site.email.split('@')[0]}<wbr />@{site.email.split('@')[1]}</span>
+      <span class="arrow" aria-hidden="true">↗</span>
+    </a>
+    <div class="contact__row">
+      <button type="button" class="label link copy" data-copy={site.email}>
+        <span data-copy-label>Copy email</span>
+      </button>
+      <ul class="contact__social">
+        {site.social.map((s) => (
+          <li><a class="label link" href={s.href} target="_blank" rel="noopener">{s.label} <span class="arrow" aria-hidden="true">↗</span></a></li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact { padding-block: var(--section) var(--s-8); border-top: 1px solid var(--line); }
+  .contact__top { display: grid; gap: var(--s-4); margin-bottom: var(--s-7); }
+  .contact__note { max-width: 44ch; }
+  .contact__mail {
+    display: flex; align-items: flex-end; justify-content: space-between; gap: var(--s-4);
+    font-weight: 800; font-variation-settings: 'wdth' 62; text-transform: uppercase;
+    font-size: clamp(2.2rem, 8.6vw, 9.5rem); line-height: 0.85; letter-spacing: -0.005em;
+    padding-block: var(--s-5); border-bottom: 1px solid var(--line);
+    transition: color var(--d-base) var(--ease-out);
+    overflow-wrap: anywhere;
+  }
+  .contact__mail .arrow { font-size: 0.5em; line-height: 1; transition: transform var(--d-base) var(--ease-out); }
+  .contact__mail:hover { color: var(--signal); }
+  .contact__mail:hover .arrow { transform: translate(6px, -6px); }
+  .contact__row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--s-4); margin-top: var(--s-4); }
+  .contact__social { display: flex; gap: var(--s-5); }
+  .copy[data-done] { color: var(--signal); }
+  @media (min-width: 900px) {
+    .contact__top { grid-template-columns: 1fr 1fr; align-items: end; }
+  }
+</style>

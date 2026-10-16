@@ -1,0 +1,107 @@
+---
+import Base from '../layouts/Base.astro';
+import Img from '../components/Img.astro';
+import { site } from '../data/site';
+
+// From Or's CV (2026). Non-design jobs are left out on purpose; the full CV is available on request.
+const services = [
+  ['Party & event branding', 'A visual world per event, carried across poster, line-up, timetable, artist cards and social.'],
+  ['Line-up posters & social campaigns', 'Announcement sequences and story formats that keep long line-ups legible.'],
+  ['Music cover art', 'Album and release artwork that holds up from full size down to a streaming thumbnail.'],
+  ['Brand identity & logos', 'Marks, stationery and campaigns for brands outside the scene.'],
+  ['Merchandise', 'Apparel, packaging and print for labels, crews and events.'],
+];
+const tools = [
+  ['Adobe', 'Photoshop, Illustrator, InDesign'],
+  ['AI', 'Midjourney, ChatGPT, Gemini, Claude'],
+  ['Other', 'Figma, After Effects (basic)'],
+];
+---
+<Base title="About" description={`${site.name} — graphic designer and Visual Communication graduate (Ariel University), freelancing since 2024 for psytrance parties, record labels, artists and brands.`}>
+  <section class="ab-hero wrap">
+    <p class="label">About</p>
+    <h1 class="h1 ab-hero__title">
+      Visual languages for parties, labels and brands — from the brief to final delivery.
+    </h1>
+  </section>
+
+  <section class="ab-intro wrap grid">
+    <div class="ab-intro__media"><Img id="09/10" alt="The Trance Tribe stand, Or's graduation project, with vinyl covers, banners and screens." sizes="(min-width: 900px) 40vw, 92vw" /></div>
+    <div class="ab-intro__text prose">
+      <p class="lead" data-reveal>I’m Or Asif-Haber, a graphic designer based in Israel and a Visual Communication Practical Engineering graduate of Ariel University.</p>
+      <p data-reveal style="--i:1">Since 2024 I’ve worked freelance, developing visual languages and campaigns for events, alongside music cover art and social media content. Most of that work lives in the psytrance scene — parties, crews, DJs and labels — where every event needs its own world and a long line-up still has to read at a glance.</p>
+      <p data-reveal style="--i:2">I work directly with clients through the whole process: the brief, shaping the creative direction, design, revisions and final delivery. Repeat clients include <strong>StoneAge Records</strong>, a Swedish psytrance label, for whom I’ve designed a T-shirt, an event poster and the cover art for the album <em>Codex Saltus — XXV Annorum Sum</em>.</p>
+      <p data-reveal style="--i:3">AI tools — Midjourney among them — are part of my workflow, alongside Photoshop, Illustrator and InDesign.</p>
+    </div>
+  </section>
+
+  <section class="ab-list wrap grid" aria-labelledby="services-title">
+    <h2 id="services-title" class="label ab-list__label">What I do</h2>
+    <ol class="ab-list__items" role="list">
+      {services.map(([t, d], n) => (
+        <li data-reveal style={`--i:${n}`}>
+          <span class="label">{String(n + 1).padStart(2, '0')}</span>
+          <h3 class="h3">{t}</h3>
+          <p class="muted">{d}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="ab-cv wrap grid" aria-labelledby="cv-title">
+    <h2 id="cv-title" class="label ab-list__label">Background</h2>
+    <dl class="ab-cv__items">
+      <div data-reveal>
+        <dt class="label">2024 — Present</dt>
+        <dd><strong>Graphic Designer, Freelance</strong><span class="muted">Event visual languages and campaigns, music cover art, social media content.</span></dd>
+      </div>
+      <div data-reveal>
+        <dt class="label">2022 — 2024</dt>
+        <dd><strong>Practical Engineer, Visual Communication — Ariel University</strong><span class="muted">Branding and visual identity, typography, digital and print design, UI/UX, animation, photography and illustration, alongside design thinking, colour, art history and marketing.</span></dd>
+      </div>
+      <div data-reveal>
+        <dt class="label">Final project</dt>
+        <dd><strong><a href="/work/trance-tribe/" class="link">Trance Tribe <span class="arrow" aria-hidden="true">→</span></a></strong><span class="muted">A visual identity for a trance-event merchandise brand, including brand applications, products and an event app. Presented at the program’s graduation exhibition.</span></dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="ab-cv wrap grid" aria-labelledby="tools-title">
+    <h2 id="tools-title" class="label ab-list__label">Tools</h2>
+    <dl class="ab-cv__items ab-cv__items--tools">
+      {tools.map(([k, v]) => (<div data-reveal><dt class="label">{k}</dt><dd>{v}</dd></div>))}
+    </dl>
+  </section>
+</Base>
+
+<style>
+  .ab-hero { padding-top: clamp(120px, 20vh, 220px); padding-bottom: var(--section); display: grid; gap: var(--s-6); }
+  .ab-hero__title { max-width: 17ch; }
+
+  .ab-intro { row-gap: var(--s-7); }
+  .ab-intro__media, .ab-intro__text { grid-column: 1 / -1; }
+  .ab-intro__text { color: var(--ink-2); }
+  .ab-intro__text .lead { color: var(--ink); margin-bottom: var(--s-5); }
+  @media (min-width: 900px) {
+    .ab-intro__media { grid-column: 1 / span 5; align-self: start; position: sticky; top: 96px; }
+    .ab-intro__text { grid-column: 7 / span 6; }
+  }
+
+  .ab-list, .ab-cv { padding-top: var(--section); row-gap: var(--s-6); }
+  .ab-list__label { grid-column: 1 / -1; }
+  .ab-list__items, .ab-cv__items { grid-column: 1 / -1; }
+  .ab-list__items li { display: grid; grid-template-columns: 3rem 1fr; gap: var(--s-2) var(--s-4); padding-block: var(--s-5); border-top: 1px solid var(--line); }
+  .ab-list__items li .muted { grid-column: 2; max-width: 52ch; }
+  .ab-list__items .label { padding-top: 0.4em; }
+  .ab-cv__items > div { display: grid; gap: var(--s-2); padding-block: var(--s-5); border-top: 1px solid var(--line); }
+  .ab-cv__items dd { display: grid; gap: var(--s-2); max-width: 64ch; }
+  .ab-cv__items dd strong { font-weight: 600; }
+  .ab-cv__items .link { min-height: 0; }
+  @media (min-width: 900px) {
+    .ab-list__label { grid-column: 1 / span 3; padding-top: var(--s-5); }
+    .ab-list__items, .ab-cv__items { grid-column: 4 / -1; }
+    .ab-list__items li { grid-template-columns: 4rem 1fr 1fr; align-items: baseline; }
+    .ab-list__items li .muted { grid-column: 3; }
+    .ab-cv__items > div { grid-template-columns: 12rem 1fr; gap: var(--gutter); }
+  }
+</style>

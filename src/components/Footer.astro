@@ -1,0 +1,12 @@
+---
+import { site } from '../data/site';
+const year = new Date().getFullYear();
+---
+<footer class="ftr wrap">
+  <p class="label">© {year} {site.name}</p>
+  <p class="label">{site.role} — {site.location}</p>
+  <a href="#top" class="label link">Back to top <span aria-hidden="true">↑</span></a>
+</footer>
+<style>
+  .ftr { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--s-3) var(--s-5); padding-block: var(--s-5) var(--s-6); }
+</style>

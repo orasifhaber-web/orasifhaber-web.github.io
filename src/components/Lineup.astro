@@ -1,0 +1,141 @@
+---
+// The full work index, set like a party timetable — the format Or designs most.
+import { projects } from '../data/projects';
+import { image } from '../lib/img';
+---
+<section class="lineup section" aria-labelledby="lineup-title" id="index">
+  <div class="wrap">
+    <header class="lineup__head">
+      <p class="label" data-reveal>Index — {projects.length} projects</p>
+      <h2 id="lineup-title" class="display" data-reveal style="--i:1">Full line-up</h2>
+    </header>
+
+    <div class="lineup__cols label" aria-hidden="true">
+      <span>No.</span><span>Project</span><span class="c-disc">Discipline</span><span class="c-client">Client</span><span class="c-year">Year</span>
+    </div>
+
+    <ol class="lineup__list">
+      {projects.map((p, n) => {
+        const img = image(p.cover.id);
+        return (
+          <li data-reveal style={`--i:${n % 5}`}>
+            <a
+              href={`/work/${p.slug}/`}
+              class="row"
+              style={`--row-accent:${p.accent}`}
+              data-preview={`/img/${p.cover.id}-640.webp`}
+              data-ratio={img.ratio}
+            >
+              <span class="row__no label">{String(n + 1).padStart(2, '0')}</span>
+              <span class="row__title">
+                <img class="row__thumb" src={`/img/${p.cover.id}-640.webp`} alt="" width="64" height="64" loading="lazy" decoding="async" />
+                <span>{p.title}</span>
+                <span class="row__leader" aria-hidden="true"></span>
+              </span>
+              <span class="row__disc muted">{p.discipline.slice(0, 2).join(', ')}</span>
+              <span class="row__client muted">{p.client ?? '—'}</span>
+              <span class="row__year label">{p.year.replace(' — ', '–')}</span>
+            </a>
+          </li>
+        );
+      })}
+    </ol>
+  </div>
+  <div class="lineup__preview" aria-hidden="true"><img alt="" /></div>
+</section>
+
+<style>
+  .lineup__head { display: grid; gap: var(--s-4); margin-bottom: var(--s-8); }
+  .lineup__cols {
+    display: none;
+    padding-bottom: var(--s-3); border-bottom: 1px solid var(--ink);
+  }
+  .lineup__list { counter-reset: row; }
+  .lineup__list li { border-bottom: 1px solid var(--line); }
+
+  .row {
+    position: relative;
+    display: grid; align-items: center;
+    grid-template-columns: 2.5rem 1fr auto;
+    grid-template-areas: 'no title year' 'no disc disc';
+    column-gap: var(--s-4); row-gap: var(--s-1);
+    padding-block: var(--s-4);
+    min-height: 64px;
+    transition: color var(--d-fast) linear;
+  }
+  .row__no { grid-area: no; align-self: start; padding-top: 0.4em; }
+  .row__title {
+    grid-area: title; display: flex; align-items: center; gap: var(--s-3); min-width: 0;
+    font-weight: 800; font-variation-settings: 'wdth' 62; text-transform: uppercase;
+    font-size: clamp(1.7rem, 3.9vw, 3.9rem); line-height: 0.95;
+    transition: transform var(--d-base) var(--ease-out), color var(--d-fast) linear;
+  }
+  .row__title > span:not(.row__leader) { overflow: hidden; text-overflow: ellipsis; }
+  .row__thumb { width: 44px; height: 44px; object-fit: cover; flex: none; border-radius: 0; }
+  .row__leader { flex: 1; min-width: var(--s-5); height: 0; border-bottom: 2px dotted var(--line); margin-inline: var(--s-3); align-self: center; display: none; }
+  .row__disc { grid-area: disc; font-size: var(--t-small); }
+  .row__client { display: none; font-size: var(--t-small); }
+  .row__year { grid-area: year; align-self: start; padding-top: 0.4em; color: var(--ink); }
+
+  .row:hover .row__title, .row:focus-visible .row__title { color: var(--row-accent); }
+  .row:focus-visible { outline-offset: -2px; }
+
+  @media (min-width: 900px) {
+    .lineup__head { grid-template-columns: 1fr auto; align-items: end; }
+    .lineup__head .label { order: 2; }
+    .lineup__cols, .row {
+      display: grid;
+      grid-template-columns: 4rem minmax(0, 2.2fr) minmax(0, 0.9fr) minmax(0, 0.8fr) 6.5rem;
+      grid-template-areas: none;
+      column-gap: var(--gutter);
+    }
+    .row { padding-block: var(--s-3); }
+    .row > * { grid-area: auto; align-self: center; padding-top: 0; }
+    .row__thumb { display: none; }
+    .row__title { white-space: nowrap; }
+    .row__leader { display: block; }
+    .row__client { display: block; }
+    .row__year { text-align: right; }
+    .lineup__cols .c-year { text-align: right; }
+    .row:hover .row__title, .row:focus-visible .row__title { transform: translateX(var(--s-4)); }
+  }
+
+  .lineup__preview {
+    position: fixed; left: 0; top: 0; z-index: 40;
+    width: clamp(220px, 22vw, 360px);
+    pointer-events: none; opacity: 0;
+    transform: translate3d(-50%, -50%, 0) scale(0.92);
+    transition: opacity var(--d-base) var(--ease-out), scale var(--d-base) var(--ease-out);
+    will-change: transform;
+  }
+  .lineup__preview img { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; box-shadow: 0 30px 80px rgb(0 0 0 / 0.55); }
+  .lineup__preview.on { opacity: 1; scale: 1.087; }
+  @media (hover: none), (max-width: 899px) { .lineup__preview { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .lineup__preview { display: none; } }
+</style>
+
+<script>
+  // Cursor-following preview of each project's cover (desktop pointer only).
+  function initLineup() {
+    const wrap = document.querySelector<HTMLElement>('.lineup__preview');
+    if (!wrap || !matchMedia('(hover: hover) and (min-width: 900px) and (prefers-reduced-motion: no-preference)').matches) return;
+    const img = wrap.querySelector('img')!;
+    let x = 0, y = 0, cx = 0, cy = 0, raf = 0, active = false;
+    const loop = () => {
+      cx += (x - cx) * 0.16; cy += (y - cy) * 0.16;
+      wrap.style.transform = `translate3d(${cx}px, ${cy}px, 0) translate(-50%, -55%)`;
+      raf = active || Math.abs(x - cx) > 0.5 ? requestAnimationFrame(loop) : 0;
+    };
+    document.querySelectorAll<HTMLAnchorElement>('.row[data-preview]').forEach((row) => {
+      row.addEventListener('pointerenter', (e) => {
+        img.src = row.dataset.preview!;
+        if (!active) { cx = x = e.clientX; cy = y = e.clientY; }
+        active = true; wrap.classList.add('on');
+        if (!raf) raf = requestAnimationFrame(loop);
+      });
+      row.addEventListener('pointermove', (e) => { x = e.clientX; y = e.clientY; });
+      row.addEventListener('pointerleave', () => { active = false; wrap.classList.remove('on'); });
+    });
+  }
+  document.addEventListener('astro:page-load', initLineup);
+</script>
