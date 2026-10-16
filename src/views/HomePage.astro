@@ -1,0 +1,87 @@
+---
+import Base from '../layouts/Base.astro';
+import WorkList from '../components/WorkList.astro';
+import { site } from '../data/site';
+import { ui, url, fwd, type Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const [l1, l2] = ui.nameLines[lang];
+---
+<Base lang={lang}>
+  <section class="hero wrap" aria-labelledby="hero-title">
+    <div class="hero__top label">
+      <span>{ui.role[lang]} — {ui.location[lang]}</span>
+      <span class="hero__years">{ui.hero.years[lang]}</span>
+    </div>
+    <h1 id="hero-title" class="mega hero__name">
+      <span class="hero__line"><span>{l1}</span></span><span class="hero__sp"> </span><span class="hero__line"><span>{l2}</span></span>
+    </h1>
+    <div class="hero__bottom">
+      <p class="hero__statement">{ui.hero.statement[lang]}</p>
+      <ul class="hero__cta">
+        <li><a href="#work" class="label link">{ui.hero.toWork[lang]} <span class="arrow" aria-hidden="true">↓</span></a></li>
+        <li><a href="#contact" class="label link">{ui.hero.toContact[lang]} <span class="arrow" aria-hidden="true">{fwd(lang)}</span></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <WorkList lang={lang} />
+
+  <section class="about-pre section wrap grid" aria-labelledby="about-pre-title">
+    <h2 id="about-pre-title" class="label about-pre__label">{ui.about.label[lang]}</h2>
+    <div class="about-pre__body">
+      <p class="lead" data-reveal>{ui.about.preview[lang]}</p>
+      <a href={url(lang, '/about/')} class="label link" data-reveal style="--i:1">{ui.about.more[lang]} <span class="arrow" aria-hidden="true">{fwd(lang)}</span></a>
+    </div>
+    <div class="about-pre__with">
+      <p class="label">{ui.about.workedWith[lang]}</p>
+      <ul class="about-pre__list" role="list">
+        {site.workedWith.map((w, n) => <li data-reveal style={`--i:${n}`}>{w}</li>)}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { display: flex; flex-direction: column; justify-content: space-between; gap: var(--s-6); padding-top: 88px; padding-bottom: var(--s-8); }
+  .hero__top { display: flex; justify-content: space-between; gap: var(--s-4); }
+  .hero__years { display: none; }
+  .hero__name { margin-inline-start: -0.045em; font-size: 22vw; }
+  :global([lang='he']) .hero__name { font-size: 30vw; line-height: 0.82; margin-inline-start: 0; }
+  .hero__line { display: block; overflow: hidden; padding-bottom: 0.02em; }
+  .hero__line > span { display: block; }
+  .hero__sp { display: none; }
+  .hero__bottom { display: grid; gap: var(--s-5); }
+  .hero__statement { font-size: clamp(1.25rem, 2.3vw, 2.2rem); line-height: 1.25; letter-spacing: -0.015em; max-width: 30ch; font-variation-settings: 'wdth' 92; }
+  :global([lang='he']) .hero__statement { letter-spacing: 0; line-height: 1.35; }
+  .hero__cta { display: flex; gap: var(--s-6); }
+  @media (min-width: 700px) {
+    .hero__name { font-size: 16.4vw; display: flex; white-space: nowrap; }
+    :global([lang='he']) .hero__name { font-size: 21vw; }
+    :global([lang='he']) .hero__sp { display: block; width: 0.22em; }
+  }
+  @media (min-width: 900px) {
+    .hero { min-height: 72svh; }
+    .hero__years { display: inline; }
+    .hero__bottom { grid-template-columns: 1fr auto; align-items: end; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__line > span { animation: rise 1.1s var(--ease-out) both; }
+    .hero__line:last-child > span { animation-delay: 90ms; }
+    .hero__bottom, .hero__top { animation: fade 1s 350ms var(--ease-out) both; }
+    @keyframes rise { from { transform: translateY(105%); } to { transform: none; } }
+    @keyframes fade { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  }
+
+  .about-pre { row-gap: var(--s-6); }
+  :where(.about-pre > *) { grid-column: 1 / -1; }
+  .about-pre__body { display: grid; gap: var(--s-5); max-width: 860px; }
+  .about-pre__body .link { justify-self: start; }
+  .about-pre__list { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-5); margin-top: var(--s-3); font-family: var(--f-display); font-weight: 700; font-variation-settings: 'wdth' 62; text-transform: uppercase; font-size: clamp(1.6rem, 3vw, 2.6rem); line-height: 1; }
+  .about-pre__list li:not(:last-child)::after { content: '/'; margin-inline-start: var(--s-5); color: var(--ink-3); font-weight: 400; }
+  @media (min-width: 900px) {
+    .about-pre__label { grid-column: 1 / span 3; padding-top: 0.6em; }
+    .about-pre__body, .about-pre__with { grid-column: 4 / span 9; }
+  }
+</style>

@@ -23,6 +23,7 @@ The site is a neutral, dark frame; the saturated work carries the colour. The fu
 Dark only (`color-scheme: dark`). No gradients except the caption scrim over images.
 
 ## Typography
+- **Hebrew (default language, RTL):** Karantina 700 for display (Latin glyphs in the same headline stay in Archivo), IBM Plex Sans Hebrew 400/600 for text and labels — both picked from the ui-ux-pro-max Google Fonts data.
 - **Archivo Variable** (wdth 62–125, wght 100–900), one family:
   - Display: wdth 62, wght 800, uppercase, line-height 0.8–0.9 (`.mega`, `.display`, `.h1`, `.h2`)
   - Subheads: wdth 88, wght 600 (`.h3`)
@@ -39,8 +40,7 @@ Pre-processed by `scripts/images.mjs` → WebP at 640 / 1280 / 2000 (capped at t
 
 ## Motion
 - Reveal: fade + 28px rise or clip-path mask, 0.9–1.1s, `cubic-bezier(0.16, 1, 0.3, 1)`, 70–90ms stagger. No bounce.
-- Home: scroll-driven unmask/zoom of the lead project (CSS `view-timeline`, desktop ≥ 900px only); subtle parallax on one Shikingim poster.
-- Line-up: cursor-following cover preview (hover devices only).
+- Home: every project row reveals the same way (image mask + text rise); no per-project effects.
 - Page transitions: Astro `ClientRouter`, shared `transition:name` on project titles.
 - `prefers-reduced-motion: reduce` → everything static, content fully visible. No JS → content fully visible.
 
@@ -50,5 +50,6 @@ Pre-processed by `scripts/images.mjs` → WebP at 640 / 1280 / 2000 (capped at t
 - Meaningful alt on every content image; decorative duplicates use empty alt + `aria-hidden` links with `tabindex="-1"`
 - Text contrast ≥ 4.5:1 throughout
 
-## Case-study blocks (`src/components/Blocks.astro`)
-`full` (optionally bleed), `pair` (optionally offset), `grid` (2–4 cols), `text`, `split` (left/right), `chapter` (series divider), `palette`, `type`, `trio`. Each project composes its own sequence in `src/data/projects.ts`.
+## Templates
+- **Home work list** (`WorkList.astro`): one identical row per project — sticky info column (number, title, subtitle, client/year/discipline, link) beside the cover, which unmasks on scroll.
+- **Case study** (`views/ProjectPage.astro`): hero → cover → overview → details (optional) → gallery (`Gallery.astro`, automatic rows) → next project. Same order and behaviour for every project.

@@ -1,0 +1,46 @@
+---
+// One gallery layout for every project: wide images run full width; tall and square images are
+// grouped into justified rows of 2–3 (equal height, widths follow each image's ratio).
+import Img from './Img.astro';
+import { image } from '../lib/img';
+import type { Img as ImgT } from '../data/projects';
+import type { Lang } from '../i18n';
+
+interface Props { items: ImgT[]; lang: Lang }
+const { items, lang } = Astro.props;
+
+type Row = { wide: boolean; items: (ImgT & { ratio: number; w: number })[] };
+const rows: Row[] = [];
+let buf: Row['items'] = [];
+const sizes = (n: number) => { const out: number[] = []; while (n > 0) { if (n === 4) { out.push(2, 2); break; } const k = Math.min(3, n); out.push(k); n -= k; } return out; };
+const flush = () => { let at = 0; for (const s of sizes(buf.length)) { rows.push({ wide: false, items: buf.slice(at, at + s) }); at += s; } buf = []; };
+for (const it of items) {
+  const { ratio, w } = image(it.id);
+  if (ratio >= 1.25) { flush(); rows.push({ wide: true, items: [{ ...it, ratio, w }] }); }
+  else buf.push({ ...it, ratio, w });
+}
+flush();
+---
+<div class="gal wrap">
+  {rows.map((r) => (
+    <div class:list={['gal__row', r.wide && 'is-wide', !r.wide && r.items.length === 1 && 'is-single']}>
+      {r.items.map((it, k) => (
+        <figure style={r.wide ? `max-width:${it.w}px` : `flex:${it.ratio} 1 0`}>
+          <Img id={it.id} alt={it.alt[lang]} i={k} sizes={r.wide ? '(min-width: 1680px) 1570px, 92vw' : `(min-width: 700px) ${Math.round(92 / r.items.length)}vw, 92vw`} />
+        </figure>
+      ))}
+    </div>
+  ))}
+</div>
+
+<style>
+  .gal { display: grid; gap: var(--gutter); }
+  .gal__row { display: flex; gap: var(--gutter); align-items: flex-start; }
+  .gal__row figure { min-width: 0; }
+  .gal__row.is-wide figure { width: 100%; margin-inline: auto; }
+  .gal__row.is-single figure { flex: 0 1 auto !important; width: min(100%, 560px); margin-inline: auto; }
+  @media (max-width: 699px) {
+    .gal__row:not(.is-wide) { flex-direction: column; }
+    .gal__row figure { flex: none !important; width: 100%; }
+  }
+</style>

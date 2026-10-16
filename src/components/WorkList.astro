@@ -1,0 +1,80 @@
+---
+// Home page work list — every project uses the same template and the same scroll behaviour:
+// a sticky info column beside the cover image, which unmasks as it enters the viewport.
+import Img from './Img.astro';
+import { projects } from '../data/projects';
+import { ui, url, fwd, type Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const n = (k: number) => String(k + 1).padStart(2, '0');
+---
+<section id="work" class="work" aria-labelledby="work-title">
+  <div class="wrap work__head">
+    <h2 id="work-title" class="label">{ui.work[lang]}</h2>
+    <p class="label">{projects.length} {ui.projects[lang]}</p>
+  </div>
+
+  <ol class="work__list" role="list">
+    {projects.map((p, k) => (
+      <li class="w wrap" style={`--wa:${p.accent}`}>
+        <div class="w__info">
+          <p class="label w__no" data-reveal><bdi dir="ltr">{n(k)} / {String(projects.length).padStart(2, '0')}</bdi></p>
+          <h3 class="h1 w__title" data-reveal style="--i:1">
+            <a href={url(lang, `/work/${p.slug}/`)} transition:name={`title-${p.slug}`}>{p.title[lang]}</a>
+          </h3>
+          <p class="w__sub" data-reveal style="--i:2">{p.subtitle[lang]}</p>
+          <dl class="w__meta" data-reveal style="--i:3">
+            <div><dt class="label">{ui.meta.client[lang]}</dt><dd>{p.client[lang]}</dd></div>
+            <div><dt class="label">{ui.meta.year[lang]}</dt><dd>{p.year}</dd></div>
+            <div><dt class="label">{ui.meta.discipline[lang]}</dt><dd>{p.discipline.map((x) => x[lang]).join(', ')}</dd></div>
+          </dl>
+          <a href={url(lang, `/work/${p.slug}/`)} class="label link w__cta" data-reveal style="--i:4">
+            {ui.viewProject[lang]} <span class="arrow" aria-hidden="true">{fwd(lang)}</span>
+          </a>
+        </div>
+        <a href={url(lang, `/work/${p.slug}/`)} class="w__media" tabindex="-1" aria-hidden="true">
+          <Img id={p.cover.id} alt="" sizes="(min-width: 900px) 62vw, 92vw" class="w__img" />
+        </a>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .work { padding-top: var(--s-9); }
+  .work__head { display: flex; justify-content: space-between; padding-bottom: var(--s-4); border-bottom: 1px solid var(--line); }
+  .work__head h2 { color: var(--ink); }
+
+  .w {
+    display: grid; gap: var(--s-6);
+    padding-block: var(--s-8);
+    border-bottom: 1px solid var(--line);
+  }
+  .w__info { display: grid; gap: var(--s-4); align-content: start; }
+  .w__no { color: var(--wa); }
+  .w__title a { transition: color var(--d-base) var(--ease-out); }
+  .w__title a:hover, .w__title a:focus-visible { color: var(--wa); }
+  .w__sub { font-size: var(--t-lead); line-height: 1.3; max-width: 26ch; }
+  .w__meta { display: grid; gap: var(--s-3); margin-top: var(--s-3); padding-top: var(--s-4); border-top: 1px solid var(--line); }
+  .w__meta div { display: grid; grid-template-columns: 6.5rem 1fr; gap: var(--s-3); align-items: baseline; }
+  .w__meta dd { color: var(--ink-2); font-size: var(--t-small); }
+  .w__cta { justify-self: start; }
+
+  .w__media { display: flex; justify-content: center; align-items: flex-start; background: var(--bg-2); padding: clamp(var(--s-4), 3vw, var(--s-7)); }
+  .w__media :global(.w__img) { width: 100%; }
+  .w__media :global(img) { transition: transform 1.2s var(--ease-out), clip-path 1.1s var(--ease-out); }
+  .w__media:hover :global(img) { transform: scale(1.02); }
+
+  /* Mobile: image first, then the info */
+  .w__media { order: -1; }
+
+  @media (min-width: 900px) {
+    .w { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); padding-block: var(--s-9); }
+    .w__media { order: 0; grid-column: 5 / -1; min-height: 70svh; align-items: center; }
+    /* Same rule for every cover: as large as fits, never taller than the viewport */
+    .w__media :global(.w__img) { width: auto; max-width: 100%; max-height: 78svh; aspect-ratio: auto !important; }
+    .w__media :global(.w__img img) { width: auto; max-width: 100%; max-height: 78svh; height: auto; }
+    .w__info { grid-column: 1 / span 4; grid-row: 1; position: sticky; top: 96px; align-self: start; padding-inline-end: var(--s-5); }
+  }
+</style>

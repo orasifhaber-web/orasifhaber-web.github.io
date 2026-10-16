@@ -1,14 +1,19 @@
 ---
 import '@fontsource-variable/archivo/wdth.css';
 import '@fontsource/jetbrains-mono/400.css';
+import '@fontsource/karantina/hebrew-700.css';
+import '@fontsource/ibm-plex-sans-hebrew/400.css';
+import '@fontsource/ibm-plex-sans-hebrew/600.css';
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
 import Header from '../components/Header.astro';
 import Contact from '../components/Contact.astro';
 import Footer from '../components/Footer.astro';
 import { site } from '../data/site';
+import { ui, url, dir, basePath, langs, type Lang } from '../i18n';
 
 interface Props {
+  lang: Lang;
   title?: string;
   description?: string;
   image?: string;
@@ -16,34 +21,40 @@ interface Props {
   jsonld?: Record<string, unknown>;
   type?: 'website' | 'article';
 }
-const { title, description = site.description, image = '/og.jpg', accent, jsonld, type = 'website' } = Astro.props;
-const fullTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.role}`;
-const canonical = new URL(Astro.url.pathname, Astro.site);
+const { lang, title, description = ui.description[lang], image = '/og.jpg', accent, jsonld, type = 'website' } = Astro.props;
+const name = ui.name[lang];
+const fullTitle = title ? `${title} — ${name}` : `${name} — ${ui.role[lang]}`;
+const path = basePath(Astro.url.pathname);
+const canonical = new URL(url(lang, path), Astro.site);
 const ogImage = new URL(image, Astro.site);
 const person = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: site.name,
-  jobTitle: site.role,
+  alternateName: ui.name.he,
+  jobTitle: ui.role[lang],
   email: `mailto:${site.email}`,
   url: Astro.site?.toString(),
   sameAs: site.social.map((s) => s.href),
 };
 ---
 <!doctype html>
-<html lang="en" style={accent ? `--accent:${accent}` : undefined}>
+<html lang={lang} dir={dir(lang)} style={accent ? `--accent:${accent}` : undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {langs.map((l) => <link rel="alternate" hreflang={l} href={new URL(url(l, path), Astro.site)} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(url('he', path), Astro.site)} />
     <meta name="theme-color" content="#0e0e0c" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="sitemap" href="/sitemap.xml" />
 
     <meta property="og:type" content={type} />
-    <meta property="og:site_name" content={site.name} />
+    <meta property="og:site_name" content={name} />
+    <meta property="og:locale" content={lang === 'he' ? 'he_IL' : 'en_US'} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
@@ -55,13 +66,13 @@ const person = {
     <ClientRouter fallback="swap" />
   </head>
   <body id="top">
-    <a class="skip" href="#main">Skip to content</a>
-    <Header />
+    <a class="skip" href="#main">{ui.skip[lang]}</a>
+    <Header lang={lang} />
     <main id="main">
       <slot />
     </main>
-    <Contact />
-    <Footer />
+    <Contact lang={lang} />
+    <Footer lang={lang} />
 
     <script>
       // Scroll reveals — content stays visible without JS (the .js class gates the hidden state).
@@ -97,22 +108,8 @@ const person = {
         setTimeout(sweep, 400);
       }
 
-      function initCopy() {
-        document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
-          btn.onclick = async () => {
-            const label = btn.querySelector('[data-copy-label]');
-            try {
-              await navigator.clipboard.writeText(btn.dataset.copy!);
-              btn.dataset.done = '';
-              if (label) label.textContent = 'Copied';
-              setTimeout(() => { delete btn.dataset.done; if (label) label.textContent = 'Copy email'; }, 2000);
-            } catch { location.href = `mailto:${btn.dataset.copy}`; }
-          };
-        });
-      }
-
       document.addEventListener('astro:after-swap', () => document.documentElement.classList.add('js'));
-      document.addEventListener('astro:page-load', () => { initReveal(); initCopy(); });
+      document.addEventListener('astro:page-load', initReveal);
     </script>
   </body>
 </html>

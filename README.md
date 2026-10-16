@@ -1,6 +1,6 @@
 # Or Asif-Haber — Portfolio
 
-Static portfolio site built with Astro 5. Content lives in `src/data/`; design tokens in `src/styles/global.css` (see `design-system/MASTER.md`).
+Static portfolio site built with Astro 5. Hebrew is the default language (`/`, RTL); English lives under `/en/`. Content lives in `src/data/` (every text field is `{ he, en }`), UI strings in `src/i18n.ts`, page templates in `src/views/`, design tokens in `src/styles/global.css` (see `design-system/MASTER.md`).
 
 ## Commands
 
@@ -24,7 +24,11 @@ Existing outputs are skipped; delete `public/img` to rebuild everything.
 
 ## Adding or editing a project
 
-Edit `src/data/projects.ts`. Each project has metadata, an intro, and a `blocks` array that composes the case study (`full`, `pair`, `grid`, `text`, `split`, `chapter`, `palette`, `type`, `trio`). Set `featured: true` to consider it for the home page; the home compositions themselves are in `src/pages/index.astro`.
+Edit `src/data/projects.ts`. Every project uses the same template: metadata, an intro, optional `details` (label + text, optional colour swatches) and a `gallery` list. The gallery lays itself out — wide images run full width, tall and square images are grouped into rows of 2–3. Order in the array = order on the site.
+
+## Contact form
+
+The lead form posts to FormSubmit (`src/components/Contact.astro`), which forwards submissions to the email in `src/data/site.ts`. The first submission triggers an activation email to that inbox; submissions are delivered after it is confirmed.
 
 ## Deploying
 

@@ -1,0 +1,131 @@
+---
+import Base from '../layouts/Base.astro';
+import Img from '../components/Img.astro';
+import { url, fwd, type Lang, type T } from '../i18n';
+
+// From Or's CV (2026). Non-design jobs are left out on purpose; the full CV is available on request.
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = (he: string, en: string): T => ({ he, en });
+const L = (x: T) => x[lang];
+
+const copy = {
+  label: t('אודות', 'About'),
+  title: t('שפות ויזואליות למסיבות, לייבלים ומותגים — מהבריף ועד המסירה.', 'Visual languages for parties, labels and brands — from the brief to final delivery.'),
+  p1: t('אני אור אסיף-הבר, מעצב גרפי מישראל והנדסאי תקשורת חזותית בוגר אוניברסיטת אריאל.', 'I’m Or Asif-Haber, a graphic designer based in Israel and a Visual Communication Practical Engineering graduate of Ariel University.'),
+  p2: t(
+    'מאז 2024 אני עובד כפרילנסר: מפתח שפות ויזואליות וקמפיינים לאירועים, לצד עטיפות אלבום ותוכן לרשתות החברתיות. רוב העבודה שלי נמצאת בסצנת הפסייטראנס — מסיבות, קרו, די-ג׳ייז ולייבלים — שבה כל אירוע צריך עולם משלו, וליינאפ ארוך עדיין צריך להיקרא במבט אחד.',
+    'Since 2024 I’ve worked freelance, developing visual languages and campaigns for events, alongside music cover art and social media content. Most of that work lives in the psytrance scene — parties, crews, DJs and labels — where every event needs its own world and a long line-up still has to read at a glance.',
+  ),
+  p3: t(
+    'אני עובד ישירות מול הלקוחות לאורך כל התהליך: הבריף, גיבוש הכיוון הקריאייטיבי, העיצוב, התיקונים והמסירה. בין הלקוחות החוזרים — StoneAge Records, לייבל פסייטראנס שוודי, שעבורו עיצבתי חולצה, פוסטר לאירוע ואת עטיפת האלבום Codex Saltus — XXV Annorum Sum.',
+    'I work directly with clients through the whole process: the brief, shaping the creative direction, design, revisions and final delivery. Repeat clients include StoneAge Records, a Swedish psytrance label, for whom I’ve designed a T-shirt, an event poster and the cover art for the album Codex Saltus — XXV Annorum Sum.',
+  ),
+  p4: t('כלי AI — ביניהם Midjourney — הם חלק מתהליך העבודה שלי, לצד Photoshop, Illustrator ו-InDesign.', 'AI tools — Midjourney among them — are part of my workflow, alongside Photoshop, Illustrator and InDesign.'),
+  imgAlt: t('עמדת Trance Tribe, פרויקט הגמר של אור, עם עטיפות ויניל, באנרים ומסכים.', 'The Trance Tribe stand, Or’s graduation project, with vinyl covers, banners and screens.'),
+  whatLabel: t('מה אני עושה', 'What I do'),
+  bgLabel: t('רקע', 'Background'),
+  toolsLabel: t('כלים', 'Tools'),
+};
+const services: [T, T][] = [
+  [t('מיתוג מסיבות ואירועים', 'Party & event branding'), t('עולם ויזואלי לכל אירוע, שעובר לפוסטר, ליינאפ, טיימטייבל, הכרזות אמנים ורשתות.', 'A visual world per event, carried across poster, line-up, timetable, artist cards and social.')],
+  [t('פוסטרי ליינאפ וקמפיינים ברשתות', 'Line-up posters & social campaigns'), t('רצפי הכרזות ופורמטי סטורי שמשאירים ליינאפים ארוכים קריאים.', 'Announcement sequences and story formats that keep long line-ups legible.')],
+  [t('עטיפות אלבום', 'Music cover art'), t('עטיפות שעובדות בגודל מלא וגם כתמונה ממוזערת בשירותי סטרימינג.', 'Album and release artwork that holds up from full size down to a streaming thumbnail.')],
+  [t('זהות מותג ולוגו', 'Brand identity & logos'), t('סמלים, ניירת וקמפיינים למותגים מחוץ לסצנה.', 'Marks, stationery and campaigns for brands outside the scene.')],
+  [t('מרצ׳נדייז', 'Merchandise'), t('ביגוד, אריזות ודפוס ללייבלים, קרו ואירועים.', 'Apparel, packaging and print for labels, crews and events.')],
+];
+const background: [string, T, T, string?][] = [
+  [L(t('2024 — היום', '2024 — Present')), t('מעצב גרפי, פרילנס', 'Graphic Designer, Freelance'), t('שפות ויזואליות וקמפיינים לאירועים, עטיפות אלבום, תוכן לרשתות.', 'Event visual languages and campaigns, music cover art, social media content.')],
+  ['2022 — 2024', t('הנדסאי תקשורת חזותית — אוניברסיטת אריאל', 'Practical Engineer, Visual Communication — Ariel University'), t('מיתוג וזהות ויזואלית, טיפוגרפיה, עיצוב לדיגיטל ולדפוס, UI/UX, אנימציה, צילום ואיור, לצד חשיבה עיצובית, צבע, תולדות האמנות ושיווק.', 'Branding and visual identity, typography, digital and print design, UI/UX, animation, photography and illustration, alongside design thinking, colour, art history and marketing.')],
+  [L(t('פרויקט גמר', 'Final project')), t('Trance Tribe', 'Trance Tribe'), t('זהות ויזואלית למותג מרצ׳נדייז של אירועי טראנס, כולל יישומי מותג, מוצרים ואפליקציית אירועים. הוצג בתערוכת הגמר של המגמה.', 'A visual identity for a trance-event merchandise brand, including brand applications, products and an event app. Presented at the program’s graduation exhibition.'), url(lang, '/work/trance-tribe/')],
+];
+const tools: [T, string][] = [
+  [t('Adobe', 'Adobe'), 'Photoshop, Illustrator, InDesign'],
+  [t('AI', 'AI'), 'Midjourney, ChatGPT, Gemini, Claude'],
+  [t('נוספים', 'Other'), 'Figma, After Effects (basic)'],
+];
+---
+<Base lang={lang} title={L(copy.label)} description={`${L(copy.p1)} ${L(copy.p2)}`.slice(0, 158)}>
+  <section class="ab-hero wrap">
+    <p class="label">{L(copy.label)}</p>
+    <h1 class="h1 ab-hero__title">{L(copy.title)}</h1>
+  </section>
+
+  <section class="ab-intro wrap grid">
+    <div class="ab-intro__media"><Img id="09/10" alt={L(copy.imgAlt)} sizes="(min-width: 900px) 40vw, 92vw" /></div>
+    <div class="ab-intro__text prose">
+      <p class="lead" data-reveal>{L(copy.p1)}</p>
+      <p data-reveal style="--i:1">{L(copy.p2)}</p>
+      <p data-reveal style="--i:2">{L(copy.p3)}</p>
+      <p data-reveal style="--i:3">{L(copy.p4)}</p>
+    </div>
+  </section>
+
+  <section class="ab-list wrap grid" aria-labelledby="services-title">
+    <h2 id="services-title" class="label ab-list__label">{L(copy.whatLabel)}</h2>
+    <ol class="ab-list__items" role="list">
+      {services.map(([ti, de], n) => (
+        <li data-reveal style={`--i:${n}`}>
+          <span class="label">{String(n + 1).padStart(2, '0')}</span>
+          <h3 class="h3">{L(ti)}</h3>
+          <p class="muted">{L(de)}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="ab-cv wrap grid" aria-labelledby="cv-title">
+    <h2 id="cv-title" class="label ab-list__label">{L(copy.bgLabel)}</h2>
+    <dl class="ab-cv__items">
+      {background.map(([when, what, desc, href]) => (
+        <div data-reveal>
+          <dt class="label">{when}</dt>
+          <dd>
+            <strong>{href ? <a href={href} class="link">{L(what)} <span class="arrow" aria-hidden="true">{fwd(lang)}</span></a> : L(what)}</strong>
+            <span class="muted">{L(desc)}</span>
+          </dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+
+  <section class="ab-cv wrap grid" aria-labelledby="tools-title">
+    <h2 id="tools-title" class="label ab-list__label">{L(copy.toolsLabel)}</h2>
+    <dl class="ab-cv__items">
+      {tools.map(([k, v]) => (<div data-reveal><dt class="label">{L(k)}</dt><dd dir="ltr" class="ab-cv__ltr">{v}</dd></div>))}
+    </dl>
+  </section>
+</Base>
+
+<style>
+  .ab-hero { padding-top: clamp(120px, 20vh, 220px); padding-bottom: var(--section); display: grid; gap: var(--s-6); }
+  .ab-hero__title { max-width: 17ch; }
+
+  .ab-intro { row-gap: var(--s-7); }
+  .ab-intro__media, .ab-intro__text { grid-column: 1 / -1; }
+  .ab-intro__text { color: var(--ink-2); }
+  .ab-intro__text .lead { color: var(--ink); margin-bottom: var(--s-5); }
+  @media (min-width: 900px) {
+    .ab-intro__media { grid-column: 1 / span 5; align-self: start; position: sticky; top: 96px; }
+    .ab-intro__text { grid-column: 7 / span 6; }
+  }
+
+  .ab-list, .ab-cv { padding-top: var(--section); row-gap: var(--s-6); }
+  .ab-list__label { grid-column: 1 / -1; }
+  .ab-list__items, .ab-cv__items { grid-column: 1 / -1; }
+  .ab-list__items li { display: grid; grid-template-columns: 3rem 1fr; gap: var(--s-2) var(--s-4); padding-block: var(--s-5); border-top: 1px solid var(--line); }
+  .ab-list__items li .muted { grid-column: 2; max-width: 52ch; }
+  .ab-list__items .label { padding-top: 0.4em; }
+  .ab-cv__items > div { display: grid; gap: var(--s-2); padding-block: var(--s-5); border-top: 1px solid var(--line); }
+  .ab-cv__items dd { display: grid; gap: var(--s-2); max-width: 64ch; }
+  .ab-cv__items dd strong { font-weight: 600; }
+  .ab-cv__items .link { min-height: 0; }
+  :global([dir='rtl']) .ab-cv__ltr { text-align: right; }
+  @media (min-width: 900px) {
+    .ab-list__label { grid-column: 1 / span 3; padding-top: var(--s-5); }
+    .ab-list__items, .ab-cv__items { grid-column: 4 / -1; }
+    .ab-list__items li { grid-template-columns: 4rem 1fr 1fr; align-items: baseline; }
+    .ab-list__items li .muted { grid-column: 3; }
+    .ab-cv__items > div { grid-template-columns: 12rem 1fr; gap: var(--gutter); }
+  }
+</style>

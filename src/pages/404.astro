@@ -1,14 +1,17 @@
 ---
 import Base from '../layouts/Base.astro';
+import { ui } from '../i18n';
 ---
-<Base title="Not found" description="This page doesn’t exist.">
+<Base lang="he" title={ui.notFound.title.he} description={ui.notFound.body.he}>
   <section class="nf wrap">
     <p class="label">404</p>
-    <h1 class="mega">Off the line-up</h1>
-    <p class="lead muted">This page doesn’t exist — the work does.</p>
-    <a href="/#index" class="label link">See all projects <span class="arrow" aria-hidden="true">→</span></a>
+    <h1 class="mega">{ui.notFound.title.he}</h1>
+    <p class="lead muted">{ui.notFound.body.he}</p>
+    <a href="/#work" class="label link">{ui.notFound.cta.he} <span class="arrow" aria-hidden="true">←</span></a>
+    <p class="muted" lang="en" dir="ltr">Page not found — <a href="/en/" class="link">go to the English site →</a></p>
   </section>
 </Base>
 <style>
-  .nf { min-height: 80svh; display: grid; align-content: center; gap: var(--s-5); padding-top: 96px; }
+  .nf { min-height: 80svh; display: grid; align-content: center; justify-items: start; gap: var(--s-5); padding-top: 96px; }
+  .nf .mega { font-size: clamp(3.5rem, 14vw, 12rem); }
 </style>

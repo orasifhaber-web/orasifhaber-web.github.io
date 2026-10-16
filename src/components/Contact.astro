@@ -1,52 +1,211 @@
 ---
 import { site } from '../data/site';
+import { ui, type Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const f = ui.contact.form;
+const [user, domain] = site.email.split('@');
+// Form submissions are relayed to the email address by FormSubmit (no account needed; the first submission must be activated from the inbox).
+const endpoint = `https://formsubmit.co/ajax/${site.email}`;
+const messages = {
+  errName: f.errName[lang], errEmail: f.errEmail[lang], errPhone: f.errPhone[lang], errContact: f.errContact[lang],
+  sending: f.sending[lang], submit: f.submit[lang], success: f.success[lang], error: f.error[lang],
+  copied: ui.contact.copied[lang], copy: ui.contact.copy[lang],
+};
 ---
 <section id="contact" class="contact" aria-labelledby="contact-title">
-  <div class="wrap">
-    <div class="contact__top">
-      <p class="label" data-reveal>Contact</p>
-      <p class="contact__note muted" data-reveal style="--i:1">
-        Party branding, line-up posters, cover art or a brand identity — send a short brief and your dates.
-        Based in {site.location}, working with clients locally and abroad.
-      </p>
+  <div class="wrap contact__grid">
+    <div class="contact__intro">
+      <p class="label" data-reveal>{ui.contact.label[lang]}</p>
+      <h2 id="contact-title" class="display" data-reveal style="--i:1">{ui.contact.title[lang]}</h2>
+      <p class="muted contact__note" data-reveal style="--i:2">{ui.contact.note[lang]}</p>
+      <div class="contact__direct" data-reveal style="--i:3">
+        <p class="label">{ui.contact.orEmail[lang]}</p>
+        <a class="contact__mail" href={`mailto:${site.email}`} dir="ltr">{user}<wbr />@{domain}</a>
+        <div class="contact__row">
+          <button type="button" class="label link" data-copy={site.email}><span data-copy-label>{ui.contact.copy[lang]}</span></button>
+          {site.social.map((s) => (
+            <a class="label link" href={s.href} target="_blank" rel="noopener">{s.label} <span class="arrow" aria-hidden="true">↗</span></a>
+          ))}
+        </div>
+      </div>
     </div>
-    <h2 id="contact-title" class="sr-only">Contact</h2>
-    <a class="contact__mail" href={`mailto:${site.email}`} data-reveal style="--i:2">
-      <span class="contact__mail-text">{site.email.split('@')[0]}<wbr />@{site.email.split('@')[1]}</span>
-      <span class="arrow" aria-hidden="true">↗</span>
-    </a>
-    <div class="contact__row">
-      <button type="button" class="label link copy" data-copy={site.email}>
-        <span data-copy-label>Copy email</span>
-      </button>
-      <ul class="contact__social">
-        {site.social.map((s) => (
-          <li><a class="label link" href={s.href} target="_blank" rel="noopener">{s.label} <span class="arrow" aria-hidden="true">↗</span></a></li>
-        ))}
-      </ul>
-    </div>
+
+    <form class="form" action={endpoint} method="post" novalidate data-form data-msg={JSON.stringify(messages)}>
+      <input type="hidden" name="_subject" value={lang === 'he' ? 'פנייה חדשה מהאתר' : 'New enquiry from the portfolio'} />
+      <input type="hidden" name="_template" value="table" />
+      <input type="hidden" name="_captcha" value="false" />
+      <input type="hidden" name="language" value={lang} />
+      <p class="form__hp" aria-hidden="true"><label>Leave empty <input type="text" name="_honey" tabindex="-1" autocomplete="off" /></label></p>
+
+      <div class="field">
+        <label for="f-name">{f.name[lang]}</label>
+        <input id="f-name" name="name" type="text" autocomplete="name" required aria-describedby="f-name-err" />
+        <p class="field__err" id="f-name-err" aria-live="polite"></p>
+      </div>
+      <div class="field__pair">
+        <div class="field">
+          <label for="f-email">{f.email[lang]}</label>
+          <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" dir="ltr" aria-describedby="f-contact-hint f-email-err" />
+          <p class="field__err" id="f-email-err" aria-live="polite"></p>
+        </div>
+        <div class="field">
+          <label for="f-phone">{f.phone[lang]}</label>
+          <input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" dir="ltr" aria-describedby="f-contact-hint f-phone-err" />
+          <p class="field__err" id="f-phone-err" aria-live="polite"></p>
+        </div>
+      </div>
+      <p class="field__hint" id="f-contact-hint">{f.contactHint[lang]}</p>
+      <div class="field">
+        <label for="f-msg">{f.message[lang]} <span class="muted">({f.optional[lang]})</span></label>
+        <textarea id="f-msg" name="message" rows="4" placeholder={f.messageHint[lang]}></textarea>
+      </div>
+
+      <div class="form__foot">
+        <button type="submit" class="form__submit"><span data-submit-label>{f.submit[lang]}</span> <span class="arrow" aria-hidden="true">{lang === 'he' ? '←' : '→'}</span></button>
+        <p class="form__status" role="status" aria-live="polite" data-status></p>
+      </div>
+    </form>
   </div>
 </section>
 
 <style>
   .contact { padding-block: var(--section) var(--s-8); border-top: 1px solid var(--line); }
-  .contact__top { display: grid; gap: var(--s-4); margin-bottom: var(--s-7); }
-  .contact__note { max-width: 44ch; }
+  .contact__grid { display: grid; gap: var(--s-8); }
+  .contact__intro { display: grid; gap: var(--s-4); align-content: start; }
+  .contact__note { max-width: 42ch; }
+  .contact__direct { display: grid; gap: var(--s-2); margin-top: var(--s-5); }
   .contact__mail {
-    display: flex; align-items: flex-end; justify-content: space-between; gap: var(--s-4);
-    font-weight: 800; font-variation-settings: 'wdth' 62; text-transform: uppercase;
-    font-size: clamp(2.2rem, 8.6vw, 9.5rem); line-height: 0.85; letter-spacing: -0.005em;
-    padding-block: var(--s-5); border-bottom: 1px solid var(--line);
+    justify-self: start;
+    font-family: var(--f-display); font-weight: 800; font-variation-settings: 'wdth' 62; text-transform: uppercase;
+    font-size: clamp(1.6rem, 3.4vw, 2.8rem); line-height: 1; overflow-wrap: anywhere;
     transition: color var(--d-base) var(--ease-out);
-    overflow-wrap: anywhere;
   }
-  .contact__mail .arrow { font-size: 0.5em; line-height: 1; transition: transform var(--d-base) var(--ease-out); }
   .contact__mail:hover { color: var(--signal); }
-  .contact__mail:hover .arrow { transform: translate(6px, -6px); }
-  .contact__row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--s-4); margin-top: var(--s-4); }
-  .contact__social { display: flex; gap: var(--s-5); }
-  .copy[data-done] { color: var(--signal); }
+  .contact__row { display: flex; flex-wrap: wrap; gap: var(--s-5); }
+  [data-copy][data-done] { color: var(--signal); }
   @media (min-width: 900px) {
-    .contact__top { grid-template-columns: 1fr 1fr; align-items: end; }
+    .contact__grid { grid-template-columns: 5fr 6fr; column-gap: var(--s-9); }
   }
+
+  .form { display: grid; gap: var(--s-5); }
+  .form__hp { position: absolute; inset-inline-start: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .field { display: grid; gap: var(--s-2); }
+  .field__pair { display: grid; gap: var(--s-5); }
+  @media (min-width: 600px) { .field__pair { grid-template-columns: 1fr 1fr; } }
+  .field label { font-size: var(--t-small); color: var(--ink); }
+  .field input, .field textarea {
+    width: 100%; font: inherit; color: var(--ink);
+    background: var(--bg-2); border: 1px solid var(--line); border-radius: 0;
+    padding: 14px var(--s-4); min-height: 52px;
+    transition: border-color var(--d-fast) linear, background-color var(--d-fast) linear;
+  }
+  .field textarea { resize: vertical; min-height: 128px; }
+  .field input::placeholder, .field textarea::placeholder { color: var(--ink-3); }
+  .field input:hover, .field textarea:hover { border-color: var(--ink-3); }
+  .field input:focus-visible, .field textarea:focus-visible { outline: 2px solid var(--signal); outline-offset: 0; border-color: transparent; }
+  .field [aria-invalid='true'] { border-color: #ff7a6b; }
+  .field__err { color: #ff9a8e; font-size: var(--t-small); min-height: 1.4em; margin-top: -2px; }
+  .field__err:empty { min-height: 0; }
+  .field__hint { color: var(--ink-2); font-size: var(--t-small); margin-top: calc(var(--s-4) * -1); }
+  .field__hint.is-error { color: #ff9a8e; }
+
+  .form__foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-5); margin-top: var(--s-2); }
+  .form__submit {
+    display: inline-flex; align-items: center; gap: var(--s-3);
+    min-height: 56px; padding: 0 var(--s-7);
+    background: var(--ink); color: var(--bg);
+    font-weight: 600; font-size: 1.0625rem;
+    transition: background-color var(--d-base) var(--ease-out), opacity var(--d-fast) linear;
+  }
+  .form__submit:hover { background: var(--signal); }
+  .form__submit:hover .arrow { transform: translateX(4px); }
+  :global([dir='rtl']) .form__submit:hover .arrow { transform: translateX(-4px); }
+  .form__submit[disabled] { opacity: 0.6; cursor: progress; }
+  .form__status { font-size: var(--t-small); color: var(--ink-2); max-width: 44ch; }
+  .form__status.is-ok { color: var(--signal); }
+  .form__status.is-err { color: #ff9a8e; }
 </style>
+
+<script>
+  type Msg = Record<string, string>;
+  const emailOk = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+  const phoneOk = (v: string) => { const d = v.replace(/\D/g, ''); return /^[+\d][\d\s\-().]*$/.test(v) && d.length >= 9 && d.length <= 15; };
+
+  function initForm() {
+    const form = document.querySelector<HTMLFormElement>('[data-form]');
+    if (!form || form.dataset.ready) return;
+    form.dataset.ready = '1';
+    const m: Msg = JSON.parse(form.dataset.msg!);
+    const $ = (id: string) => form.querySelector<HTMLInputElement>(`#${id}`)!;
+    const name = $('f-name'), email = $('f-email'), phone = $('f-phone');
+    const hint = form.querySelector<HTMLElement>('#f-contact-hint')!;
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const btn = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+    const btnLabel = form.querySelector<HTMLElement>('[data-submit-label]')!;
+
+    const setErr = (el: HTMLInputElement, msg: string) => {
+      el.setAttribute('aria-invalid', msg ? 'true' : 'false');
+      form.querySelector(`#${el.id}-err`)!.textContent = msg;
+    };
+    const checkName = () => { const ok = name.value.trim().length > 1; setErr(name, ok ? '' : m.errName); return ok; };
+    const checkEmail = () => { const v = email.value.trim(); const ok = !v || emailOk(v); setErr(email, ok ? '' : m.errEmail); return ok; };
+    const checkPhone = () => { const v = phone.value.trim(); const ok = !v || phoneOk(v); setErr(phone, ok ? '' : m.errPhone); return ok; };
+    const checkContact = () => {
+      const ok = !!(email.value.trim() || phone.value.trim());
+      hint.classList.toggle('is-error', !ok);
+      hint.textContent = ok ? hint.dataset.text! : m.errContact;
+      return ok;
+    };
+    hint.dataset.text = hint.textContent!;
+
+    // Validate on blur, re-validate while correcting.
+    name.addEventListener('blur', checkName);
+    email.addEventListener('blur', checkEmail);
+    phone.addEventListener('blur', checkPhone);
+    [name, email, phone].forEach((el) => el.addEventListener('input', () => {
+      if (el.getAttribute('aria-invalid') === 'true') ({ 'f-name': checkName, 'f-email': checkEmail, 'f-phone': checkPhone } as Record<string, () => boolean>)[el.id]();
+      if (hint.classList.contains('is-error')) checkContact();
+    }));
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const ok = [checkName(), checkEmail(), checkPhone(), checkContact()];
+      if (ok.includes(false)) {
+        const first = form.querySelector<HTMLElement>('[aria-invalid=true]') ?? (ok[3] ? null : email);
+        first?.focus();
+        return;
+      }
+      btn.disabled = true; btnLabel.textContent = m.sending; status.className = 'form__status'; status.textContent = '';
+      try {
+        const data = Object.fromEntries(new FormData(form).entries());
+        const res = await fetch(form.action, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data) });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok || String(json.success) !== 'true') throw new Error(json.message || res.statusText);
+        form.reset();
+        status.classList.add('is-ok'); status.textContent = m.success;
+      } catch {
+        status.classList.add('is-err'); status.textContent = m.error;
+      } finally {
+        btn.disabled = false; btnLabel.textContent = m.submit;
+      }
+    });
+  }
+
+  function initCopy() {
+    document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((b) => {
+      b.onclick = async () => {
+        const label = b.querySelector('[data-copy-label]');
+        const m: Msg = JSON.parse(document.querySelector<HTMLElement>('[data-form]')!.dataset.msg!);
+        try {
+          await navigator.clipboard.writeText(b.dataset.copy!);
+          b.dataset.done = ''; if (label) label.textContent = m.copied;
+          setTimeout(() => { delete b.dataset.done; if (label) label.textContent = m.copy; }, 2000);
+        } catch { location.href = `mailto:${b.dataset.copy}`; }
+      };
+    });
+  }
+
+  document.addEventListener('astro:page-load', () => { initForm(); initCopy(); });
+</script>
