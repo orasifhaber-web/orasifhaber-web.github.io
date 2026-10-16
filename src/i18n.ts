@@ -37,6 +37,7 @@ export const ui = {
     years: { he: 'עבודות נבחרות 2024–2026', en: 'Selected work 2024–2026' },
     toWork: { he: 'לעבודות', en: 'Selected work' },
     toContact: { he: 'השאירו פרטים', en: 'Get in touch' },
+    portrait: { he: 'דיוקן של אור אסיף-חבר', en: 'Portrait of Or Asif-Haber' },
   },
   work: { he: 'עבודות', en: 'Work' },
   projects: { he: 'פרויקטים', en: 'projects' },

@@ -1,0 +1,396 @@
+---
+// Interactive portrait: the photo stays put; a soft, liquid-edged mask follows the pointer and reveals one artwork underneath.
+// The reveal shows on the face only; each completed hover (or touch) that reached the face cycles the artwork: Gothic → Surrealism → Gothic …
+// The three files are pre-aligned (see data/portrait.ts) — every layer gets the exact same box, no per-layer transform.
+// The artworks are drawn inside an SVG with the image's own viewBox, so the mask works in image pixels whatever the display size;
+// only the mask's outline moves — the artwork itself is never distorted.
+// Size it from outside (width / max-width); the height follows the image's aspect ratio.
+// `demo` (on by default): the first time the portrait comes into view, the window sweeps across the face on its own, once,
+// as if a cursor passed over it — so visitors discover the hidden layer without any instruction text.
+import { PORTRAIT_BASE, PORTRAIT_SIZE, portraitLayers, faceOutline } from '../data/portrait';
+import { smoothClosedPath } from '../lib/smooth-path';
+
+interface Props {
+  alt: string;
+  class?: string;
+  demo?: boolean;
+}
+const { alt, class: className, demo = true } = Astro.props;
+const { width, height } = PORTRAIT_SIZE;
+const src = (file: string) => PORTRAIT_BASE + file;
+const uid = `portrait-${Math.random().toString(36).slice(2, 8)}`; // SVG ids must be unique per instance
+const face = smoothClosedPath(faceOutline);
+const arts = [
+  { style: 'gothic', file: portraitLayers.gothic },
+  { style: 'surrealism', file: portraitLayers.surrealism },
+];
+---
+<portrait-reveal class:list={['portrait', className]} data-next="gothic" data-state="idle" data-demo={demo ? '' : undefined}>
+  <img class="portrait__layer" src={src(portraitLayers.master)} alt={alt} width={width} height={height} decoding="async" fetchpriority="high" draggable="false" />
+  {arts.map(({ style, file }) => (
+    <svg class="portrait__layer portrait__art" data-style={style} data-src={src(file)} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+      <defs>
+        <filter id={`${uid}-${style}-soft`} x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="0" />
+        </filter>
+        <mask id={`${uid}-${style}-mask`} maskUnits="userSpaceOnUse" x="0" y="0" width={width} height={height}>
+          <path fill="#fff" filter={`url(#${uid}-${style}-soft)`} d="" />
+        </mask>
+        {/* the reveal only shows on the face: the liquid window is cut to this outline, with a lightly feathered edge */}
+        <filter id={`${uid}-${style}-face-soft`} x="-5%" y="-5%" width="110%" height="110%">
+          <feGaussianBlur stdDeviation="7" />
+        </filter>
+        <mask id={`${uid}-${style}-face`} maskUnits="userSpaceOnUse" x="0" y="0" width={width} height={height}>
+          <path fill="#fff" filter={`url(#${uid}-${style}-face-soft)`} d={face} />
+        </mask>
+      </defs>
+      <g mask={`url(#${uid}-${style}-face)`}>
+        <image href={src(file)} width={width} height={height} mask={`url(#${uid}-${style}-mask)`} />
+      </g>
+    </svg>
+  ))}
+</portrait-reveal>
+
+<style>
+  .portrait {
+    position: relative;
+    display: block;
+    aspect-ratio: 1086 / 1448;
+    overflow: hidden;
+    background: var(--bg-2);
+    /* the page scrolls and zooms normally over the portrait; taps reveal (no double-tap zoom delay) */
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  .portrait__layer {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 50%;
+    pointer-events: none;
+  }
+
+  .portrait__art {
+    visibility: hidden;
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { smoothClosedPath } from '../lib/smooth-path';
+  import { faceOutline } from '../data/portrait';
+
+  const STYLES = ['gothic', 'surrealism'] as const;
+  const IMAGE_W = 1086; // SVG user units = image pixels (PORTRAIT_SIZE)
+  const RADIUS = 0.17 * IMAGE_W; // reach of the mask, soft edge included
+  const CORE = 0.8; // share of RADIUS covered by the shape before the blur
+  const SOFT = 0.09 * RADIUS; // blur that softens the edge
+  const WOBBLE = 0.22; // how far the edge bulges in/out, as a share of the shape's radius
+  const POINTS = 40;
+  const TAP_SLOP = 10; // px a finger may drift and still count as a tap
+  const TAP_TIME = 500; // ms — longer presses are not taps
+  const TAP_HOLD = 1500; // ms the window stays open after a tap
+  // Intro sweep (image pixels): a zigzag down the face, forehead → cheeks → beard → neck, all inside faceOutline.
+  const ZIGZAG: [number, number][] = [[340, 330], [640, 390], [380, 540], [660, 640], [450, 770], [650, 880], [560, 990]];
+
+  // Point at progress t (0–1) on a smooth curve through the points (Catmull-Rom), so the sweep flows through each turn
+  // instead of slowing down at every corner.
+  function onCurve(pts: [number, number][], t: number): [number, number] {
+    const last = pts.length - 1;
+    const s = Math.min(t, 0.99999) * last;
+    const i = Math.floor(s);
+    const u = s - i;
+    const [p0, p1, p2, p3] = [pts[Math.max(i - 1, 0)], pts[i], pts[i + 1], pts[Math.min(i + 2, last)]];
+    const c = (a: number, b: number, c2: number, d: number) =>
+      0.5 * (2 * b + (c2 - a) * u + (2 * a - 5 * b + 4 * c2 - d) * u * u + (3 * b - a - 3 * c2 + d) * u * u * u);
+    return [c(p0[0], p1[0], p2[0], p3[0]), c(p0[1], p1[1], p2[1], p3[1])];
+  }
+
+  // Closed, smooth outline: the radius drifts around the circle with a few slow sine waves, so the edge flows like liquid.
+  function blob(cx: number, cy: number, r: number, t: number, amp: number) {
+    const pts: [number, number][] = [];
+    for (let i = 0; i < POINTS; i++) {
+      const a = (i / POINTS) * Math.PI * 2;
+      const k =
+        1 +
+        amp *
+          (0.45 * Math.sin(2 * a + t * 0.9 + 1.3) +
+            0.3 * Math.sin(3 * a - t * 1.25 + 0.4) +
+            0.17 * Math.sin(5 * a + t * 1.7 + 2.1) +
+            0.08 * Math.sin(8 * a - t * 2.3 + 0.7));
+      pts.push([cx + Math.cos(a) * r * k, cy + Math.sin(a) * r * k]);
+    }
+    return smoothClosedPath(pts);
+  }
+
+  // Does a circle of radius r around (x, y) reach into the face outline? (inside it, or closer than r to its edge)
+  function touchesFace(x: number, y: number, r: number) {
+    let inside = false;
+    let near = Infinity;
+    for (let i = 0, j = faceOutline.length - 1; i < faceOutline.length; j = i++) {
+      const [ax, ay] = faceOutline[j];
+      const [bx, by] = faceOutline[i];
+      if (by > y !== ay > y && x < ((ax - bx) * (y - by)) / (ay - by) + bx) inside = !inside;
+      const dx = bx - ax;
+      const dy = by - ay;
+      const t = Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / (dx * dx + dy * dy)));
+      near = Math.min(near, Math.hypot(x - (ax + t * dx), y - (ay + t * dy)));
+    }
+    return inside || near < r;
+  }
+
+  type Art = { el: SVGSVGElement; path: SVGPathElement; blur: SVGFEGaussianBlurElement };
+
+  class PortraitReveal extends HTMLElement {
+    private mm?: ReturnType<typeof gsap.matchMedia>;
+    private styleIndex = 0;
+    private ready = false;
+    private loaded?: Promise<void>;
+    private demoDone = false; // the intro sweep runs once per page view, even if setup() is rebuilt
+
+    connectedCallback() {
+      const arts: Art[] = STYLES.map((s) => {
+        const el = this.querySelector<SVGSVGElement>(`[data-style="${s}"]`)!;
+        return { el, path: el.querySelector('path')!, blur: el.querySelector('feGaussianBlur')! };
+      });
+      // Both artworks load eagerly (the SVG <image> requests them right away); these Image objects share the same cache entry
+      // and tell us when the files are in, so the reveal never paints a half-loaded artwork.
+      // decode() warms the decoded bitmap but is not awaited — it can stall in background tabs.
+      // (a failed artwork keeps the portrait as a plain photo — no reveal into a broken image)
+      const load = (url: string) =>
+        new Promise<HTMLImageElement>((done) => {
+          const img = new Image();
+          img.addEventListener('load', () => done(img), { once: true });
+          img.src = url;
+        });
+      this.loaded = Promise.all(arts.map((a) => load(a.el.dataset.src!))).then((imgs) => {
+        this.ready = true;
+        imgs.forEach((img) => img.decode().catch(() => undefined));
+      });
+
+      this.mm = gsap.matchMedia();
+      // Both conditions are listed so exactly one always matches (matchMedia skips the handler when none does).
+      this.mm.add(
+        { motion: '(prefers-reduced-motion: no-preference)', reduce: '(prefers-reduced-motion: reduce)' },
+        (ctx) => this.setup(arts, !!ctx.conditions?.reduce),
+      );
+    }
+
+    disconnectedCallback() {
+      this.mm?.revert();
+      this.mm = undefined;
+    }
+
+    private setup(arts: Art[], reduce: boolean) {
+      const pos = { x: 0, y: 0 }; // in image pixels
+      const mask = { p: 0 }; // 0 = closed, 1 = open
+      let art = arts[this.styleIndex];
+      let active = false;
+      let ticking = false;
+      let touchId: number | null = null;
+      let tween: gsap.core.Tween | undefined;
+      let sawFace = false; // did this cycle actually show any of the artwork? Only then does the next style come up.
+
+      this.dataset.next = STYLES[this.styleIndex];
+      this.dataset.state = 'idle';
+
+      // Reduced motion: a still, soft circle — no flowing edge.
+      const amp = reduce ? 0 : WOBBLE;
+      const render = () => {
+        const p = mask.p;
+        art.path.setAttribute('d', p > 0 ? blob(pos.x, pos.y, RADIUS * CORE * p, gsap.ticker.time, amp) : '');
+        art.blur.setAttribute('stdDeviation', (SOFT * (0.4 + 0.6 * p)).toFixed(1));
+        // counts once a clearly visible part of the window (its solid core, not the faint feather) overlaps the face
+        if (!sawFace && p > 0) sawFace = touchesFace(pos.x, pos.y, RADIUS * CORE * p * 0.7);
+      };
+      // The edge keeps flowing while the mask is visible, so redraw every frame then — and only then.
+      const startTicking = () => {
+        if (!ticking) gsap.ticker.add(render);
+        ticking = true;
+      };
+      const stopTicking = () => {
+        gsap.ticker.remove(render);
+        ticking = false;
+      };
+
+      // Reduced motion: the mask sits exactly under the pointer and opens/closes without animation.
+      const follow = { duration: reduce ? 0 : 0.45, ease: 'power3' };
+      const xTo = gsap.quickTo(pos, 'x', follow);
+      const yTo = gsap.quickTo(pos, 'y', follow);
+
+      const point = (e: PointerEvent) => {
+        const r = this.getBoundingClientRect();
+        const s = IMAGE_W / r.width;
+        return { x: (e.clientX - r.left) * s, y: (e.clientY - r.top) * s };
+      };
+
+      const moveTo = (e: PointerEvent, jump = false) => {
+        const { x, y } = point(e);
+        if (jump) {
+          xTo(x, x);
+          yTo(y, y);
+          pos.x = x;
+          pos.y = y;
+        } else {
+          xTo(x);
+          yTo(y);
+        }
+        if (reduce || jump) render();
+      };
+
+      const open = (e: PointerEvent) => {
+        if (!this.ready) return;
+        // The visitor takes over from the intro sweep: the window carries on from where the sweep left it.
+        // Once they have found the reveal themselves, a sweep that hasn't started yet is no longer needed.
+        stopDemo();
+        this.demoDone = true;
+        // A fresh cycle starts right under the pointer; re-entering while it is still closing just reopens the same artwork.
+        const fresh = mask.p === 0;
+        if (fresh) sawFace = false;
+        moveTo(e, fresh);
+        active = true;
+        art.el.style.visibility = 'visible';
+        this.dataset.state = 'open';
+        startTicking();
+        tween?.kill();
+        tween = gsap.to(mask, { p: 1, duration: reduce ? 0 : 0.7, ease: 'power3.out', onUpdate: render });
+      };
+
+      const finish = () => {
+        stopTicking();
+        art.el.style.visibility = 'hidden';
+        art.path.setAttribute('d', '');
+        this.dataset.state = 'idle';
+        // A pass over hair or shirt only showed nothing, so the same artwork stays ready for the next entry.
+        if (!sawFace) return;
+        this.styleIndex = (this.styleIndex + 1) % STYLES.length;
+        art = arts[this.styleIndex];
+        this.dataset.next = STYLES[this.styleIndex];
+        this.dispatchEvent(new CustomEvent('portrait:next', { detail: STYLES[this.styleIndex] }));
+      };
+
+      const close = () => {
+        if (!active) return;
+        active = false;
+        this.dataset.state = 'closing';
+        tween?.kill();
+        // The artwork only advances once the mask has fully closed (and only if it reached the face) — quick in/out movements can't skip a style.
+        tween = gsap.to(mask, { p: 0, duration: reduce ? 0 : 0.5, ease: 'power2.inOut', onUpdate: render, onComplete: finish });
+      };
+
+      const onEnter = (e: PointerEvent) => { if (e.pointerType !== 'touch') open(e); };
+      const onLeave = (e: PointerEvent) => { if (e.pointerType !== 'touch') close(); };
+      // Touch: the page always scrolls freely over the portrait (it can fill most of a phone screen).
+      // A short tap opens the window where the finger landed and closes it again after a moment;
+      // another tap while it is open just moves it there. A finger that travels is a scroll, not a tap.
+      let tap: { x: number; y: number; t: number } | null = null;
+      let tapClose: number | undefined;
+      const onDown = (e: PointerEvent) => {
+        if (e.pointerType !== 'touch' || touchId !== null) return;
+        touchId = e.pointerId;
+        tap = { x: e.clientX, y: e.clientY, t: e.timeStamp };
+      };
+      const onMove = (e: PointerEvent) => {
+        if (e.pointerType === 'touch') {
+          if (e.pointerId === touchId && tap && Math.hypot(e.clientX - tap.x, e.clientY - tap.y) > TAP_SLOP) touchId = null;
+          return;
+        }
+        if (!active) {
+          // The cursor was already over the portrait (page load, images still loading) — treat the move as the entry.
+          open(e);
+          return;
+        }
+        moveTo(e);
+      };
+      const onUp = (e: PointerEvent) => {
+        if (e.pointerId !== touchId) return;
+        touchId = null;
+        if (!tap || e.timeStamp - tap.t > TAP_TIME) return;
+        if (active) moveTo(e);
+        else open(e);
+        window.clearTimeout(tapClose);
+        tapClose = window.setTimeout(close, TAP_HOLD);
+      };
+      const onCancel = (e: PointerEvent) => {
+        if (e.pointerId === touchId) touchId = null; // the browser took the gesture (scroll / zoom)
+      };
+
+      // Intro sweep: the window opens on the forehead, zigzags down the face to the neck and closes — as if a cursor passed by.
+      // It counts as a normal cycle (it shows Gothic), so the visitor's own first reveal brings up the next artwork.
+      // Skipped with reduced motion: it is motion the visitor didn't start.
+      let demo: gsap.core.Timeline | undefined;
+      let demoWait: number | undefined;
+      let io: IntersectionObserver | undefined;
+      const stopDemo = () => {
+        if (!demo) return;
+        demo.kill();
+        demo = undefined;
+        this.dataset.state = 'open';
+      };
+      const playDemo = () => {
+        if (this.demoDone || active || mask.p > 0) return;
+        this.demoDone = true;
+        sawFace = false;
+        [pos.x, pos.y] = ZIGZAG[0];
+        art.el.style.visibility = 'visible';
+        this.dataset.state = 'demo';
+        startTicking();
+        // One continuous glide along the curve (eased only at the very start and end); the window opens as it sets off
+        // and starts closing while it is still drifting into the neck, so nothing stops and restarts.
+        const sweep = { t: 0 };
+        demo = gsap
+          .timeline({ onComplete: () => { demo = undefined; finish(); } })
+          .to(mask, { p: 1, duration: 0.9, ease: 'power2.out' }, 0)
+          .to(sweep, { t: 1, duration: 3.6, ease: 'sine.inOut', onUpdate: () => { [pos.x, pos.y] = onCurve(ZIGZAG, sweep.t); } }, 0)
+          .to(mask, { p: 0, duration: 0.8, ease: 'power2.inOut' }, '>-0.6');
+      };
+      if ('demo' in this.dataset && !this.demoDone && !reduce) {
+        // Starts once at least half of the portrait is on screen and the artworks have loaded.
+        io = new IntersectionObserver(
+          (entries) => {
+            if (!entries.some((en) => en.isIntersecting)) return;
+            io?.disconnect();
+            // the pause lets a page's own entrance animation (e.g. the Hero title) finish first
+            this.loaded?.then(() => { demoWait = window.setTimeout(playDemo, 1200); });
+          },
+          { threshold: 0.5 },
+        );
+        io.observe(this);
+      }
+
+      this.addEventListener('pointerenter', onEnter);
+      this.addEventListener('pointerleave', onLeave);
+      this.addEventListener('pointerdown', onDown);
+      this.addEventListener('pointermove', onMove);
+      this.addEventListener('pointerup', onUp);
+      this.addEventListener('pointercancel', onCancel);
+
+      // Runs on disconnect or when the reduced-motion preference flips (matchMedia then rebuilds with the new setting).
+      return () => {
+        io?.disconnect();
+        window.clearTimeout(demoWait);
+        demo?.kill();
+        stopTicking();
+        this.removeEventListener('pointerenter', onEnter);
+        this.removeEventListener('pointerleave', onLeave);
+        this.removeEventListener('pointerdown', onDown);
+        this.removeEventListener('pointermove', onMove);
+        this.removeEventListener('pointerup', onUp);
+        this.removeEventListener('pointercancel', onCancel);
+        window.clearTimeout(tapClose);
+        arts.forEach((a) => {
+          a.el.style.removeProperty('visibility');
+          a.path.setAttribute('d', '');
+        });
+      };
+    }
+  }
+
+  if (!customElements.get('portrait-reveal')) customElements.define('portrait-reveal', PortraitReveal);
+</script>
