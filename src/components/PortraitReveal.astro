@@ -207,7 +207,11 @@ const arts = [
         art.path.setAttribute('d', p > 0 ? blob(pos.x, pos.y, RADIUS * CORE * p, gsap.ticker.time, amp) : '');
         art.blur.setAttribute('stdDeviation', (SOFT * (0.4 + 0.6 * p)).toFixed(1));
         // counts once a clearly visible part of the window (its solid core, not the faint feather) overlaps the face
-        if (!sawFace && p > 0) sawFace = touchesFace(pos.x, pos.y, RADIUS * CORE * p * 0.7);
+        if (!sawFace && p > 0) {
+          sawFace = touchesFace(pos.x, pos.y, RADIUS * CORE * p * 0.7);
+          // lets the page respond to what is being revealed (e.g. the Hero aura takes on the artwork's colours)
+          if (sawFace) this.dispatchEvent(new CustomEvent('portrait:reveal', { detail: STYLES[this.styleIndex] }));
+        }
       };
       // The edge keeps flowing while the mask is visible, so redraw every frame then — and only then.
       const startTicking = () => {
@@ -269,6 +273,7 @@ const arts = [
         this.dataset.state = 'idle';
         // A pass over hair or shirt only showed nothing, so the same artwork stays ready for the next entry.
         if (!sawFace) return;
+        this.dispatchEvent(new CustomEvent('portrait:conceal', { detail: STYLES[this.styleIndex] }));
         this.styleIndex = (this.styleIndex + 1) % STYLES.length;
         art = arts[this.styleIndex];
         this.dataset.next = STYLES[this.styleIndex];
