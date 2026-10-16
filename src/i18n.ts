@@ -15,10 +15,10 @@ export const ui = {
   role: { he: 'מעצב גרפי', en: 'Graphic Designer' },
   location: { he: 'ישראל', en: 'Israel' },
   available: { he: 'פתוח לפרויקטים', en: 'Available for freelance' },
-  name: { he: 'אור אסיף-הבר', en: 'Or Asif-Haber' },
-  nameLines: { he: ['אור', 'אסיף-הבר'], en: ['Or Asif-', 'Haber'] },
+  name: { he: 'אור אסיף-חבר', en: 'Or Asif-Haber' },
+  nameLines: { he: ['אור', 'אסיף-חבר'], en: ['Or Asif-', 'Haber'] },
   description: {
-    he: 'אור אסיף-הבר — מעצב גרפי שבונה עולמות ויזואליים למסיבות טראנס, לייבלים ואמנים: פוסטרים, מיתוג מסיבות, עטיפות אלבום וזהויות מותג.',
+    he: 'אור אסיף-חבר — מעצב גרפי שבונה עולמות ויזואליים למסיבות טראנס, לייבלים ואמנים: פוסטרים, מיתוג מסיבות, עטיפות אלבום וזהויות מותג.',
     en: 'Or Asif-Haber is a graphic designer building visual worlds for psytrance parties, record labels and artists — line-up posters, party branding, cover art and brand identities.',
   },
   nav: {
