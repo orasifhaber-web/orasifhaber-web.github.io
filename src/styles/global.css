@@ -172,10 +172,16 @@ a:hover .arrow, a:focus-visible .arrow { transform: translateX(4px); }
   }
   .js [data-reveal].in { opacity: 1; transform: none; }
 
-  .js [data-reveal='mask'] { opacity: 1; transform: none; clip-path: inset(0 0 100% 0); transition: clip-path 1.1s var(--ease-out); transition-delay: calc(var(--i, 0) * 90ms); }
-  .js [data-reveal='mask'] img { transform: scale(1.08); transition: transform 1.6s var(--ease-out); transition-delay: inherit; }
-  .js [data-reveal='mask'].in { clip-path: inset(0 0 0 0); }
-  .js [data-reveal='mask'].in img { transform: none; }
+  /* The mask sits on the image, not the observed container — a fully clipped target never reports as intersecting. */
+  .js [data-reveal='mask'] { opacity: 1; transform: none; transition: background-color var(--d-base) linear; }
+  .js [data-reveal='mask']:not(.in) { background-image: none !important; background-color: transparent; }
+  .js [data-reveal='mask'] img {
+    clip-path: inset(0 0 100% 0);
+    transform: scale(1.08);
+    transition: clip-path 1.1s var(--ease-out), transform 1.6s var(--ease-out);
+    transition-delay: calc(var(--i, 0) * 90ms);
+  }
+  .js [data-reveal='mask'].in img { clip-path: inset(0 0 0 0); transform: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

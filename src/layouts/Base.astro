@@ -65,16 +65,36 @@ const person = {
 
     <script>
       // Scroll reveals — content stays visible without JS (the .js class gates the hidden state).
+      // IntersectionObserver does the work; a throttled position check on scroll/resize is a safety net
+      // so nothing can stay hidden if the observer is delayed or never fires.
+      let pending: HTMLElement[] = [];
+      let io: IntersectionObserver | undefined;
+      const show = (e: Element) => { e.classList.add('in'); io?.unobserve(e); };
+      function sweep() {
+        const limit = innerHeight * 0.95;
+        pending = pending.filter((e) => {
+          const r = e.getBoundingClientRect();
+          if (r.top < limit && r.bottom > 0) { show(e); return false; }
+          return !e.classList.contains('in');
+        });
+      }
+      let t = 0;
+      const onScroll = () => { if (!t) t = window.setTimeout(() => { t = 0; sweep(); }, 120); };
+      addEventListener('scroll', onScroll, { passive: true });
+      addEventListener('resize', onScroll, { passive: true });
+
       function initReveal() {
-        const els = document.querySelectorAll<HTMLElement>('[data-reveal]:not(.in)');
-        if (!('IntersectionObserver' in window)) { els.forEach((e) => e.classList.add('in')); return; }
-        const io = new IntersectionObserver(
-          (entries) => entries.forEach((en) => {
-            if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
-          }),
-          { rootMargin: '0px 0px -8% 0px', threshold: 0.01 },
-        );
-        els.forEach((e) => io.observe(e));
+        io?.disconnect();
+        pending = [...document.querySelectorAll<HTMLElement>('[data-reveal]:not(.in)')];
+        if ('IntersectionObserver' in window) {
+          io = new IntersectionObserver(
+            (entries) => entries.forEach((en) => en.isIntersecting && show(en.target)),
+            { rootMargin: '0px 0px -5% 0px', threshold: 0 },
+          );
+          pending.forEach((e) => io!.observe(e));
+        }
+        sweep();
+        setTimeout(sweep, 400);
       }
 
       function initCopy() {
