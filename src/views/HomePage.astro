@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import WorkList from '../components/WorkList.astro';
 import PortraitReveal from '../components/PortraitReveal.astro';
-import HeroAura from '../components/HeroAura.astro';
+import HeroGeometry from '../components/HeroGeometry.astro';
 import { site } from '../data/site';
 import { ui, url, fwd, type Lang } from '../i18n';
 
@@ -20,7 +20,7 @@ const [l1, l2] = ui.nameLines[lang];
     <h1 id="hero-title" class="mega hero__name">
       <span class="hero__line"><span>{l1}</span></span><span class="hero__sp"> </span><span class="hero__line"><span>{l2}</span></span>
     </h1>
-    <HeroAura class="hero__aura" />
+    <HeroGeometry class="hero__geo" />
     <PortraitReveal class="hero__portrait" alt={ui.hero.portrait[lang]} />
     <div class="hero__bottom">
       <p class="hero__statement">{ui.hero.statement[lang]}</p>
@@ -76,13 +76,20 @@ const [l1, l2] = ui.nameLines[lang];
     -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 98%);
     mask-image: linear-gradient(to bottom, #000 72%, transparent 98%);
   }
-  /* ambient colour behind the portrait: same grid cell, spilling a little past it */
-  .hero :global(.hero__aura) {
+  /* looping geometric "rose window" behind the portrait, centred on the head (same grid cell as the portrait) */
+  .hero :global(.hero__geo) {
     position: absolute;
     z-index: 0;
     grid-column: 1;
     grid-row: 3;
-    inset: -16% -16% 28%; /* ends above the shirt, so the colour gathers around head and shoulders */
+    inset: 0;
+    --geo-x: 47%;
+    /* head height, from the portrait's own size: a third of its height (width × 1448/1086), less its -9vw pull-up */
+    --geo-y: calc(min(92vw, 520px) * 1.3333 * 0.33 - 9vw);
+    --geo-size: 128%;
+    /* on phones the portrait sits well below the header: only a soft fade at the cell's top edge */
+    --geo-clear: 0px;
+    --geo-solid: 18%;
   }
   .hero__bottom { position: relative; z-index: 3; display: grid; gap: var(--s-5); padding: var(--s-6) var(--margin) var(--s-8); }
   .hero__statement { font-size: clamp(1.25rem, 2.3vw, 2.2rem); line-height: 1.25; letter-spacing: -0.015em; max-width: 30ch; font-variation-settings: 'wdth' 92; }
@@ -113,7 +120,8 @@ const [l1, l2] = ui.nameLines[lang];
       aspect-ratio: 1086 / 1448;
       margin: 0;
     }
-    .hero :global(.hero__aura) { grid-area: fig; inset: 0 -6% 0 -70%; }
+    /* the portrait starts 72px down (below the header): its head sits ~38% down the full-height cell */
+    .hero :global(.hero__geo) { grid-area: fig; --geo-y: 38%; --geo-size: 135%; --geo-clear: 64px; --geo-solid: 230px; }
     .hero__top { grid-area: top; padding: 88px var(--margin) 0; padding-right: var(--s-6); }
     .hero__years { display: inline; }
     .hero__name { grid-area: name; display: flex; white-space: nowrap; margin: 0 calc(-1 * var(--tuck)) 0 0; padding: 0 0 0 var(--margin); }

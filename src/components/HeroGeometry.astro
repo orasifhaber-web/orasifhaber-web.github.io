@@ -1,0 +1,129 @@
+---
+// Looping geometric "rose window" behind the Hero portrait's head: thin-line rings, a hexagram, a twelve-petal rose and
+// an eight-point star, each layer turning slowly at its own speed and direction, with rings pulsing out from the centre
+// like a bass beat. It echoes the Gothic rose window in 02_GOTHIC and the mandalas of psytrance art.
+// When the portrait reveals an artwork (`portrait:reveal`), the lines take on that artwork's colours; they settle back on
+// `portrait:conceal`. Decorative only (aria-hidden). CSS transform animations (GPU), endless; still with reduced motion.
+// Place it inside the same parent as <PortraitReveal>; the parent positions it (it is absolutely positioned).
+interface Props { class?: string }
+const { class: className } = Astro.props;
+
+const TAU = Math.PI * 2;
+const at = (r: number, a: number) => [r * Math.cos(a - Math.PI / 2), r * Math.sin(a - Math.PI / 2)].map((n) => n.toFixed(1)).join(',');
+const polygon = (n: number, r: number, turn = 0) => Array.from({ length: n }, (_, i) => at(r, turn + (i / n) * TAU)).join(' ');
+const ring = (n: number, r: number) => Array.from({ length: n }, (_, i) => at(r, (i / n) * TAU).split(',').map(Number));
+
+// Layers, outside in: [svg contents, rotation seconds (negative = anticlockwise), tone]
+const ticks = Array.from({ length: 48 }, (_, i) => {
+  const a = (i / 48) * TAU;
+  const long = i % 4 === 0;
+  return `<line x1="${at(452, a).split(',')[0]}" y1="${at(452, a).split(',')[1]}" x2="${at(long ? 492 : 476, a).split(',')[0]}" y2="${at(long ? 492 : 476, a).split(',')[1]}"/>`;
+}).join('');
+const layers: [string, number, 'a' | 'b'][] = [
+  [`<circle r="480"/><circle r="452"/>${ticks}`, 160, 'a'],
+  [`<circle r="400"/><polygon points="${polygon(3, 400)}"/><polygon points="${polygon(3, 400, Math.PI)}"/>${ring(6, 400).map(([x, y]) => `<circle cx="${x}" cy="${y}" r="24"/>`).join('')}`, -110, 'b'],
+  [`<circle r="320"/>${ring(12, 200).map(([x, y]) => `<circle cx="${x}" cy="${y}" r="120"/>`).join('')}`, 75, 'a'],
+  [`<circle r="150"/><polygon points="${polygon(4, 150)}"/><polygon points="${polygon(4, 150, Math.PI / 4)}"/><circle r="70"/>`, -50, 'b'],
+];
+---
+<hero-geometry class:list={['geo', className]} aria-hidden="true">
+  <div class="geo__mandala">
+    <span class="geo__pulse"></span>
+    <span class="geo__pulse"></span>
+    {layers.map(([svg, sec, tone]) => (
+      <svg class={`geo__layer geo__layer--${tone}`} viewBox="-500 -500 1000 1000" style={`--spin:${Math.abs(sec)}s;--dir:${sec < 0 ? 'reverse' : 'normal'}`} set:html={svg} />
+    ))}
+  </div>
+</hero-geometry>
+
+<style>
+  .geo {
+    --geo-a: #a8a49a; /* resting: the site's own ink tones */
+    --geo-b: #827f76;
+    display: block;
+    pointer-events: none;
+    /* fades out at the top (the fixed header stays on plain background) and at the bottom (into the next section) */
+    /* (the parent can move the top fade with --geo-clear / --geo-solid, e.g. when there is no header above it) */
+    --fade: linear-gradient(to bottom, transparent 0, transparent var(--geo-clear, 64px), #000 var(--geo-solid, 230px), #000 72%, transparent 100%);
+    -webkit-mask-image: var(--fade);
+    mask-image: var(--fade);
+    opacity: 0.5;
+    transition: opacity 1.2s ease;
+  }
+  /* revealing an artwork: the lines brighten and take its colours (sampled from the artworks, lifted to read as light) */
+  .geo[data-tone='gothic'] { --geo-a: #b5508f; --geo-b: #d9a05c; opacity: 0.85; }
+  .geo[data-tone='surrealism'] { --geo-a: #3fb0c8; --geo-b: #e6b46a; opacity: 0.85; }
+
+  /* centred on the head: (x, y) and size are set by the parent through --geo-x / --geo-y / --geo-size */
+  .geo__mandala {
+    position: absolute;
+    left: var(--geo-x, 50%);
+    top: var(--geo-y, 35%);
+    width: var(--geo-size, 110%);
+    aspect-ratio: 1;
+    margin: calc(var(--geo-size, 110%) / -2) 0 0 calc(var(--geo-size, 110%) / -2);
+  }
+  .geo__layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.2;
+    vector-effect: non-scaling-stroke;
+    transition: color 1.2s ease;
+  }
+  .geo__layer :global(*) { vector-effect: non-scaling-stroke; }
+  .geo__layer--a { color: var(--geo-a); }
+  .geo__layer--b { color: var(--geo-b); }
+  .geo__pulse {
+    position: absolute;
+    inset: 4%;
+    border: 1px solid var(--geo-b);
+    border-radius: 50%;
+    opacity: 0;
+    transition: border-color 1.2s ease;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .geo__mandala { animation: geo-breathe 10s ease-in-out infinite alternate; }
+    .geo__layer { animation: geo-spin var(--spin) linear infinite var(--dir); will-change: transform; }
+    .geo__pulse { animation: geo-pulse 7s cubic-bezier(0.2, 0.6, 0.3, 1) infinite; will-change: transform, opacity; }
+    .geo__pulse + .geo__pulse { animation-delay: 3.5s; }
+  }
+  @keyframes geo-spin { to { transform: rotate(1turn); } }
+  @keyframes geo-breathe { from { transform: scale(0.97); } to { transform: scale(1.03); } }
+  @keyframes geo-pulse {
+    0% { transform: scale(0.12); opacity: 0; }
+    15% { opacity: 0.7; }
+    100% { transform: scale(1); opacity: 0; }
+  }
+</style>
+
+<script>
+  // Tint the geometry with the colours of whatever artwork the portrait is revealing.
+  class HeroGeometry extends HTMLElement {
+    private off?: () => void;
+
+    connectedCallback() {
+      const portrait = this.parentElement?.querySelector('portrait-reveal');
+      if (!portrait) return;
+      const onReveal = (e: Event) => { this.dataset.tone = (e as CustomEvent<string>).detail; };
+      const onConceal = () => { delete this.dataset.tone; };
+      portrait.addEventListener('portrait:reveal', onReveal);
+      portrait.addEventListener('portrait:conceal', onConceal);
+      this.off = () => {
+        portrait.removeEventListener('portrait:reveal', onReveal);
+        portrait.removeEventListener('portrait:conceal', onConceal);
+      };
+    }
+
+    disconnectedCallback() {
+      this.off?.();
+    }
+  }
+
+  if (!customElements.get('hero-geometry')) customElements.define('hero-geometry', HeroGeometry);
+</script>
