@@ -29,7 +29,7 @@ const items = projects.map((p) => {
 ---
 <section id="work" class="reel" aria-labelledby="work-title">
   <div class="wrap reel__head">
-    <h2 id="work-title" class="label">{ui.work[lang]}</h2>
+    <h2 id="work-title" class="h2 reel__heading">{ui.workTitle[lang]}</h2>
     <p class="label">{projects.length} {ui.projects[lang]}</p>
   </div>
 
@@ -55,9 +55,10 @@ const items = projects.map((p) => {
 </section>
 
 <style>
-  .reel { padding-top: var(--s-9); }
-  .reel__head { display: flex; justify-content: space-between; padding-bottom: var(--s-4); border-bottom: 1px solid var(--line); }
-  .reel__head h2 { color: var(--ink); }
+  /* clear air after the Hero, then the heading sits right on top of its gallery */
+  .reel { padding-top: var(--section); }
+  .reel__head { display: flex; justify-content: space-between; align-items: end; gap: var(--s-5); }
+  .reel__heading { color: var(--ink); }
 
   .reel__stage {
     position: relative;
@@ -67,7 +68,7 @@ const items = projects.map((p) => {
     container-type: size; /* cqw / cqh below are this stage's width / height */
     --more-bottom: clamp(var(--s-4), 3svh, var(--s-6));
   }
-  @media (min-width: 900px) { .reel__stage { height: clamp(440px, 82svh, 860px); } }
+  @media (min-width: 900px) { .reel__stage { height: clamp(440px, 76svh, 800px); } }
   .reel__band { position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s var(--ease-out); }
   .reel__band.is-ready { opacity: 1; }
   .reel__stage.is-paused :global(.reel__tile) { animation-play-state: paused; }
@@ -77,10 +78,13 @@ const items = projects.map((p) => {
   .reel__band :global(.reel__strip img) { position: absolute; top: 0; max-width: none; object-fit: cover; user-select: none; }
   .reel__band :global(.reel__strip:first-child) { border-radius: 6px 0 0 6px; }
   .reel__band :global(.reel__strip:last-child) { border-radius: 0 6px 6px 0; }
-  .reel__band :global(.reel__tile) { transition: filter var(--d-base) var(--ease-out); }
-  .reel__stage.is-paused :global(.reel__tile:not(.is-on)) { filter: brightness(0.45) saturate(0.6); }
+  /* The project in focus — the one facing the centre, or the hovered one — stands out: it swells as it passes the
+     centre (the script sets each tile's `scale` from its distance to the centre) and the others dim a little.
+     Dimming is applied to the images inside the strips: a filter on the tile itself would flatten its 3D curve. */
+  .reel__band :global(.reel__strip img) { transition: filter 0.5s var(--ease-out); }
+  .reel__stage.has-caption :global(.reel__tile:not(.is-focus) .reel__strip img) { filter: brightness(0.6) saturate(0.75); }
 
-  /* hovered project's title, under the row's centre */
+  /* the title of the project facing you at the centre (or the hovered one), under the row */
   .reel__caption {
     position: absolute;
     inset-inline: var(--margin);
@@ -92,9 +96,11 @@ const items = projects.map((p) => {
     pointer-events: none;
     opacity: 0;
     transform: translateY(8px);
-    transition: opacity var(--d-base) var(--ease-out), transform var(--d-base) var(--ease-out);
+    transition: opacity 0.22s var(--ease-out), transform 0.22s var(--ease-out);
   }
-  .reel__stage.is-paused .reel__caption { opacity: 1; transform: none; }
+  .reel__stage.has-caption .reel__caption { opacity: 1; transform: none; }
+  /* a new project reaching the centre: the old title fades down, the new one fades up */
+  .reel__stage.has-caption .reel__caption.is-swapping { opacity: 0; transform: translateY(6px); }
   .reel__title {
     font-family: var(--f-display);
     font-weight: 800;
@@ -135,20 +141,23 @@ const items = projects.map((p) => {
 <script>
   // Strips per tile: a few degrees of arc each — too few to read as facets.
   const SLICES = 16;
-  // Camera distance as a multiple of the cylinder's radius: just past the axis, so the ends swell toward the lens.
-  const CAMERA = 1.6;
+  // Camera distance as a multiple of the cylinder's radius. Closer = the ends swell harder toward the lens; at 1.6 a tile
+  // coming in at the edge was stretched to ~2300px and flashed through the fade as a smeared sliver, so it sits further
+  // back: the curve still reads, the edges stay calm (~×1.4 at most).
+  const CAMERA = 2.4;
   // A tile is never wider than this share of the stage, so a phone still shows its neighbours.
   const MAX_WIDTH = 55;
   // Look of the row
   const SPEED = 4.5; // seconds for the row to advance by one tile
-  const TILE = 40; // tile height, % of the stage height
+  const TILE = 36; // tile height, % of the stage height
   const ASPECT = 1; // covers mix square, portrait and landscape — square crops all of them least
   const GAP = 8; // % of a tile's height
-  const AXIS = 42; // vertical centre of the row, % of the stage height (room for the title below)
+  const AXIS = 36; // vertical centre of the row, % of the stage height (clear room for the title below)
   // degrees the row has bent round by the frame's edge (5–85); on narrow screens a tight curve brings the ends so close
   // to the camera that they swell far past the screen, so phones get a gentler one
-  const curveFor = (width: number) => (width < 700 ? 40 : 72);
-  const FADE = 9; // % of the width faded at each end
+  const curveFor = (width: number) => (width < 700 ? 40 : 60);
+  const FADE = 14; // % of the width faded at each end: tiles arrive and leave softly
+  const MAGNIFY = 0.16; // how much larger the tile at the centre gets
 
   // Cylinder radius (share of the stage width) that puts the frame's edge `bend` radians round the arc, seen through
   // the camera: r·sinθ · CAMERA / (CAMERA − 1 + cosθ) = width / 2, solved for r.
@@ -175,14 +184,19 @@ const items = projects.map((p) => {
 
   class WorkReel extends HTMLElement {
     private ro?: ResizeObserver;
+    private io?: IntersectionObserver;
+    private stop?: () => void;
     private key = '';
 
     connectedCallback() {
       const items: Item[] = JSON.parse(this.dataset.items || '[]');
       if (!items.length) return;
       const band = this.querySelector<HTMLElement>('.reel__band')!;
+      const caption = this.querySelector<HTMLElement>('.reel__caption')!;
       const titleEl = this.querySelector<HTMLElement>('.reel__title')!;
       const subEl = this.querySelector<HTMLElement>('.reel__sub')!;
+      let curSweep = 0; // the current loop's half-length in degrees (set by build)
+      let curPitch = 1; // degrees from one tile to the next (set by build)
       const id = `reel${++uid}`;
       const orbit = `${id}-orbit`;
       const hiDpi = window.devicePixelRatio > 1.4;
@@ -201,6 +215,8 @@ const items = projects.map((p) => {
         if (key === this.key) return;
         this.key = key;
         const { columns, sweep, unit, limit } = L;
+        curSweep = sweep;
+        curPitch = (ASPECT + GAP / 100) * unit;
 
         // every length is a multiple of the tile's height (stage height, capped by MAX_WIDTH on narrow screens)
         const u = (n: number) => `calc(${+n.toFixed(4)} * min(${TILE}cqh, ${+(MAX_WIDTH / ASPECT).toFixed(4)}cqw))`;
@@ -288,22 +304,75 @@ const items = projects.map((p) => {
       this.ro = new ResizeObserver(([en]) => build(en.contentRect.width, en.contentRect.height));
       this.ro.observe(this);
 
-      // hover a tile: the row pauses, the others dim, and the project's title shows under it
-      let on: HTMLElement | null = null;
+      // The title under the row: the project facing you at the centre, cross-faded when the next one arrives.
+      let shownN = -1;
+      let swapT: number | undefined;
+      const setCaption = (n: number) => {
+        if (n === shownN || !items[n]) return;
+        const it = items[n];
+        const apply = () => {
+          titleEl.textContent = it.title;
+          subEl.textContent = it.sub;
+          this.style.setProperty('--reel-accent', it.accent);
+          caption.classList.remove('is-swapping');
+        };
+        const firstTime = shownN === -1;
+        shownN = n;
+        this.classList.add('has-caption');
+        window.clearTimeout(swapT);
+        if (firstTime) return apply();
+        caption.classList.add('is-swapping'); // fade the old title out…
+        swapT = window.setTimeout(apply, 220); // …then bring the new one in
+      };
+
+      // Which tile faces the centre? Each tile's place on the arc follows from its animation's progress:
+      // angle = −sweep + 2·sweep·progress, so the centre tile is the one whose angle is nearest 0.
+      let on: HTMLElement | null = null; // the hovered tile, which overrides the centre one
+      let focused: HTMLElement | null = null;
+      const focus = (tile: HTMLElement) => {
+        if (tile === focused) return;
+        focused?.classList.remove('is-focus');
+        focused = tile;
+        tile.classList.add('is-focus');
+        setCaption(Number(tile.dataset.n));
+      };
+      // Every frame: each tile swells as it nears the centre — 1 + MAGNIFY at the exact centre, back to 1 a tile away
+      // (smoothstep, so it eases in and out) — and the nearest one takes the focus and the title.
+      const followCentre = () => {
+        if (!curSweep) return;
+        let best: HTMLElement | null = null;
+        let bestAngle = Infinity;
+        band.querySelectorAll<HTMLElement>('.reel__tile').forEach((tile) => {
+          const anim = tile.getAnimations().find((a) => (a as CSSAnimation).animationName === orbit);
+          const p = anim?.effect?.getComputedTiming().progress;
+          if (p == null) return;
+          const angle = Math.abs(-curSweep + 2 * curSweep * p);
+          const near = Math.max(0, 1 - angle / curPitch);
+          tile.style.scale = (1 + MAGNIFY * near * near * (3 - 2 * near)).toFixed(4);
+          if (angle < bestAngle) { bestAngle = angle; best = tile; }
+        });
+        if (best && !on) focus(best);
+      };
+      // runs only while the gallery is on screen
+      let raf = 0;
+      const loop = () => { followCentre(); raf = requestAnimationFrame(loop); };
+      this.io = new IntersectionObserver(([en]) => {
+        cancelAnimationFrame(raf);
+        if (en.isIntersecting) loop();
+      });
+      this.io.observe(this);
+      this.stop = () => { cancelAnimationFrame(raf); window.clearTimeout(swapT); };
+
+      // hover a tile: the row pauses, the others dim, and the title locks to that project
       const enter = (tile: HTMLElement) => {
-        on?.classList.remove('is-on');
         on = tile;
-        tile.classList.add('is-on');
-        const it = items[Number(tile.dataset.n)];
-        titleEl.textContent = it.title;
-        subEl.textContent = it.sub;
-        this.style.setProperty('--reel-accent', it.accent);
+        focus(tile);
         this.classList.add('is-paused');
       };
       const leave = () => {
-        on?.classList.remove('is-on');
         on = null;
         this.classList.remove('is-paused');
+        followCentre(); // focus goes straight back to the tile at the centre
       };
       band.addEventListener('pointerover', (e) => {
         if ((e as PointerEvent).pointerType === 'touch') return; // phones: a tap simply opens the project
@@ -316,6 +385,8 @@ const items = projects.map((p) => {
 
     disconnectedCallback() {
       this.ro?.disconnect();
+      this.io?.disconnect();
+      this.stop?.();
       this.key = '';
     }
   }

@@ -81,6 +81,10 @@
     "he": "עבודות",
     "en": "Work"
   },
+  "workTitle": {
+    "he": "הפרויקטים שלי",
+    "en": "My projects"
+  },
   "projects": {
     "he": "פרויקטים",
     "en": "projects"
