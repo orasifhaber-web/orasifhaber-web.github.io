@@ -1,0 +1,162 @@
+{
+  "label": {
+    "he": "אודות",
+    "en": "About"
+  },
+  "title": {
+    "he": "שפות ויזואליות למסיבות, לייבלים ומותגים — מהבריף ועד המסירה.",
+    "en": "Visual languages for parties, labels and brands — from the brief to final delivery."
+  },
+  "p1": {
+    "he": "אני אור אסיף-חבר, מעצב גרפי מישראל והנדסאי תקשורת חזותית בוגר אוניברסיטת אריאל.",
+    "en": "I’m Or Asif-Haber, a graphic designer based in Israel and a Visual Communication Practical Engineering graduate of Ariel University."
+  },
+  "p2": {
+    "he": "מאז 2024 אני עובד כפרילנסר: מפתח שפות ויזואליות וקמפיינים לאירועים, לצד עטיפות אלבום ותוכן לרשתות החברתיות. רוב העבודה שלי נמצאת בסצנת הפסייטראנס — מסיבות, קרו, די-ג׳ייז ולייבלים — שבה כל אירוע צריך עולם משלו, וליינאפ ארוך עדיין צריך להיקרא במבט אחד.",
+    "en": "Since 2024 I’ve worked freelance, developing visual languages and campaigns for events, alongside music cover art and social media content. Most of that work lives in the psytrance scene — parties, crews, DJs and labels — where every event needs its own world and a long line-up still has to read at a glance."
+  },
+  "p3": {
+    "he": "אני עובד ישירות מול הלקוחות לאורך כל התהליך: הבריף, גיבוש הכיוון הקריאייטיבי, העיצוב, התיקונים והמסירה. בין הלקוחות החוזרים — StoneAge Records, לייבל פסייטראנס שוודי, שעבורו עיצבתי חולצה, פוסטר לאירוע ואת עטיפת האלבום Codex Saltus — XXV Annorum Sum.",
+    "en": "I work directly with clients through the whole process: the brief, shaping the creative direction, design, revisions and final delivery. Repeat clients include StoneAge Records, a Swedish psytrance label, for whom I’ve designed a T-shirt, an event poster and the cover art for the album Codex Saltus — XXV Annorum Sum."
+  },
+  "p4": {
+    "he": "כלי AI — ביניהם Midjourney — הם חלק מתהליך העבודה שלי, לצד Photoshop, Illustrator ו-InDesign.",
+    "en": "AI tools — Midjourney among them — are part of my workflow, alongside Photoshop, Illustrator and InDesign."
+  },
+  "imgAlt": {
+    "he": "עמדת Trance Tribe, פרויקט הגמר של אור, עם עטיפות ויניל, באנרים ומסכים.",
+    "en": "The Trance Tribe stand, Or’s graduation project, with vinyl covers, banners and screens."
+  },
+  "whatLabel": {
+    "he": "מה אני עושה",
+    "en": "What I do"
+  },
+  "bgLabel": {
+    "he": "רקע",
+    "en": "Background"
+  },
+  "toolsLabel": {
+    "he": "כלים",
+    "en": "Tools"
+  },
+  "services": [
+    {
+      "title": {
+        "he": "מיתוג מסיבות ואירועים",
+        "en": "Party & event branding"
+      },
+      "body": {
+        "he": "עולם ויזואלי לכל אירוע, שעובר לפוסטר, ליינאפ, טיימטייבל, הכרזות אמנים ורשתות.",
+        "en": "A visual world per event, carried across poster, line-up, timetable, artist cards and social."
+      }
+    },
+    {
+      "title": {
+        "he": "פוסטרי ליינאפ וקמפיינים ברשתות",
+        "en": "Line-up posters & social campaigns"
+      },
+      "body": {
+        "he": "רצפי הכרזות ופורמטי סטורי שמשאירים ליינאפים ארוכים קריאים.",
+        "en": "Announcement sequences and story formats that keep long line-ups legible."
+      }
+    },
+    {
+      "title": {
+        "he": "עטיפות אלבום",
+        "en": "Music cover art"
+      },
+      "body": {
+        "he": "עטיפות שעובדות בגודל מלא וגם כתמונה ממוזערת בשירותי סטרימינג.",
+        "en": "Album and release artwork that holds up from full size down to a streaming thumbnail."
+      }
+    },
+    {
+      "title": {
+        "he": "זהות מותג ולוגו",
+        "en": "Brand identity & logos"
+      },
+      "body": {
+        "he": "סמלים, ניירת וקמפיינים למותגים מחוץ לסצנה.",
+        "en": "Marks, stationery and campaigns for brands outside the scene."
+      }
+    },
+    {
+      "title": {
+        "he": "מרצ׳נדייז",
+        "en": "Merchandise"
+      },
+      "body": {
+        "he": "ביגוד, אריזות ודפוס ללייבלים, קרו ואירועים.",
+        "en": "Apparel, packaging and print for labels, crews and events."
+      }
+    }
+  ],
+  "background": [
+    {
+      "when": {
+        "he": "2024 — היום",
+        "en": "2024 — Present"
+      },
+      "title": {
+        "he": "מעצב גרפי, פרילנס",
+        "en": "Graphic Designer, Freelance"
+      },
+      "body": {
+        "he": "שפות ויזואליות וקמפיינים לאירועים, עטיפות אלבום, תוכן לרשתות.",
+        "en": "Event visual languages and campaigns, music cover art, social media content."
+      }
+    },
+    {
+      "when": {
+        "he": "2022 — 2024",
+        "en": "2022 — 2024"
+      },
+      "title": {
+        "he": "הנדסאי תקשורת חזותית — אוניברסיטת אריאל",
+        "en": "Practical Engineer, Visual Communication — Ariel University"
+      },
+      "body": {
+        "he": "מיתוג וזהות ויזואלית, טיפוגרפיה, עיצוב לדיגיטל ולדפוס, UI/UX, אנימציה, צילום ואיור, לצד חשיבה עיצובית, צבע, תולדות האמנות ושיווק.",
+        "en": "Branding and visual identity, typography, digital and print design, UI/UX, animation, photography and illustration, alongside design thinking, colour, art history and marketing."
+      }
+    },
+    {
+      "when": {
+        "he": "פרויקט גמר",
+        "en": "Final project"
+      },
+      "title": {
+        "he": "Trance Tribe",
+        "en": "Trance Tribe"
+      },
+      "body": {
+        "he": "זהות ויזואלית למותג מרצ׳נדייז של אירועי טראנס, כולל יישומי מותג, מוצרים ואפליקציית אירועים. הוצג בתערוכת הגמר של המגמה.",
+        "en": "A visual identity for a trance-event merchandise brand, including brand applications, products and an event app. Presented at the program’s graduation exhibition."
+      },
+      "link": "/work/trance-tribe/"
+    }
+  ],
+  "tools": [
+    {
+      "label": {
+        "he": "Adobe",
+        "en": "Adobe"
+      },
+      "value": "Photoshop, Illustrator, InDesign"
+    },
+    {
+      "label": {
+        "he": "AI",
+        "en": "AI"
+      },
+      "value": "Midjourney, ChatGPT, Gemini, Claude"
+    },
+    {
+      "label": {
+        "he": "נוספים",
+        "en": "Other"
+      },
+      "value": "Figma, After Effects (basic)"
+    }
+  ]
+}

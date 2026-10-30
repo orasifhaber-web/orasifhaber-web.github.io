@@ -1,0 +1,1205 @@
+[
+  {
+    "slug": "codex-saltus",
+    "title": {
+      "he": "Codex Saltus",
+      "en": "Codex Saltus"
+    },
+    "subtitle": {
+      "he": "עטיפת אלבום לאוסף חגיגות ה-25 של StoneAge Records",
+      "en": "Cover artwork for the 25th anniversary compilation of StoneAge Records"
+    },
+    "client": {
+      "he": "StoneAge Records",
+      "en": "StoneAge Records"
+    },
+    "year": "2026",
+    "discipline": [
+      {
+        "he": "עטיפת אלבום",
+        "en": "Album cover"
+      },
+      {
+        "he": "טיפוגרפיה",
+        "en": "Typography"
+      }
+    ],
+    "tools": [
+      "Photoshop",
+      "InDesign",
+      "Midjourney"
+    ],
+    "accent": "#9DAE62",
+    "cover": {
+      "id": "01/artwork",
+      "alt": {
+        "he": "עטיפת האלבום Codex Saltus: ישויות עץ עולות מתוך ספר פתוח בזוהר ירוק, מתחת לכותרת בכתב גותי.",
+        "en": "Codex Saltus album cover: wooden forest entities rising out of an open book, glowing green, beneath the title in blackletter type."
+      }
+    },
+    "hero": {
+      "id": "01/cover",
+      "alt": {
+        "he": "עטיפת Codex Saltus — XXV Annorum Sum על רקע יער כהה ומטושטש.",
+        "en": "Codex Saltus — XXV Annorum Sum album cover set against a blurred dark forest."
+      }
+    },
+    "intro": [
+      {
+        "he": "עטיפת אלבום ל-Codex Saltus — XXV Annorum Sum, אוסף חגיגות ה-25 של StoneAge Records, לייבל דארק/פסייטראנס שוודי שמוציא מוזיקה מאז שנת 2000. עשרה טראקים, שלושה-עשר אמנים מרחבי העולם, ביציאה ב-Bandcamp, Beatport ו-Spotify.",
+        "en": "Cover artwork for Codex Saltus — XXV Annorum Sum, the 25th anniversary compilation of StoneAge Records, a Swedish dark/psytrance label releasing since 2000. Ten tracks, thirteen international artists, out on Bandcamp, Beatport and Spotify."
+      },
+      {
+        "he": "המטרה הייתה לתרגם את המוזיקה — Forest, Psytrance ו-PsyDark — לעולם ויזואלי שמתחבר למשמעות השם Codex Saltus: ״ספר היער״.",
+        "en": "The goal was to translate the music — spanning Forest, Psytrance and PsyDark — into a visual world connected to the meaning of Codex Saltus: “The Book of the Forest.”"
+      }
+    ],
+    "details": [
+      {
+        "label": {
+          "he": "קונספט",
+          "en": "Concept"
+        },
+        "body": {
+          "he": "קודקס קוסמי עתיק שנולד מתוך היער ומחזיק בסודותיו האפלים והמיסטיים. הישויות שעולות מהספר מייצגות את הסודות והאנרגיה שבתוכו, והספר עצמו הוא המקור שממנו נולד כל העולם של העטיפה.",
+          "en": "An ancient cosmic codex, born from the forest and holding its dark, mystical secrets. The entities rising from the book represent the secrets and energy held within it; the book itself is where the artwork’s whole world emerges from."
+        }
+      },
+      {
+        "label": {
+          "he": "טיפוגרפיה",
+          "en": "Typography"
+        },
+        "body": {
+          "he": "הטיפוגרפיה משלבת את האופי העתיק והמיסטי של האלבום עם השפה של StoneAge Records. Pirata One לכותרת — פונט בהשראת כתבי יד היסטוריים, בעל נוכחות טקסית. Tango Psychedelia לכותרת המשנה — הפונט מהלוגו של הלייבל, שמחבר את העטיפה לזהות שלו.",
+          "en": "The typography combines the album’s ancient, mystical character with the StoneAge Records identity. Pirata One for the title — inspired by historical manuscripts, with a ritualistic presence. Tango Psychedelia for the subtitle — the typeface of the label’s logo, connecting the artwork to its identity."
+        }
+      },
+      {
+        "label": {
+          "he": "צבע",
+          "en": "Colour"
+        },
+        "body": {
+          "he": "ירוקי יער כהים וגוני אדמה, לצד זוהר ירוק — אווירה טבעית, אפלה ומיסטית עם נגיעות פסיכדליות.",
+          "en": "Dark forest greens and earthy tones, combined with a luminous green glow — a natural, dark and mystical atmosphere with psychedelic touches."
+        },
+        "colors": [
+          "#39402D",
+          "#D1D6D5",
+          "#4C3F30",
+          "#829052",
+          "#10110C"
+        ]
+      },
+      {
+        "label": {
+          "he": "יציאה דיגיטלית",
+          "en": "Digital release"
+        },
+        "body": {
+          "he": "העטיפה תוכננה לפלטפורמות דיגיטליות: קומפוזיציה מרכזית חזקה וטיפוגרפיה ברורה שנשארות קריאות בכל גודל מסך — מתצוגת ״מתנגן עכשיו״ בטלפון ועד נגן במחשב.",
+          "en": "Designed for digital platforms, with a strong central composition and clear typography that stay recognisable at every screen size — from a phone’s now-playing view to a desktop player."
+        }
+      }
+    ],
+    "gallery": [
+      {
+        "id": "01/entities",
+        "alt": {
+          "he": "פרט: שלוש ישויות עץ מגולפות, עם ספירלה על הפנים המרכזיות.",
+          "en": "Detail: three carved wooden entities with a spiral on the central face."
+        }
+      },
+      {
+        "id": "01/book",
+        "alt": {
+          "he": "פרט: הספר הפתוח בתחתית העבודה, שורשים מתפשטים מדפיו.",
+          "en": "Detail: the open book at the base of the artwork, roots spreading from its pages."
+        }
+      },
+      {
+        "id": "01/lockup",
+        "alt": {
+          "he": "הכותרת: Codex Saltus ב-Pirata One מעל XXV Annorum Sum ב-Tango Psychedelia.",
+          "en": "Title lockup: “Codex Saltus” in Pirata One above “XXV Annorum Sum” in Tango Psychedelia."
+        }
+      },
+      {
+        "id": "01/release",
+        "alt": {
+          "he": "העטיפה בנגן מוזיקה בטלפון ובמחשב נייד.",
+          "en": "The cover shown in a music player on a phone and a laptop."
+        }
+      },
+      {
+        "id": "01/artwork",
+        "alt": {
+          "he": "העבודה הסופית של עטיפת Codex Saltus.",
+          "en": "Final Codex Saltus album artwork."
+        }
+      }
+    ],
+    "behance": "https://www.behance.net/gallery/255964477/Codex-Saltus-25th-Anniversary-Album-Cover"
+  },
+  {
+    "slug": "trance-tribe",
+    "title": {
+      "he": "Trance Tribe",
+      "en": "Trance Tribe"
+    },
+    "subtitle": {
+      "he": "זהות מותג למותג מרצ׳נדייז ואופנה פסיכדלית",
+      "en": "Brand identity for a psychedelic merchandise & fashion label"
+    },
+    "client": {
+      "he": "פרויקט גמר — אוניברסיטת אריאל",
+      "en": "Final project — Ariel University"
+    },
+    "year": "2024",
+    "discipline": [
+      {
+        "he": "זהות מותג",
+        "en": "Brand identity"
+      },
+      {
+        "he": "מרצ׳נדייז",
+        "en": "Merchandise"
+      },
+      {
+        "he": "אפליקציה ואתר",
+        "en": "App & web"
+      }
+    ],
+    "tools": [
+      "Photoshop",
+      "Illustrator",
+      "Midjourney"
+    ],
+    "accent": "#E8E4DA",
+    "cover": {
+      "id": "09/01",
+      "alt": {
+        "he": "מרצ׳נדייז של Trance Tribe: חולצות, תיקים וכובעים סביב הלוגו המשושה.",
+        "en": "Trance Tribe merchandise flat lay: T-shirts, bags and hats around the hexagonal Trance Tribe logo."
+      }
+    },
+    "hero": {
+      "id": "09/01",
+      "alt": {
+        "he": "Trance Tribe — Psychedelic Merchandise & Fashion, מבט כללי על המותג.",
+        "en": "Trance Tribe — Psychedelic Merchandise & Fashion, brand overview."
+      }
+    },
+    "intro": [
+      {
+        "he": "פרויקט הגמר שלי בתקשורת חזותית באוניברסיטת אריאל: זהות ויזואלית למותג מרצ׳נדייז של אירועי טראנס, כולל יישומי מותג, מוצרים ואפליקציית אירועים. הפרויקט הוצג בתערוכת הגמר של המגמה.",
+        "en": "My final project in Visual Communication at Ariel University: a visual identity for a trance-event merchandise brand, including brand applications, products and an event app. It was presented at the program’s graduation exhibition."
+      },
+      {
+        "he": "מערכת שחור-לבן קפדנית — סמל שנבנה על גריד, מסגרות משושות ודוגמאות קו גיאומטריות — משאירה לכל תת-ז׳אנר של טראנס מקום לדמות משלו: PsyBient, PsyDark, Progressive, Hi-Tech, PsyTrance, PsyCore ועוד.",
+        "en": "A strict black-and-white system — a symbol built on a construction grid, hexagonal frames, geometric line patterns — gives each trance sub-genre room to carry its own character: PsyBient, PsyDark, Progressive, Hi-Tech, PsyTrance, PsyCore and more."
+      }
+    ],
+    "gallery": [
+      {
+        "id": "09/02",
+        "alt": {
+          "he": "הלוגו של Trance Tribe וגריד הבנייה שלו, עם הגרסה האופקית והסלוגן.",
+          "en": "Trance Tribe logo and its construction grid, with the horizontal lockup and tagline."
+        }
+      },
+      {
+        "id": "09/03",
+        "alt": {
+          "he": "מדבקות משושות עם הלוגו וקוד QR של Join the Tribe!.",
+          "en": "Hexagonal stickers with the logo and a “Join the Tribe!” QR code."
+        }
+      },
+      {
+        "id": "09/04",
+        "alt": {
+          "he": "שקיות קניות שחורות עם דוגמת קווים והלוגו המשושה.",
+          "en": "Black shopping bags with line patterns and the hexagonal logo."
+        }
+      },
+      {
+        "id": "09/06",
+        "alt": {
+          "he": "שלוש חולצות שחורות: PsyBient, PsyDark ו-Trance.",
+          "en": "Three black T-shirts: PsyBient, PsyDark and Trance designs."
+        }
+      },
+      {
+        "id": "09/07",
+        "alt": {
+          "he": "כובעי טמבל עם דוגמאות הז׳אנרים על שולחן עץ.",
+          "en": "Bucket hats with genre patterns on a wooden table."
+        }
+      },
+      {
+        "id": "09/05",
+        "alt": {
+          "he": "רול-אפ עם דמויות הז׳אנרים וקוד QR.",
+          "en": "Roll-up banner showing the genre characters and a QR code."
+        }
+      },
+      {
+        "id": "09/08",
+        "alt": {
+          "he": "מסכי אפליקציית האירועים: אירועים קרובים, ז׳אנרים מועדפים וחנות.",
+          "en": "Event app screens: upcoming events, favourite genres and the store."
+        }
+      },
+      {
+        "id": "09/09",
+        "alt": {
+          "he": "האתר של Trance Tribe במחשב, טאבלט וטלפון.",
+          "en": "Trance Tribe website shown across desktop, tablet and phone."
+        }
+      },
+      {
+        "id": "09/10",
+        "alt": {
+          "he": "עמדת Trance Tribe עם עטיפות ויניל, באנרים ומסכים.",
+          "en": "Trance Tribe stand with vinyl covers, banners and screens."
+        }
+      },
+      {
+        "id": "09/11",
+        "alt": {
+          "he": "מדבקות משושות של הז׳אנרים.",
+          "en": "Hexagonal genre stickers."
+        }
+      },
+      {
+        "id": "09/13",
+        "alt": {
+          "he": "צמידים מודפסים בשמות הז׳אנרים.",
+          "en": "Stacked wristbands printed with genre names."
+        }
+      },
+      {
+        "id": "09/12",
+        "alt": {
+          "he": "דוכן Trance Tribe באירוע בחוץ, בעדשה רחבה.",
+          "en": "A Trance Tribe stall at an outdoor event, seen through a wide lens."
+        }
+      }
+    ],
+    "behance": "https://www.behance.net/gallery/205631033/Trance-Tribe-brand"
+  },
+  {
+    "slug": "shuk-petah-tikva",
+    "title": {
+      "he": "שוק פתח תקווה",
+      "en": "Shuk Petah Tikva"
+    },
+    "subtitle": {
+      "he": "מיתוג מחדש לשוק פתח תקווה",
+      "en": "Rebranding for the Petah Tikva market"
+    },
+    "client": {
+      "he": "פרויקט לימודים",
+      "en": "Study project"
+    },
+    "year": "2024",
+    "discipline": [
+      {
+        "he": "לוגו",
+        "en": "Logo"
+      },
+      {
+        "he": "זהות מותג",
+        "en": "Brand identity"
+      },
+      {
+        "he": "פוסטרים",
+        "en": "Posters"
+      }
+    ],
+    "tools": [
+      "Photoshop",
+      "Illustrator"
+    ],
+    "accent": "#F2A23A",
+    "cover": {
+      "id": "12/03",
+      "alt": {
+        "he": "שני פוסטרי אירועים של שוק פתח תקווה: ערב בירה ללא תחתית וג׳אם סשן, באיורי כתמי דיו.",
+        "en": "Two Shuk Petah Tikva event posters: bottomless beer night and a jam session, with ink-splash illustrations."
+      }
+    },
+    "hero": {
+      "id": "12/05",
+      "alt": {
+        "he": "הלוגו של שוק פתח תקווה: המילה ״שוק״ עם קצף בירה שעולה מהאותיות.",
+        "en": "Shuk Petah Tikva logo: the Hebrew word “Shuk” with beer foam rising from the letters."
+      }
+    },
+    "intro": [
+      {
+        "he": "מיתוג מחדש לשוק פתח תקווה. הלוגו הופך את המילה ״שוק״ לכוס בירה — קצף שגולש מעל האותיות — והזהות ממשיכה עם טקסטורות מכחול גסות, רקעים שחורים והדגשות בכתום.",
+        "en": "A rebrand for the Petah Tikva market. The logo turns the Hebrew word “Shuk” into a pint — foam overflowing the letters — and the identity follows with rough brush textures, black grounds and orange accents."
+      },
+      {
+        "he": "המערכת כוללת ניירת משרדית, פוסטרים לערבים כמו ערב בירה ללא תחתית וג׳אם סשן, ומרצ׳נדייז.",
+        "en": "The system covers stationery, event posters for evenings like a bottomless-beer night and a jam session, and merchandise."
+      }
+    ],
+    "gallery": [
+      {
+        "id": "12/03",
+        "alt": {
+          "he": "פוסטרי אירועים: ״בירה ללא תחתית״ ו״ג׳אם סשן״.",
+          "en": "Event posters: “Bottomless beer” and “Jam session”."
+        }
+      },
+      {
+        "id": "12/01",
+        "alt": {
+          "he": "כרטיסי ביקור על שולחן עץ.",
+          "en": "Business cards on a wooden table."
+        }
+      },
+      {
+        "id": "12/02",
+        "alt": {
+          "he": "נייר מכתבים, מעטפה וכרטיסי ביקור.",
+          "en": "Letterhead, envelope and business cards."
+        }
+      },
+      {
+        "id": "12/04",
+        "alt": {
+          "he": "תיק בד שחור עם איור קוקטיילים והלוגו, בבר.",
+          "en": "Black tote bag with cocktail illustration and the logo, in a bar."
+        }
+      }
+    ],
+    "behance": "https://www.behance.net/gallery/205125065/Petah-Tikva-market-rebranding"
+  },
+  {
+    "slug": "changa-crew-russian-edition",
+    "title": {
+      "he": "Changa Crew — Russian Edition",
+      "en": "Changa Crew — Russian Edition"
+    },
+    "subtitle": {
+      "he": "מיתוג למסיבת שנתיים לצ׳אנגה קרו",
+      "en": "Party branding for Changa Crew’s two-year celebration"
+    },
+    "client": {
+      "he": "Changa Crew",
+      "en": "Changa Crew"
+    },
+    "year": "2026",
+    "discipline": [
+      {
+        "he": "מיתוג מסיבה",
+        "en": "Party branding"
+      },
+      {
+        "he": "פוסטרי ליינאפ",
+        "en": "Line-up posters"
+      },
+      {
+        "he": "רשתות חברתיות",
+        "en": "Social media"
+      }
+    ],
+    "tools": [
+      "Photoshop",
+      "Illustrator",
+      "InDesign",
+      "Midjourney"
+    ],
+    "accent": "#D8443A",
+    "cover": {
+      "id": "02/01",
+      "alt": {
+        "he": "פוסטר Changa Crew Russian Edition: שלושה דובים באימוניות אדומות מנגנים בסינתיסייזרים ליד אגם בלילה.",
+        "en": "Changa Crew Russian Edition poster: three bears in red tracksuits playing synthesizers by a lake at night."
+      }
+    },
+    "hero": {
+      "id": "02/01",
+      "alt": {
+        "he": "Changa Crew — Two Years Celebration, Russian Edition, הוויז׳ואל המרכזי.",
+        "en": "Changa Crew — Two Years Celebration, Russian Edition, key visual."
+      }
+    },
+    "intro": [
+      {
+        "he": "מיתוג למסיבת השנתיים של Changa Crew, 20–21.08.26: עיצוב פסיכדלי עם וייב של אנדרגראונד רוסי. דובים באימוניות ליד הסינתים, פלטת לילה של אדום ושחור ופרטי כוכב סובייטי שעוברים לאורך הטיפוגרפיה.",
+        "en": "Branding for Changa Crew’s two-year celebration, 20–21.08.26: psychedelic design with a Russian underground gopnik vibe. Bears in tracksuits at the synths, a red-and-black night palette and Soviet star details running through the type."
+      },
+      {
+        "he": "העולם עובר לכל הפורמטים של הקמפיין — פוסטר ראשי, ליינאפ, טיימטייבל, הכרזות אמנים ופוסט הגרלה בעברית.",
+        "en": "The world carries across every format of the campaign — main poster, line-up, timetable, artist announcements and a Hebrew giveaway post."
+      }
+    ],
+    "gallery": [
+      {
+        "id": "02/02",
+        "alt": {
+          "he": "פוסטר הליינאפ עם דגלי המדינות של האמנים.",
+          "en": "Line-up poster listing the artists with their country flags."
+        }
+      },
+      {
+        "id": "02/08",
+        "alt": {
+          "he": "פוסטר הטיימטייבל.",
+          "en": "Timetable poster."
+        }
+      },
+      {
+        "id": "02/04",
+        "alt": {
+          "he": "הכרזת אמן: Transdriver.",
+          "en": "Artist announcement: Transdriver."
+        }
+      },
+      {
+        "id": "02/05",
+        "alt": {
+          "he": "הכרזת אמן: Parasense & Paranoic Sensations.",
+          "en": "Artist announcement: Parasense & Paranoic Sensations."
+        }
+      },
+      {
+        "id": "02/06",
+        "alt": {
+          "he": "הכרזת אמן: The Soviet Union.",
+          "en": "Artist announcement: The Soviet Union."
+        }
+      },
+      {
+        "id": "02/07",
+        "alt": {
+          "he": "הכרזת אמן: Eden.",
+          "en": "Artist announcement: Eden."
+        }
+      },
+      {
+        "id": "02/03",
+        "alt": {
+          "he": "פוסט הגרלה בעברית: דוב בקפוצ׳ון אדום מחזיק שני כרטיסים למסיבה.",
+          "en": "Hebrew giveaway post: a bear in a red hoodie holding two party tickets."
+        }
+      }
+    ],
+    "behance": "https://www.behance.net/gallery/250238947/Changa-crew-2-Party-branding"
+  },
+  {
+    "slug": "shikingim-aviv-edition",
+    "title": {
+      "he": "Shikingim — Aviv Edition",
+      "en": "Shikingim — Aviv Edition"
+    },
+    "subtitle": {
+      "he": "גרפיקה למסיבת טראנס של הפקות שיקינגים",
+      "en": "Graphics for a Shikingim production trance party"
+    },
+    "client": {
+      "he": "Shikingim",
+      "en": "Shikingim"
+    },
+    "year": "2026",
+    "discipline": [
+      {
+        "he": "מיתוג מסיבה",
+        "en": "Party branding"
+      },
+      {
+        "he": "פוסטרי ליינאפ",
+        "en": "Line-up posters"
+      },
+      {
+        "he": "רשתות חברתיות",
+        "en": "Social media"
+      }
+    ],
+    "tools": [
+      "Photoshop",
+      "Illustrator",
+      "InDesign",
+      "Midjourney"
+    ],
+    "accent": "#3FB7A6",
+    "cover": {
+      "id": "03/01",
+      "alt": {
+        "he": "פוסטר הליינאפ של Shikingim Aviv Edition על נוף סוריאליסטי של פנים מגולפות באבן וצמחים בטורקיז.",
+        "en": "Shikingim Aviv Edition line-up poster over a surreal landscape of carved stone faces and teal plants."
+      }
+    },
+    "hero": {
+      "id": "03/01",
+      "alt": {
+        "he": "פוסטר הליינאפ של Shikingim Aviv Edition.",
+        "en": "Shikingim Aviv Edition line-up poster."
+      }
+    },
+    "intro": [
+      {
+        "he": "גרפיקה למסיבת טראנס של הפקות שיקינגים, מהדורת האביב, 19–20.03.26: עמק פסיכדלי מואר של פנים מגולפות באבן, פטריות בטורקיז ונהר, והאמנים בתחפושת ויקינגים עם קרניים מול קיר רונות.",
+        "en": "Graphics for a Shikingim production trance party, Aviv (spring) Edition, 19–20.03.26: a sunlit psychedelic valley of carved stone faces, teal mushrooms and a river, with the artists cast as horned Vikings in front of a rune wall."
+      }
+    ],
+    "gallery": [
+      {
+        "id": "03/02",
+        "alt": {
+          "he": "הכרזת אמן: Trashlords / Steptime כוויקינג.",
+          "en": "Artist announcement: Trashlords / Steptime as a Viking."
+        }
+      },
+      {
+        "id": "03/03",
+        "alt": {
+          "he": "הכרזת אמן: Dr Vagator בקסדה עם קרניים.",
+          "en": "Artist announcement: Dr Vagator in a horned helmet."
+        }
+      },
+      {
+        "id": "03/04",
+        "alt": {
+          "he": "הכרזת אמן: The Cousins בתחפושת ויקינגים.",
+          "en": "Artist announcement: The Cousins in Viking costume."
+        }
+      }
+    ],
+    "behance": "https://www.behance.net/gallery/245797575/SHIKINGIM-2"
+  },
+  {
+    "slug": "shikingim-winter-edition",
+    "title": {
+      "he": "Shikingim — Winter Edition",
+      "en": "Shikingim — Winter Edition"
+    },
+    "subtitle": {
+      "he": "גרפיקה למסיבת טראנס של הפקות שיקינגים",
+      "en": "Graphics for a Shikingim production trance party"
+    },
+    "client": {
+      "he": "Shikingim",
+      "en": "Shikingim"
+    },
+    "year": "2025",
+    "discipline": [
+      {
+        "he": "מיתוג מסיבה",
+        "en": "Party branding"
+      },
+      {
+        "he": "פוסטרי ליינאפ",
+        "en": "Line-up posters"
+      },
+      {
+        "he": "רשתות חברתיות",
+        "en": "Social media"
+      }
+    ],
+    "tools": [
+      "Photoshop",
+      "Illustrator",
+      "InDesign",
+      "Midjourney"
+    ],
+    "accent": "#E9A65A",
+    "cover": {
+      "id": "04/01",
+      "alt": {
+        "he": "פוסטר הליינאפ של Shikingim Winter Edition: טוטמי אבן וחייזרים ירוקים סביב שומר קטן עם קרניים.",
+        "en": "Shikingim Winter Edition line-up poster: stone totems and green aliens around a small horned guardian."
+      }
+    },
+    "hero": {
+      "id": "04/01",
+      "alt": {
+        "he": "פוסטר הליינאפ של Shikingim Winter Edition.",
+        "en": "Shikingim Winter Edition line-up poster."
+      }
+    },
+    "intro": [
+      {
+        "he": "גרפיקה למסיבת טראנס של הפקות שיקינגים, מהדורת החורף, 04–05.12.25: פלטת לילה כחולה של טוטמי אבן וחייזרים ירוקים סביב שומר קטן עם קרניים, ולוגוטייפ ״שיקינגים״ בעברית.",
+        "en": "Graphics for a Shikingim production trance party, Winter Edition, 04–05.12.25: a night-blue palette of stone totems and green aliens around a small horned guardian, with a Hebrew Shikingim logotype."
+      }
+    ],
+    "gallery": [
+      {
+        "id": "04/02",
+        "alt": {
+          "he": "פוסטר הטיימטייבל.",
+          "en": "Timetable poster."
+        }
+      },
+      {
+        "id": "04/03",
+        "alt": {
+          "he": "הכרזת אמן: DJ Sharon.",
+          "en": "Artist announcement: DJ Sharon."
+        }
+      },
+      {
+        "id": "04/04",
+        "alt": {
+          "he": "הכרזת אמן: Mystica.",
+          "en": "Artist announcement: Mystica."
+        }
+      },
+      {
+        "id": "04/05",
+        "alt": {
+          "he": "הכרזת אמן: Chakra.",
+          "en": "Artist announcement: Chakra."
+        }
+      }
+    ],
+    "behance": "https://www.behance.net/gallery/242584349/SHIKINGIM"
+  },
+  {
+    "slug": "changa-crew-one-year",
+    "title": {
+      "he": "Changa Crew — One Year",
+      "en": "Changa Crew — One Year"
+    },
+    "subtitle": {
+      "he": "מיתוג למסיבת השנה של צ׳אנגה קרו",
+      "en": "Party branding for Changa Crew’s one-year celebration"
+    },
+    "client": {
+      "he": "Changa Crew",
+      "en": "Changa Crew"
+    },
+    "year": "2025",
+    "discipline": [
+      {
+        "he": "מיתוג מסיבה",
+        "en": "Party branding"
+      },
+      {
+        "he": "פוסטרי ליינאפ",
+        "en": "Line-up posters"
+      },
+      {
+        "he": "רשתות חברתיות",
+        "en": "Social media"
+      }
+    ],
+    "tools": [
+      "Photoshop",
+      "Illustrator",
+      "InDesign",
+      "Midjourney"
+    ],
+    "accent": "#C9853F",
+    "cover": {
+      "id": "05/01",
+      "alt": {
+        "he": "הוויז׳ואל של One Year Celebrations: שלושה ראשים מגולפים עם קרניים על רקע קלף מסתחרר.",
+        "en": "One Year Celebrations key visual: three carved horned heads on a swirling parchment background."
+      }
+    },
+    "hero": {
+      "id": "05/01",
+      "alt": {
+        "he": "Changa Crew — One Year Celebrations, הוויז׳ואל המרכזי.",
+        "en": "Changa Crew — One Year Celebrations, key visual."
+      }
+    },
+    "intro": [
+      {
+        "he": "מיתוג למסיבת השנה של Changa Crew, 29–30.08.25: שלושה ראשים מגולפים עם קרניים שעולים מרקע קלף מסתחרר, ממוסגרים בערימות רמקולים — חם, שבטי וארצי.",
+        "en": "Branding for Changa Crew’s one-year celebration, 29–30.08.25: three carved, horned heads rising from a swirling parchment ground, framed by speaker stacks — warm, tribal and earthy."
+      },
+      {
+        "he": "הקמפיין כולל טיזר, ליינאפ וטיימטייבל בפורמט סטורי, הכרזות אמנים ותפריט בר.",
+        "en": "The campaign includes a teaser, line-up and timetable in story format, artist announcements and a bar menu."
+      }
+    ],
+    "gallery": [
+      {
+        "id": "05/03",
+        "alt": {
+          "he": "הליינאפ בפורמט סטורי.",
+          "en": "Line-up in story format."
+        }
+      },
+      {
+        "id": "05/04",
+        "alt": {
+          "he": "הטיימטייבל בפורמט סטורי.",
+          "en": "Timetable in story format."
+        }
+      },
+      {
+        "id": "05/05",
+        "alt": {
+          "he": "הכרזת אמן: Eden, במסגרת טבעת אבן מגולפת.",
+          "en": "Artist announcement: Eden, framed in a carved stone ring."
+        }
+      },
+      {
+        "id": "05/06",
+        "alt": {
+          "he": "הכרזת אמן: Meshulash.",
+          "en": "Artist announcement: Meshulash."
+        }
+      },
+      {
+        "id": "05/07",
+        "alt": {
+          "he": "הכרזת אמן: DJ Sharon.",
+          "en": "Artist announcement: DJ Sharon."
+        }
+      },
+      {
+        "id": "05/02",
+        "alt": {
+          "he": "פוסט טיזר Coming Soon.",
+          "en": "Coming soon teaser post."
+        }
+      },
+      {
+        "id": "05/08",
+        "alt": {
+          "he": "תפריט בר בעברית באותו סגנון קלף.",
+          "en": "Hebrew bar menu designed in the same parchment style."
+        }
+      }
+    ],
+    "behance": "https://www.behance.net/gallery/233754603/Changa-crew-party-branding"
+  },
+  {
+    "slug": "orebro-forest-party",
+    "title": {
+      "he": "Örebro Forest Party",
+      "en": "Örebro Forest Party"
+    },
+    "subtitle": {
+      "he": "פוסטר ליינאפ למסיבת הלייבל של StoneAge Records בשוודיה",
+      "en": "Line-up poster for a StoneAge Records label party in Sweden"
+    },
+    "client": {
+      "he": "StoneAge Records",
+      "en": "StoneAge Records"
+    },
+    "year": "2025",
+    "discipline": [
+      {
+        "he": "פוסטרי ליינאפ",
+        "en": "Line-up posters"
+      },
+      {
+        "he": "באנר לאירוע",
+        "en": "Event banner"
+      }
+    ],
+    "tools": [
+      "Photoshop",
+      "Illustrator",
+      "InDesign",
+      "Midjourney"
+    ],
+    "accent": "#A98BE0",
+    "cover": {
+      "id": "07/01",
+      "alt": {
+        "he": "פוסטר Örebro Forest Party: יצורי יער-פטריות זוהרים ממסגרים את הליינאפ על רקע סגול כהה.",
+        "en": "Örebro Forest Party poster: glowing mushroom-forest creatures frame the line-up on a dark purple ground."
+      }
+    },
+    "hero": {
+      "id": "07/01",
+      "alt": {
+        "he": "פוסטר הליינאפ של Örebro Forest Party.",
+        "en": "Örebro Forest Party line-up poster."
+      }
+    },
+    "intro": [
+      {
+        "he": "פוסטר ליינאפ ובאנר לאירוע של מסיבת הלייבל של StoneAge Records, 25–27.07.2025 באורברו, שוודיה — מפגש יער של שלושה ימים עם קמפינג חופשי.",
+        "en": "Line-up poster and event banner for a StoneAge Records label party, 25–27.07.2025 in Örebro, Sweden — a three-day forest gathering with free camping."
+      },
+      {
+        "he": "יצורי יער-פטריות בניאון ממסגרים את הפוסטר משני הצדדים, ומשאירים מרכז כהה ושקט כדי שליינאפ ארוך יישאר קריא.",
+        "en": "Neon mushroom-forest creatures frame the poster on both sides, leaving a calm dark centre for a long line-up to stay legible."
+      }
+    ],
+    "gallery": [
+      {
+        "id": "07/02",
+        "alt": {
+          "he": "גרסת באנר רחבה של העיצוב.",
+          "en": "Wide event banner version of the design."
+        }
+      }
+    ],
+    "behance": "https://www.behance.net/gallery/226175003/StopneAge-Records-Party-Lineup-Poster-Design"
+  },
+  {
+    "slug": "dj-sharon",
+    "title": {
+      "he": "DJ Sharon",
+      "en": "DJ Sharon"
+    },
+    "subtitle": {
+      "he": "Summer Tour 2025 — פוסט פרומו",
+      "en": "Summer Tour 2025 — promotional post"
+    },
+    "client": {
+      "he": "DJ Sharon",
+      "en": "DJ Sharon"
+    },
+    "year": "2025",
+    "discipline": [
+      {
+        "he": "רשתות חברתיות",
+        "en": "Social media"
+      },
+      {
+        "he": "פוסטר סיבוב הופעות",
+        "en": "Tour poster"
+      }
+    ],
+    "tools": [
+      "Illustrator",
+      "InDesign",
+      "Photoshop"
+    ],
+    "accent": "#D46AE6",
+    "cover": {
+      "id": "08/01",
+      "alt": {
+        "he": "פוסט DJ Sharon Summer Tour 2025: הדי-ג׳יי מאחורי הדקים עם תאריכי הסיבוב על רקע מבוך סגול זוהר.",
+        "en": "DJ Sharon Summer Tour 2025 post: the DJ behind the decks with tour dates over a glowing purple maze pattern."
+      }
+    },
+    "hero": {
+      "id": "08/01",
+      "alt": {
+        "he": "פוסט DJ Sharon Summer Tour 2025.",
+        "en": "DJ Sharon Summer Tour 2025 post."
+      }
+    },
+    "intro": [
+      {
+        "he": "פוסט פרומו לסיבוב ההופעות של DJ Sharon בקיץ, שמוכר במוזיקה הפסיכדלית העמוקה והמסתורית שלו. בהשראת הסאונד, הוויז׳ואל משלב צבעים זוהרים על רקע כהה, גיאומטריה מהפנטת וקומפוזיציה בשכבות — חוויה קוסמית ומוצללת.",
+        "en": "A promotional post for DJ Sharon’s summer tour, known for his deep and mysterious psychedelic music. Inspired by his sound, the visual combines glowing colours on dark backgrounds, hypnotic geometry and layered composition to create a cosmic, shadowy experience."
+      }
+    ],
+    "gallery": [
+      {
+        "id": "08/02",
+        "alt": {
+          "he": "הפוסט בפיד אינסטגרם בטלפון.",
+          "en": "The post shown in an Instagram feed on a phone."
+        }
+      }
+    ],
+    "behance": "https://www.behance.net/gallery/223028963/DJ-Sharon-Summer-Tour-Post"
+  },
+  {
+    "slug": "cosmix",
+    "title": {
+      "he": "Cosmix",
+      "en": "Cosmix"
+    },
+    "subtitle": {
+      "he": "אומנות קיר בחיתוך לייזר בשכבות, בגיאומטריה מקודשת",
+      "en": "Layered laser-cut wall art in sacred geometry"
+    },
+    "client": {
+      "he": "Cosmix",
+      "en": "Cosmix"
+    },
+    "year": "2024",
+    "discipline": [
+      {
+        "he": "עיצוב דוגמאות",
+        "en": "Pattern design"
+      },
+      {
+        "he": "מוצר",
+        "en": "Product"
+      },
+      {
+        "he": "לוגו",
+        "en": "Logo"
+      }
+    ],
+    "tools": [
+      "Illustrator",
+      "Photoshop"
+    ],
+    "accent": "#D2AE62",
+    "cover": {
+      "id": "10/01",
+      "alt": {
+        "he": "תקריב של אומנות גיאומטרית בחיתוך לייזר בשכבות עם הלוגו של Cosmix.",
+        "en": "Close-up of layered laser-cut geometric art with the Cosmix logo."
+      }
+    },
+    "hero": {
+      "id": "10/01",
+      "alt": {
+        "he": "גיאומטריה בחיתוך לייזר של Cosmix עם הלוגו.",
+        "en": "Cosmix laser-cut geometry with the Cosmix logo."
+      }
+    },
+    "intro": [
+      {
+        "he": "עיצובים ל-Cosmix, קו של אומנות קיר בחיתוך לייזר בשכבות. משושים, כוכבים וליבות ״פרח החיים״ מצוירים כשכבות בעץ, זהב, כסף וצבע — כך שכל יצירה נקראת כעומק ולא כדוגמה שטוחה.",
+        "en": "Designs for Cosmix, a line of layered laser-cut wall art. Hexagons, stars and flower-of-life cores are drawn as stacked layers in wood, gold, silver and colour, so each piece reads as depth rather than a flat pattern."
+      },
+      {
+        "he": "הקו כולל גם מראות ממוסגרות בעיטור מאנדר יווני, שמוצגות בהדמיות חדרים לצד הלוגו של המותג.",
+        "en": "The line also includes framed mirrors with Greek-key borders, presented in room settings alongside the brand’s logo."
+      }
+    ],
+    "gallery": [
+      {
+        "id": "10/02",
+        "alt": {
+          "he": "יצירה משושה עם שיבוצים סגולים.",
+          "en": "Hexagonal piece with purple inlays."
+        }
+      },
+      {
+        "id": "10/03",
+        "alt": {
+          "he": "יצירת הקסגרמה בגווני עץ.",
+          "en": "Hexagram piece in wood tones."
+        }
+      },
+      {
+        "id": "10/04",
+        "alt": {
+          "he": "יצירה מרובעת בזהב ואדום עם ליבת פרח החיים.",
+          "en": "Square piece in gold and red with a flower-of-life centre."
+        }
+      },
+      {
+        "id": "10/05",
+        "alt": {
+          "he": "יצירה משושה עם שיבוצים כחולים.",
+          "en": "Hexagonal piece with blue inlays."
+        }
+      },
+      {
+        "id": "10/06",
+        "alt": {
+          "he": "היצירה הכחולה על קיר בסלון.",
+          "en": "Blue hexagonal piece on a living-room wall."
+        }
+      },
+      {
+        "id": "10/07",
+        "alt": {
+          "he": "היצירה המרובעת בזהב ואדום על קיר.",
+          "en": "Gold and red square piece on a wall."
+        }
+      },
+      {
+        "id": "10/08",
+        "alt": {
+          "he": "מראה במסגרת מאנדר זהב מעל קונסולה.",
+          "en": "Gold Greek-key mirror above a console."
+        }
+      },
+      {
+        "id": "10/10",
+        "alt": {
+          "he": "יצירת ההקסגרמה על קיר בהיר.",
+          "en": "Hexagram piece on a light wall."
+        }
+      }
+    ],
+    "behance": "https://www.behance.net/gallery/205627841/Cosmix-Laser-Art-Design"
+  },
+  {
+    "slug": "mey-israel",
+    "title": {
+      "he": "מי ישראל",
+      "en": "Mey Israel"
+    },
+    "subtitle": {
+      "he": "לוגו וקמפיין הסברה לחברת מים",
+      "en": "Logo and public campaign for a water company"
+    },
+    "client": {
+      "he": "פרויקט לימודים",
+      "en": "Study project"
+    },
+    "year": "2025",
+    "discipline": [
+      {
+        "he": "לוגו",
+        "en": "Logo"
+      },
+      {
+        "he": "קמפיין",
+        "en": "Campaign"
+      },
+      {
+        "he": "דפוס",
+        "en": "Print"
+      }
+    ],
+    "tools": [
+      "Illustrator",
+      "Photoshop",
+      "InDesign"
+    ],
+    "accent": "#3A9BE0",
+    "cover": {
+      "id": "06/03",
+      "alt": {
+        "he": "שלט חוצות של מי ישראל: אסלה מצוירת כועסת מלאה במגבונים, באזהרה לא לזרוק אותם לאסלה.",
+        "en": "Mey Israel billboard: an angry cartoon toilet stuffed with wipes, warning against throwing them in the toilet."
+      }
+    },
+    "hero": {
+      "id": "06/01",
+      "alt": {
+        "he": "הלוגו של מי ישראל: טיפת מים וגלים עם הכיתוב בעברית.",
+        "en": "Mey Israel logo: a water drop and waves with the Hebrew wordmark."
+      }
+    },
+    "intro": [
+      {
+        "he": "לוגו לחברת מים — טיפה ושני גלים שעוטפים את הכיתוב — וקמפיין הסברה שנבנה סביב מסר אחד ישיר: ״האסלה אינה פח אשפה.״",
+        "en": "A logo for a water company — a drop and two waves wrapped around the Hebrew wordmark — and a public campaign built around one blunt message: “The toilet is not a trash can.”"
+      },
+      {
+        "he": "דמות של אסלה כועסת ומפוצצת נושאת את המסר. הקמפיין רץ בעברית וברוסית על שלט חוצות, פליירים וחוברת מקופלת לשלושה, וקו הגלים מהלוגו מחבר את כולם.",
+        "en": "An angry, overstuffed toilet character carries the message. The campaign runs in Hebrew and Russian across a billboard, flyers and a tri-fold brochure, all held together by the logo’s wave line."
+      }
+    ],
+    "gallery": [
+      {
+        "id": "06/03",
+        "alt": {
+          "he": "שלט החוצות של הקמפיין ברוסית על רקע שמיים מעוננים.",
+          "en": "Russian-language billboard of the campaign against a cloudy sky."
+        }
+      },
+      {
+        "id": "06/04",
+        "alt": {
+          "he": "פלייר בעברית עם רשימת מה אסור לזרוק לאסלה.",
+          "en": "Hebrew flyer listing what must not be thrown into the toilet."
+        }
+      },
+      {
+        "id": "06/06",
+        "alt": {
+          "he": "פלייר ברוסית עם דמות האסלה הכועסת.",
+          "en": "Russian flyer with the angry toilet character."
+        }
+      },
+      {
+        "id": "06/05",
+        "alt": {
+          "he": "הצד הפנימי של החוברת בעברית.",
+          "en": "Inside spread of the tri-fold brochure in Hebrew."
+        }
+      },
+      {
+        "id": "06/02",
+        "alt": {
+          "he": "החוברת והפלייר המודפסים.",
+          "en": "The printed brochure and flyer."
+        }
+      }
+    ],
+    "behance": "https://www.behance.net/gallery/226781929/mey-israel-logo-and-Campaign-Design"
+  },
+  {
+    "slug": "kulanoo",
+    "title": {
+      "he": "כולנו",
+      "en": "Kulanoo"
+    },
+    "subtitle": {
+      "he": "לוגו, פוסטר ואתר ל״כולנו״",
+      "en": "Logo, poster and web for “Kulanoo” — “all of us”"
+    },
+    "client": {
+      "he": "פרויקט לימודים",
+      "en": "Study project"
+    },
+    "year": "2024",
+    "discipline": [
+      {
+        "he": "לוגו",
+        "en": "Logo"
+      },
+      {
+        "he": "פוסטרים",
+        "en": "Posters"
+      },
+      {
+        "he": "אתר",
+        "en": "Web"
+      }
+    ],
+    "tools": [
+      "Photoshop",
+      "Illustrator"
+    ],
+    "accent": "#D23A48",
+    "cover": {
+      "id": "11/03",
+      "alt": {
+        "he": "פוסטר רחוב של כולנו: ידיים מחבקות לב אדום, עם הכיתוב ״תמיד כאן בשבילכם!״.",
+        "en": "Kulanoo street poster: hands embracing a red heart, with the line “Always here for you!”."
+      }
+    },
+    "hero": {
+      "id": "11/01",
+      "alt": {
+        "he": "הלוגו של כולנו: לב אדום שמוחזק בידי שלוש דמויות, לצד הכיתוב.",
+        "en": "Kulanoo logo: a red heart held by three figures, beside the Hebrew wordmark."
+      }
+    },
+    "intro": [
+      {
+        "he": "מיתוג ל״כולנו״. הסמל הוא לב אדום שמוחזק בידי שלוש דמויות — דימוי ישיר של קהילה — עם גרסאות לגדלים קטנים ולצבע אחד.",
+        "en": "Branding for Kulanoo — Hebrew for “all of us.” The mark is a red heart held by three figures, a direct image of community, with variations for small sizes and single colour."
+      },
+      {
+        "he": "הזהות ממשיכה לפוסטר רחוב ולאתר סביב המסר ״תמיד כאן בשבילכם!״.",
+        "en": "The identity carries into a street poster and a website around the message “Always here for you!”."
+      }
+    ],
+    "gallery": [
+      {
+        "id": "11/02",
+        "alt": {
+          "he": "הלוגו של כולנו עם הסמל, גרסה בצבע אחד וגרסה הפוכה.",
+          "en": "Kulanoo logo with its icon, one-colour and reversed variations."
+        }
+      },
+      {
+        "id": "11/03",
+        "alt": {
+          "he": "פוסטר כולנו בתחנת אוטובוס.",
+          "en": "Kulanoo poster at a bus stop."
+        }
+      },
+      {
+        "id": "11/04",
+        "alt": {
+          "he": "האתר של כולנו במסך מחשב.",
+          "en": "Kulanoo website on a desktop screen."
+        }
+      }
+    ],
+    "behance": "https://www.behance.net/gallery/205481417/kulanoo-branding"
+  }
+]
