@@ -1,0 +1,264 @@
+---
+// Space behind the Hero: a field of twinkling stars (round points, each on its own rhythm; the near ones with a soft
+// glow) drifting slowly towards the viewer out of a vanishing point behind the portrait's head, with faint nebulae in
+// the colours of the two artworks. It answers the mouse quietly — and only while the pointer is NOT over the portrait,
+// so the face keeps all the attention:
+//  · parallax — the view turns a little with the pointer; near stars move more than far ones, so the depth reads in 3D;
+//  · a lens — stars part softly around the cursor.
+// On touch screens (no hover) the view drifts gently by itself. When the portrait reveals an artwork (`portrait:reveal`)
+// the stars and nebulae take on its colours, and settle back on `portrait:conceal`.
+// Decorative only (aria-hidden). One canvas, one GSAP ticker loop, paused while the Hero is off screen; a single still
+// frame with reduced motion. Place it inside the same parent as <PortraitReveal>, sized by the parent.
+interface Props { class?: string }
+const { class: className } = Astro.props;
+---
+<hero-cosmos class:list={['cosmos', className]} aria-hidden="true"><canvas></canvas></hero-cosmos>
+
+<style>
+  .cosmos {
+    display: block;
+    pointer-events: none;
+    /* clear behind the fixed header, then full strength, fading out into the next section */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, transparent 56px, #000 200px, #000 84%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, transparent 56px, #000 200px, #000 84%, transparent 100%);
+  }
+  canvas { display: block; width: 100%; height: 100%; }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+
+  type RGB = [number, number, number];
+  // Star tint and three nebula colours per state — sampled from the artworks (rest = the site's warm ink + a quiet mix).
+  const TONES: Record<'rest' | 'gothic' | 'surrealism', { star: RGB; neb: [RGB, RGB, RGB]; glow: number }> = {
+    rest: { star: [237, 234, 227], neb: [[97, 48, 112], [40, 109, 127], [131, 83, 56]], glow: 0.13 },
+    gothic: { star: [246, 222, 200], neb: [[120, 54, 99], [134, 60, 77], [198, 146, 84]], glow: 0.22 },
+    surrealism: { star: [214, 238, 244], neb: [[40, 109, 127], [45, 69, 112], [217, 165, 97]], glow: 0.22 },
+  };
+  type ToneName = keyof typeof TONES;
+
+  const SPEED = 0.03; // depth units per second — a slow, steady drift
+  const FOCAL = 0.55; // × the shorter side: perspective strength
+  const LENS = 110; // px: reach of the cursor's lens
+  const PARALLAX = 0.045; // how far the view turns with the pointer
+  type Star = { x: number; y: number; z: number; tw: number; rate: number };
+
+  class HeroCosmos extends HTMLElement {
+    private mm?: ReturnType<typeof gsap.matchMedia>;
+
+    connectedCallback() {
+      const canvas = this.querySelector('canvas')!;
+      const ctx = canvas.getContext('2d')!;
+      const portrait = this.parentElement?.querySelector('portrait-reveal') ?? null;
+      const mix = { gothic: 0, surrealism: 0 }; // how much of each artwork's palette is showing
+
+      let w = 0, h = 0, vx = 0, vy = 0, focal = 1, spread = 1;
+      let stars: Star[] = [];
+      const spawn = (s: Star, far: boolean) => {
+        s.x = (Math.random() * 2 - 1) * spread;
+        s.y = (Math.random() * 2 - 1) * spread;
+        s.z = far ? 1 : 0.06 + Math.random() * 0.94;
+        s.tw = Math.random() * Math.PI * 2;
+        s.rate = 0.8 + Math.random() * 2.6; // twinkle speed
+        return s;
+      };
+      const measure = () => {
+        const box = this.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        w = box.width;
+        h = box.height;
+        canvas.width = Math.round(w * dpr);
+        canvas.height = Math.round(h * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        // vanishing point: the portrait's head (≈ 47% across, 33% down the image)
+        if (portrait) {
+          const p = portrait.getBoundingClientRect();
+          vx = p.left - box.left + p.width * 0.47;
+          vy = p.top - box.top + p.height * 0.33;
+        } else {
+          vx = w / 2;
+          vy = h / 2;
+        }
+        focal = Math.min(w, h) * FOCAL;
+        spread = (Math.max(vx, w - vx, vy, h - vy) / focal) * 1.1; // far stars fill the screen from the vanishing point
+        const count = Math.round(Math.min(900, Math.max(180, (w * h) / 1700)));
+        while (stars.length < count) stars.push(spawn({ x: 0, y: 0, z: 0, tw: 0, rate: 1 }, false));
+        stars.length = count;
+      };
+
+      // pointer state, eased so the view glides rather than jumps
+      const mouse = { x: 0, y: 0, in: 0 }; // px in this box; `in` fades the lens in/out
+      const view = { x: 0, y: 0 }; // eased parallax, -1…1
+      let target = { x: 0, y: 0 };
+      let hasMouse = false; // a mouse is on the page (touch screens never set this)
+      let over = false; // …and it is over the Hero background, not over the portrait
+
+      const colour = (a: RGB, b: RGB, c: RGB): RGB =>
+        [0, 1, 2].map((i) => a[i] * (1 - mix.gothic - mix.surrealism) + b[i] * mix.gothic + c[i] * mix.surrealism) as RGB;
+
+      const draw = (t: number, dt: number) => {
+        ctx.clearRect(0, 0, w, h);
+        const R = TONES.rest, G = TONES.gothic, S = TONES.surrealism;
+        const glow = R.glow + (G.glow - R.glow) * mix.gothic + (S.glow - R.glow) * mix.surrealism;
+
+        // the view: follows the mouse, or drifts by itself on touch screens
+        if (!hasMouse) target = { x: Math.sin(t * 0.07) * 0.35, y: Math.cos(t * 0.09) * 0.25 };
+        const ease = 1 - Math.exp(-dt * 2.5);
+        view.x += (target.x - view.x) * ease;
+        view.y += (target.y - view.y) * ease;
+        const camX = view.x * spread * PARALLAX; // gentle: a slow turn of the head, not a swing
+        const camY = view.y * spread * PARALLAX;
+
+        // nebulae: large soft clouds that drift and swing with the view (less than the stars — they are far away)
+        ctx.globalCompositeOperation = 'lighter';
+        const neb = colour(R.neb[0], G.neb[0], S.neb[0]);
+        const nebs: [RGB, number, number, number][] = [
+          [neb, -0.18, -0.22, 0.55],
+          [colour(R.neb[1], G.neb[1], S.neb[1]), -0.42, 0.18, 0.5],
+          [colour(R.neb[2], G.neb[2], S.neb[2]), 0.2, -0.05, 0.38],
+        ];
+        nebs.forEach(([c, ox, oy, size], i) => {
+          const nx = vx + (ox + Math.sin(t * 0.03 + i * 2) * 0.05 - view.x * 0.05) * w;
+          const ny = vy + (oy + Math.cos(t * 0.025 + i) * 0.05 - view.y * 0.05) * h;
+          const r = Math.max(w, h) * size;
+          const g = ctx.createRadialGradient(nx, ny, 0, nx, ny, r);
+          g.addColorStop(0, `rgba(${c.map(Math.round).join(',')},${glow})`);
+          g.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = g;
+          ctx.fillRect(nx - r, ny - r, r * 2, r * 2);
+        });
+
+        // stars
+        const [sr, sg, sb] = colour(R.star, G.star, S.star).map(Math.round);
+        const lensOn = mouse.in > 0.01;
+        for (const s of stars) {
+          s.z -= SPEED * dt;
+          if (s.z < 0.05) spawn(s, true);
+          const f = focal / s.z;
+          let x = vx + (s.x - camX / s.z) * f;
+          let y = vy + (s.y - camY / s.z) * f;
+          if (x < -20 || x > w + 20 || y < -20 || y > h + 20) {
+            if (s.z < 0.6) spawn(s, true); // drifted past the edge: recycle far away
+            continue;
+          }
+          if (lensOn) {
+            // the cursor's lens: nudge the star gently outward from the pointer
+            const dx = x - mouse.x, dy = y - mouse.y;
+            const d = Math.hypot(dx, dy);
+            if (d < LENS && d > 0.001) {
+              const push = LENS * 0.22 * (1 - d / LENS) ** 2 * mouse.in;
+              x += (dx / d) * push;
+              y += (dy / d) * push;
+            }
+          }
+          const near = 1 - s.z; // 0 far … 1 close
+          const fadeIn = Math.min(1, near / 0.2);
+          // twinkle: each star pulses on its own rhythm, sometimes dipping almost to nothing
+          const pulse = 0.5 + 0.5 * Math.sin(t * s.rate + s.tw);
+          const twinkle = 0.3 + 0.7 * pulse * pulse;
+          const alpha = Math.min(1, (0.55 + near * 0.6) * fadeIn * twinkle);
+          const r = 0.75 + near * near * 1.6; // core radius, px
+          // a soft halo around the nearer, brighter stars
+          if (near > 0.45) {
+            const halo = r * 4;
+            const g = ctx.createRadialGradient(x, y, 0, x, y, halo);
+            g.addColorStop(0, `rgba(${sr},${sg},${sb},${(alpha * 0.35).toFixed(3)})`);
+            g.addColorStop(1, `rgba(${sr},${sg},${sb},0)`);
+            ctx.fillStyle = g;
+            ctx.fillRect(x - halo, y - halo, halo * 2, halo * 2);
+          }
+          ctx.fillStyle = `rgba(${sr},${sg},${sb},${alpha.toFixed(3)})`;
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.globalCompositeOperation = 'source-over';
+      };
+
+      let prev = 0;
+      const tick = () => {
+        const t = gsap.ticker.time;
+        const dt = Math.min(0.05, prev ? t - prev : 0.016);
+        prev = t;
+        mouse.in += ((hasMouse && over ? 1 : 0) - mouse.in) * Math.min(1, dt * 4); // lens fades in/out
+        draw(t, dt);
+      };
+
+      this.mm = gsap.matchMedia();
+      this.mm.add({ motion: '(prefers-reduced-motion: no-preference)', reduce: '(prefers-reduced-motion: reduce)' }, (mctx) => {
+        const reduce = !!mctx.conditions?.reduce;
+        const still = () => draw(20, 0); // reduced motion: one fixed frame, no reaction to the mouse
+
+        const ro = new ResizeObserver(() => { measure(); if (reduce) still(); });
+        ro.observe(this);
+        if (portrait) ro.observe(portrait);
+
+        // pointer: parallax target and lens position — ignored while the pointer is over the portrait,
+        // where the reveal on the face has the stage (the view simply holds still until the pointer leaves it)
+        const onMove = (e: PointerEvent) => {
+          if (e.pointerType === 'touch') return;
+          hasMouse = true;
+          const p = portrait?.getBoundingClientRect();
+          const onPortrait = !!p && e.clientX >= p.left && e.clientX <= p.right && e.clientY >= p.top && e.clientY <= p.bottom;
+          const box = this.getBoundingClientRect();
+          const x = e.clientX - box.left, y = e.clientY - box.top;
+          over = !onPortrait && y >= 0 && y <= box.height;
+          if (!over) return;
+          mouse.x = x;
+          mouse.y = y;
+          target = { x: Math.max(-1, Math.min(1, (x - w / 2) / (w / 2))), y: Math.max(-1, Math.min(1, (y - h / 2) / (h / 2))) };
+        };
+        const onLeave = () => { hasMouse = false; over = false; };
+
+        // the colours of whatever artwork the portrait reveals
+        const toTone = (name: ToneName) => {
+          gsap.to(mix, {
+            gothic: name === 'gothic' ? 1 : 0,
+            surrealism: name === 'surrealism' ? 1 : 0,
+            duration: reduce ? 0.3 : 1.4,
+            ease: 'power2.inOut',
+            overwrite: true,
+            onUpdate: reduce ? still : undefined,
+          });
+        };
+        const onReveal = (e: Event) => toTone((e as CustomEvent<string>).detail as ToneName);
+        const onConceal = () => toTone('rest');
+        portrait?.addEventListener('portrait:reveal', onReveal);
+        portrait?.addEventListener('portrait:conceal', onConceal);
+
+        // animate only while the Hero is on screen
+        let running = false;
+        const io = new IntersectionObserver(([en]) => {
+          if (reduce) return;
+          if (en.isIntersecting && !running) { prev = 0; gsap.ticker.add(tick); }
+          if (!en.isIntersecting && running) gsap.ticker.remove(tick);
+          running = en.isIntersecting;
+        });
+        io.observe(this);
+        if (!reduce) {
+          window.addEventListener('pointermove', onMove, { passive: true });
+          document.documentElement.addEventListener('pointerleave', onLeave);
+        }
+
+        measure();
+        if (reduce) still();
+        return () => {
+          ro.disconnect();
+          io.disconnect();
+          gsap.ticker.remove(tick);
+          window.removeEventListener('pointermove', onMove);
+          document.documentElement.removeEventListener('pointerleave', onLeave);
+          portrait?.removeEventListener('portrait:reveal', onReveal);
+          portrait?.removeEventListener('portrait:conceal', onConceal);
+        };
+      });
+    }
+
+    disconnectedCallback() {
+      this.mm?.revert();
+      this.mm = undefined;
+    }
+  }
+
+  if (!customElements.get('hero-cosmos')) customElements.define('hero-cosmos', HeroCosmos);
+</script>
