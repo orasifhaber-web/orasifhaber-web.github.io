@@ -1,0 +1,20 @@
+---
+// All projects as a list — the full work list (one identical row per project), reached from the home gallery's
+// "all projects" button and from every project page.
+import Base from '../layouts/Base.astro';
+import WorkList from '../components/WorkList.astro';
+import { ui, type Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+---
+<Base lang={lang} title={ui.allProjects[lang]}>
+  <section class="wi-hero wrap">
+    <h1 class="h1">{ui.allProjects[lang]}</h1>
+  </section>
+  <WorkList lang={lang} />
+</Base>
+
+<style>
+  .wi-hero { padding-top: clamp(120px, 20vh, 220px); }
+</style>

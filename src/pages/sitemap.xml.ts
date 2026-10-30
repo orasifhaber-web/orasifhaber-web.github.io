@@ -3,7 +3,7 @@ import { projects } from '../data/projects';
 import { langs, url } from '../i18n';
 
 export const GET: APIRoute = ({ site }) => {
-  const paths = ['/', '/about/', ...projects.map((p) => `/work/${p.slug}/`)];
+  const paths = ['/', '/about/', '/work/', ...projects.map((p) => `/work/${p.slug}/`)];
   const entry = (p: string) =>
     langs
       .map((l) => `  <url>\n    <loc>${new URL(url(l, p), site)}</loc>\n${langs.map((a) => `    <xhtml:link rel="alternate" hreflang="${a}" href="${new URL(url(a, p), site)}"/>`).join('\n')}\n  </url>`)

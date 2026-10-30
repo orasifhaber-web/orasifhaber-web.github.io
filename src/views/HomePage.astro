@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import WorkList from '../components/WorkList.astro';
+import WorkReel from '../components/WorkReel.astro';
 import PortraitReveal from '../components/PortraitReveal.astro';
 import HeroCosmos from '../components/HeroCosmos.astro';
 import { site } from '../data/site';
@@ -31,7 +31,7 @@ const [l1, l2] = ui.nameLines[lang];
     </div>
   </section>
 
-  <WorkList lang={lang} />
+  <WorkReel lang={lang} />
 
   <section class="about-pre section wrap grid" aria-labelledby="about-pre-title">
     <h2 id="about-pre-title" class="label about-pre__label">{ui.about.label[lang]}</h2>
