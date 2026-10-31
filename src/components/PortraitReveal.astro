@@ -15,8 +15,9 @@ interface Props {
   alt: string;
   class?: string;
   demo?: boolean;
+  demoDelay?: number; // ms after the portrait is loaded and in view before the demo plays (lets an entrance finish first)
 }
-const { alt, class: className, demo = true } = Astro.props;
+const { alt, class: className, demo = true, demoDelay = 1200 } = Astro.props;
 const { width, height } = PORTRAIT_SIZE;
 const src = (file: string) => PORTRAIT_BASE + file;
 const uid = `portrait-${Math.random().toString(36).slice(2, 8)}`; // SVG ids must be unique per instance
@@ -26,7 +27,7 @@ const arts = [
   { style: 'surrealism', file: portraitLayers.surrealism },
 ];
 ---
-<portrait-reveal class:list={['portrait', className]} data-next="gothic" data-state="idle" data-demo={demo ? '' : undefined}>
+<portrait-reveal class:list={['portrait', className]} data-next="gothic" data-state="idle" data-demo={demo ? '' : undefined} data-demo-delay={demoDelay}>
   <img class="portrait__layer" src={src(portraitLayers.master)} alt={alt} width={width} height={height} decoding="async" fetchpriority="high" draggable="false" />
   {arts.map(({ style, file }) => (
     <svg class="portrait__layer portrait__art" data-style={style} data-src={src(file)} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
@@ -370,7 +371,7 @@ const arts = [
             if (!entries.some((en) => en.isIntersecting)) return;
             io?.disconnect();
             // the pause lets a page's own entrance animation (e.g. the Hero title) finish first
-            this.loaded?.then(() => { demoWait = window.setTimeout(playDemo, 1200); });
+            this.loaded?.then(() => { demoWait = window.setTimeout(playDemo, Number(this.dataset.demoDelay) || 1200); });
           },
           { threshold: 0.5 },
         );
