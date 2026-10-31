@@ -49,6 +49,26 @@ for (const [id, c] of Object.entries(crops)) {
   console.log(id);
 }
 
+// Behance covers: each project's cover exactly as Or cropped it on Behance (808 × 632). The crop rectangle is encoded in
+// the cover's Behance file name in portfolio.json — base64 of "crop,w,h,x,y" — and applied to the folder's cover file;
+// covers saved already cropped (no crop in the name) are used as they are. Output id: "<nn>/behance".
+const portfolio = JSON.parse(fs.readFileSync(path.join(SRC, 'portfolio.json'), 'utf8'));
+for (const p of portfolio) {
+  const dir = path.join(SRC, p.folder);
+  const file = path.join(dir, fs.readdirSync(dir).find((f) => /^cover\.(png|jpe?g)$/i.test(f)));
+  const code = p.cover.match(/\.([A-Za-z0-9_-]+)\.(?:png|jpe?g)$/)?.[1] ?? '';
+  const decoded = Buffer.from(code, 'base64').toString();
+  const id = `${p.folder.slice(0, 2)}/behance`;
+  if (decoded.startsWith('crop,')) {
+    const [width, height, left, top] = decoded.split(',').slice(1).map(Number);
+    await emit(id, () => sharp(file).extract({ left, top, width, height }), width, height);
+  } else {
+    const { width, height } = await sharp(file).metadata();
+    await emit(id, () => sharp(file), width, height);
+  }
+  console.log(id);
+}
+
 // Open Graph image
 await sharp(sheet).extract(crops['01/artwork']).resize(1200, 630, { fit: 'cover', position: 'top' }).jpeg({ quality: 82 }).toFile('public/og.jpg');
 

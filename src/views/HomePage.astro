@@ -24,7 +24,7 @@ const [l1, l2] = ui.nameLines[lang];
       <span class="hero__line"><span>{l1}</span></span><span class="hero__sp"> </span><span class="hero__line"><span>{l2}</span></span>
     </h1>
     <HeroCosmos class="hero__space" />
-    <PortraitReveal class="hero__portrait" alt={ui.hero.portrait[lang]} demoDelay={2400} />
+    <PortraitReveal class="hero__portrait" alt={ui.hero.portrait[lang]} demoDelay={4200} />
     <div class="hero__bottom">
       <p class="hero__statement">{ui.hero.statement[lang]}</p>
       <ul class="hero__cta">
@@ -248,12 +248,13 @@ const [l1, l2] = ui.nameLines[lang];
   }
 
   /* The entrance — one orchestrated sequence, ~2.3s, in the site's light motif:
-     the stars come up out of the dark → the portrait develops from below and switches on with a short flicker → the
-     name rises line by line → the labels, the statement and the two buttons follow → the menu last. (The portrait's
-     own "third eye" demo waits until it is over.) Reduced motion: everything is simply there. */
+     the stars come up out of the dark → the portrait develops from below as the light slowly comes up on it (a smooth
+     ramp, no flicker) → the name rises line by line → the labels, the statement and the two buttons follow → the menu
+     last. The portrait's own "third eye" demo waits a good two seconds more, so the face is seen as itself first.
+     Reduced motion: everything is simply there. */
   @media (prefers-reduced-motion: no-preference) {
     .hero :global(.hero__space) { animation: fade-in 1.8s var(--ease-in-out) both; }
-    .hero :global(.hero__portrait) { animation: develop 1.9s 0.2s linear both; }
+    .hero :global(.hero__portrait) { animation: develop 2s 0.2s var(--ease-in-out) both; }
     .hero__line > span { animation: rise 1.2s 0.6s var(--ease-out) both; }
     .hero__line:last-child > span { animation-delay: 0.74s; }
     .hero__top { animation: fade 1s 1.15s var(--ease-out) both; }
@@ -264,14 +265,10 @@ const [l1, l2] = ui.nameLines[lang];
     @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
     @keyframes rise { from { transform: translateY(105%); } to { transform: none; } }
     @keyframes fade { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-    /* develop: the picture rises out of the dark from below, then the light switches on — a short neon flicker */
+    /* develop: the picture rises out of the dark from below while the light slowly comes up on it */
     @keyframes develop {
       0% { clip-path: inset(100% 0 0 0); filter: brightness(0); }
-      48% { clip-path: inset(0 0 0 0); filter: brightness(0.3); }
-      60% { filter: brightness(0.95); }
-      66% { filter: brightness(0.45); }
-      75% { filter: brightness(1.08); }
-      82% { filter: brightness(0.8); }
+      55% { clip-path: inset(0 0 0 0); filter: brightness(0.45); }
       100% { clip-path: inset(0 0 0 0); filter: brightness(1); }
     }
   }

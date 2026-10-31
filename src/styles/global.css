@@ -45,6 +45,7 @@
   --s-10: 144px;
   --s-11: 208px;
   --section: clamp(96px, 14vw, 208px);
+  --page-top: clamp(92px, 11vh, 124px); /* the top of every page's opening: just clear of the fixed header */
 
   /* grid */
   --margin: clamp(16px, 4vw, 56px);
@@ -226,9 +227,9 @@ a:hover .arrow, a:focus-visible .arrow { transform: translateX(4px); }
 .media img { width: 100%; height: 100%; object-fit: cover; }
 .media.contain img { object-fit: contain; }
 
-/* Light on: a picture you can open sits a little dim, and "switches on" when you point at it (or tab to it) — a short
-   neon-tube flicker up to full light, with a warm glow from above. Put .lit on the link or on the row that holds it. */
-.lit .media img { filter: brightness(0.8) saturate(0.92); transition: filter 0.7s var(--ease-out); }
+/* Light on: a picture you can open sits a little dim, and the light comes up on it when you point at it (or tab to
+   it) — a smooth fade up, like a dimmer, with a warm glow from above. Put .lit on the link or on the row that holds it. */
+.lit .media img { filter: brightness(0.8) saturate(0.92); transition: filter 0.8s var(--ease-out); }
 .lit:hover .media img, .lit:focus-within .media img { filter: brightness(1.04) saturate(1.04); }
 .lit .media::after {
   content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0; mix-blend-mode: screen;
@@ -236,17 +237,6 @@ a:hover .arrow, a:focus-visible .arrow { transform: translateX(4px); }
   transition: opacity 0.8s var(--ease-out);
 }
 .lit:hover .media::after, .lit:focus-within .media::after { opacity: 1; }
-@media (prefers-reduced-motion: no-preference) {
-  .lit:hover .media img, .lit:focus-within .media img { animation: ignite 1s linear both; }
-}
-@keyframes ignite {
-  0% { filter: brightness(0.8) saturate(0.92); }
-  9% { filter: brightness(1.14) saturate(1.05); }
-  15% { filter: brightness(0.82) saturate(0.95); }
-  26% { filter: brightness(1.1) saturate(1.05); }
-  34% { filter: brightness(0.9) saturate(1); }
-  62%, 100% { filter: brightness(1.04) saturate(1.04); }
-}
 
 /* ---------- reveal motion ---------- */
 @media (prefers-reduced-motion: no-preference) {
@@ -264,8 +254,9 @@ a:hover .arrow, a:focus-visible .arrow { transform: translateX(4px); }
   .js [data-reveal='mask'] img {
     clip-path: inset(0 0 100% 0);
     transform: scale(1.08);
-    transition: clip-path 1.1s var(--ease-out), transform 1.6s var(--ease-out);
-    transition-delay: calc(var(--i, 0) * 90ms);
+    /* filter keeps its own timing, so the light-on effect (.lit) still fades smoothly on revealed pictures */
+    transition: clip-path 1.1s var(--ease-out), transform 1.6s var(--ease-out), filter 0.8s var(--ease-out) 0s;
+    transition-delay: calc(var(--i, 0) * 90ms), calc(var(--i, 0) * 90ms), 0s;
   }
   .js [data-reveal='mask'].in img { clip-path: inset(0 0 0 0); transform: none; }
 }

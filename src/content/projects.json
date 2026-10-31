@@ -32,7 +32,7 @@
     ],
     "accent": "#9DAE62",
     "cover": {
-      "id": "01/cover",
+      "id": "01/behance",
       "alt": {
         "he": "עטיפת Codex Saltus — XXV Annorum Sum על רקע יער כהה ומטושטש.",
         "en": "Codex Saltus — XXV Annorum Sum album cover set against a blurred dark forest."
@@ -180,7 +180,7 @@
     ],
     "accent": "#E8E4DA",
     "cover": {
-      "id": "09/01",
+      "id": "09/behance",
       "alt": {
         "he": "מרצ׳נדייז של Trance Tribe: חולצות, תיקים וכובעים סביב הלוגו המשושה.",
         "en": "Trance Tribe merchandise flat lay: T-shirts, bags and hats around the hexagonal Trance Tribe logo."
@@ -327,7 +327,7 @@
     ],
     "accent": "#F2A23A",
     "cover": {
-      "id": "12/05",
+      "id": "12/behance",
       "alt": {
         "he": "הלוגו של שוק פתח תקווה: המילה ״שוק״ עם קצף בירה שעולה מהאותיות.",
         "en": "Shuk Petah Tikva logo: the Hebrew word “Shuk” with beer foam rising from the letters."
@@ -420,12 +420,11 @@
     ],
     "accent": "#D8443A",
     "cover": {
-      "id": "02/01",
+      "id": "02/behance",
       "alt": {
         "he": "פוסטר Changa Crew Russian Edition: שלושה דובים באימוניות אדומות מנגנים בסינתיסייזרים ליד אגם בלילה.",
         "en": "Changa Crew Russian Edition poster: three bears in red tracksuits playing synthesizers by a lake at night."
-      },
-      "focus": "50% 0%"
+      }
     },
     "hero": {
       "id": "02/01",
@@ -535,12 +534,11 @@
     ],
     "accent": "#3FB7A6",
     "cover": {
-      "id": "03/01",
+      "id": "03/behance",
       "alt": {
         "he": "פוסטר הליינאפ של Shikingim Aviv Edition על נוף סוריאליסטי של פנים מגולפות באבן וצמחים בטורקיז.",
         "en": "Shikingim Aviv Edition line-up poster over a surreal landscape of carved stone faces and teal plants."
-      },
-      "focus": "50% 0%"
+      }
     },
     "hero": {
       "id": "03/01",
@@ -618,12 +616,11 @@
     ],
     "accent": "#E9A65A",
     "cover": {
-      "id": "04/01",
+      "id": "04/behance",
       "alt": {
         "he": "פוסטר הליינאפ של Shikingim Winter Edition: טוטמי אבן וחייזרים ירוקים סביב שומר קטן עם קרניים.",
         "en": "Shikingim Winter Edition line-up poster: stone totems and green aliens around a small horned guardian."
-      },
-      "focus": "50% 0%"
+      }
     },
     "hero": {
       "id": "04/01",
@@ -708,7 +705,7 @@
     ],
     "accent": "#C9853F",
     "cover": {
-      "id": "05/01",
+      "id": "05/behance",
       "alt": {
         "he": "הוויז׳ואל של One Year Celebrations: שלושה ראשים מגולפים עם קרניים על רקע קלף מסתחרר.",
         "en": "One Year Celebrations key visual: three carved horned heads on a swirling parchment background."
@@ -818,7 +815,7 @@
     ],
     "accent": "#A98BE0",
     "cover": {
-      "id": "07/01",
+      "id": "07/behance",
       "alt": {
         "he": "פוסטר Örebro Forest Party: יצורי יער-פטריות זוהרים ממסגרים את הליינאפ על רקע סגול כהה.",
         "en": "Örebro Forest Party poster: glowing mushroom-forest creatures frame the line-up on a dark purple ground."
@@ -885,7 +882,7 @@
     ],
     "accent": "#D46AE6",
     "cover": {
-      "id": "08/01",
+      "id": "08/behance",
       "alt": {
         "he": "פוסט DJ Sharon Summer Tour 2025: הדי-ג׳יי מאחורי הדקים עם תאריכי הסיבוב על רקע מבוך סגול זוהר.",
         "en": "DJ Sharon Summer Tour 2025 post: the DJ behind the decks with tour dates over a glowing purple maze pattern."
@@ -951,7 +948,7 @@
     ],
     "accent": "#D2AE62",
     "cover": {
-      "id": "10/01",
+      "id": "10/behance",
       "alt": {
         "he": "תקריב של אומנות גיאומטרית בחיתוך לייזר בשכבות עם הלוגו של Cosmix.",
         "en": "Close-up of layered laser-cut geometric art with the Cosmix logo."
@@ -1071,7 +1068,7 @@
     ],
     "accent": "#3A9BE0",
     "cover": {
-      "id": "06/01",
+      "id": "06/behance",
       "alt": {
         "he": "הלוגו של מי ישראל: טיפת מים וגלים עם הכיתוב בעברית.",
         "en": "Mey Israel logo: a water drop and waves with the Hebrew wordmark."
@@ -1169,7 +1166,7 @@
     ],
     "accent": "#D23A48",
     "cover": {
-      "id": "11/01",
+      "id": "11/behance",
       "alt": {
         "he": "הלוגו של כולנו: לב אדום שמוחזק בידי שלוש דמויות, לצד הכיתוב.",
         "en": "Kulanoo logo: a red heart held by three figures, beside the Hebrew wordmark."

@@ -124,7 +124,7 @@ const facts = background.filter((b) => /\d/.test(b.when)).slice(0, 2);
   .ab-tone { background: linear-gradient(to bottom, var(--from), var(--to) 180px) var(--to); }
 
   /* ---------- 1. opening ---------- */
-  .ab-open { display: grid; gap: var(--s-6); padding-top: clamp(104px, 16vh, 168px); padding-bottom: var(--s-8); }
+  .ab-open { display: grid; gap: var(--s-6); padding-top: var(--page-top); padding-bottom: var(--s-8); }
   .ab-open__text { display: grid; gap: var(--s-5); align-content: center; justify-items: start; }
   .ab-open__title { max-width: 16ch; }
   .ab-open__lead { max-width: 34ch; }

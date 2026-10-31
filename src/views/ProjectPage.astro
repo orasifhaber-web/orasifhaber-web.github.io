@@ -6,6 +6,7 @@ import '@fontsource/pirata-one/400.css';
 import Base from '../layouts/Base.astro';
 import Img from '../components/Img.astro';
 import Gallery from '../components/Gallery.astro';
+import { image } from '../lib/img';
 import { projects, inCategory, categoryOf, coverFrame, type Project } from '../data/projects';
 import { site } from '../data/site';
 import { ui, url, fwd, back, type Lang } from '../i18n';
@@ -36,7 +37,7 @@ const jsonld = {
   inLanguage: lang,
   creator: { '@type': 'Person', name: site.name },
   dateCreated: p.year,
-  image: new URL(`/img/${p.hero.id}-1280.webp`, Astro.site).toString(),
+  image: new URL(image(p.hero.id).src, Astro.site).toString(),
   keywords: p.discipline.map(L).join(', '),
 };
 const ink = (hex: string) => {
@@ -44,7 +45,7 @@ const ink = (hex: string) => {
   return 0.299 * ((v >> 16) & 255) + 0.587 * ((v >> 8) & 255) + 0.114 * (v & 255) > 150 ? '#0e0e0c' : '#edeae3';
 };
 ---
-<Base lang={lang} title={L(p.title)} description={`${L(p.subtitle)}. ${L(p.intro[0])}`.slice(0, 158)} image={`/img/${p.hero.id}-1280.webp`} accent={p.accent} jsonld={jsonld} type="article">
+<Base lang={lang} title={L(p.title)} description={`${L(p.subtitle)}. ${L(p.intro[0])}`.slice(0, 158)} image={image(p.hero.id).src} accent={p.accent} jsonld={jsonld} type="article">
   <article class="project">
     <header class="p-hero wrap">
       <nav class="p-hero__crumbs label" aria-label={ui.breadcrumb[lang]}>
@@ -115,7 +116,7 @@ const ink = (hex: string) => {
 </Base>
 
 <style>
-  .p-hero { padding-top: clamp(96px, 14vh, 160px); padding-bottom: var(--s-7); display: grid; gap: var(--s-5); }
+  .p-hero { padding-top: var(--page-top); padding-bottom: var(--s-7); display: grid; gap: var(--s-5); }
   .p-hero__crumbs { display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: center; }
   .p-hero__crumbs .link { min-height: 0; }
   .p-hero__title { overflow-wrap: anywhere; }

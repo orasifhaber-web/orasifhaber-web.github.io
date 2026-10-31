@@ -5,6 +5,7 @@ import Base from '../layouts/Base.astro';
 import WorkGrid from '../components/WorkGrid.astro';
 import CategoryNav from '../components/CategoryNav.astro';
 import { categories, inCategory, type Category } from '../data/projects';
+import { image } from '../lib/img';
 import { site } from '../data/site';
 import { ui, url, fwd, type Lang } from '../i18n';
 
@@ -22,7 +23,7 @@ const jsonld = {
   hasPart: items.map((p) => ({ '@type': 'CreativeWork', name: p.title[lang], url: new URL(url(lang, `/work/${p.slug}/`), Astro.site).toString() })),
 };
 ---
-<Base lang={lang} title={c.title[lang]} description={c.intro[lang]} image={`/img/${items[0].cover.id}-1280.webp`} jsonld={jsonld}>
+<Base lang={lang} title={c.title[lang]} description={c.intro[lang]} image={image(items[0].cover.id).src} jsonld={jsonld}>
   <section class="ca-hero wrap">
     <nav class="label ca-hero__crumbs" aria-label={ui.breadcrumb[lang]}>
       <a href={url(lang, '/') + '#work'} class="link">{ui.work[lang]}</a>
@@ -48,7 +49,7 @@ const jsonld = {
 </Base>
 
 <style>
-  .ca-hero { padding-top: clamp(120px, 20vh, 220px); padding-bottom: var(--s-7); display: grid; gap: var(--s-5); }
+  .ca-hero { padding-top: var(--page-top); padding-bottom: var(--s-7); display: grid; gap: var(--s-5); }
   .ca-grid { padding-top: var(--s-5); }
   .ca-hero__crumbs { display: flex; gap: var(--s-3); align-items: center; }
   .ca-hero__crumbs .link { min-height: 0; }
