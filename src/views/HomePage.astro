@@ -34,7 +34,7 @@ const [l1, l2] = ui.nameLines[lang];
 
   <!-- the work, one section per category (not all twelve projects at once) -->
   <div id="work">
-    {categories.map((c) => <CategorySection lang={lang} c={c} />)}
+    {categories.map((c, n) => <CategorySection lang={lang} c={c} n={n} />)}
   </div>
 
   <section class="about-pre section wrap grid" aria-labelledby="about-pre-title">

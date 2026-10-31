@@ -9,11 +9,12 @@ interface Props {
   class?: string;
   fit?: 'cover' | 'contain';
   ratio?: string; // force an aspect ratio (crop); default is the image's own
+  focus?: string; // object-position for that crop, e.g. '50% 0%' keeps the top
   reveal?: boolean;
   i?: number;
   style?: string;
 }
-const { id, alt, sizes = '100vw', eager = false, class: cls = '', fit = 'cover', ratio, reveal = true, i = 0, style = '' } = Astro.props;
+const { id, alt, sizes = '100vw', eager = false, class: cls = '', fit = 'cover', ratio, focus, reveal = true, i = 0, style = '' } = Astro.props;
 const img = image(id);
 const ar = ratio ?? `${img.w} / ${img.h}`;
 ---
@@ -32,5 +33,6 @@ const ar = ratio ?? `${img.w} / ${img.h}`;
     loading={eager ? 'eager' : 'lazy'}
     fetchpriority={eager ? 'high' : undefined}
     decoding="async"
+    style={focus ? `object-position:${focus}` : undefined}
   />
 </div>

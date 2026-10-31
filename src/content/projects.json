@@ -32,10 +32,10 @@
     ],
     "accent": "#9DAE62",
     "cover": {
-      "id": "01/artwork",
+      "id": "01/cover",
       "alt": {
-        "he": "עטיפת האלבום Codex Saltus: ישויות עץ עולות מתוך ספר פתוח בזוהר ירוק, מתחת לכותרת בכתב גותי.",
-        "en": "Codex Saltus album cover: wooden forest entities rising out of an open book, glowing green, beneath the title in blackletter type."
+        "he": "עטיפת Codex Saltus — XXV Annorum Sum על רקע יער כהה ומטושטש.",
+        "en": "Codex Saltus — XXV Annorum Sum album cover set against a blurred dark forest."
       }
     },
     "hero": {
@@ -327,10 +327,10 @@
     ],
     "accent": "#F2A23A",
     "cover": {
-      "id": "12/03",
+      "id": "12/05",
       "alt": {
-        "he": "שני פוסטרי אירועים של שוק פתח תקווה: ערב בירה ללא תחתית וג׳אם סשן, באיורי כתמי דיו.",
-        "en": "Two Shuk Petah Tikva event posters: bottomless beer night and a jam session, with ink-splash illustrations."
+        "he": "הלוגו של שוק פתח תקווה: המילה ״שוק״ עם קצף בירה שעולה מהאותיות.",
+        "en": "Shuk Petah Tikva logo: the Hebrew word “Shuk” with beer foam rising from the letters."
       }
     },
     "hero": {
@@ -538,7 +538,8 @@
       "alt": {
         "he": "פוסטר הליינאפ של Shikingim Aviv Edition על נוף סוריאליסטי של פנים מגולפות באבן וצמחים בטורקיז.",
         "en": "Shikingim Aviv Edition line-up poster over a surreal landscape of carved stone faces and teal plants."
-      }
+      },
+      "focus": "50% 0%"
     },
     "hero": {
       "id": "03/01",
@@ -620,7 +621,8 @@
       "alt": {
         "he": "פוסטר הליינאפ של Shikingim Winter Edition: טוטמי אבן וחייזרים ירוקים סביב שומר קטן עם קרניים.",
         "en": "Shikingim Winter Edition line-up poster: stone totems and green aliens around a small horned guardian."
-      }
+      },
+      "focus": "50% 0%"
     },
     "hero": {
       "id": "04/01",
@@ -1068,10 +1070,10 @@
     ],
     "accent": "#3A9BE0",
     "cover": {
-      "id": "06/03",
+      "id": "06/01",
       "alt": {
-        "he": "שלט חוצות של מי ישראל: אסלה מצוירת כועסת מלאה במגבונים, באזהרה לא לזרוק אותם לאסלה.",
-        "en": "Mey Israel billboard: an angry cartoon toilet stuffed with wipes, warning against throwing them in the toilet."
+        "he": "הלוגו של מי ישראל: טיפת מים וגלים עם הכיתוב בעברית.",
+        "en": "Mey Israel logo: a water drop and waves with the Hebrew wordmark."
       }
     },
     "hero": {
@@ -1166,10 +1168,10 @@
     ],
     "accent": "#D23A48",
     "cover": {
-      "id": "11/03",
+      "id": "11/01",
       "alt": {
-        "he": "פוסטר רחוב של כולנו: ידיים מחבקות לב אדום, עם הכיתוב ״תמיד כאן בשבילכם!״.",
-        "en": "Kulanoo street poster: hands embracing a red heart, with the line “Always here for you!”."
+        "he": "הלוגו של כולנו: לב אדום שמוחזק בידי שלוש דמויות, לצד הכיתוב.",
+        "en": "Kulanoo logo: a red heart held by three figures, beside the Hebrew wordmark."
       }
     },
     "hero": {

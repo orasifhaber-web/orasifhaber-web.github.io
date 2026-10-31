@@ -292,5 +292,23 @@
   "categoryPage": {
     "he": "לעמוד הקטגוריה",
     "en": "Category page"
+  },
+  "carousel": {
+    "prev": {
+      "he": "הקודם",
+      "en": "Previous"
+    },
+    "next": {
+      "he": "הבא",
+      "en": "Next"
+    },
+    "pause": {
+      "he": "עצירה",
+      "en": "Pause"
+    },
+    "play": {
+      "he": "הפעלה",
+      "en": "Play"
+    }
   }
 }

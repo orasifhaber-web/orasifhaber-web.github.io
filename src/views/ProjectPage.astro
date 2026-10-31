@@ -102,7 +102,7 @@ const ink = (hex: string) => {
         <span class="label">{nextCat ? `${ui.nextCategory[lang]}: ${nextCat.title[lang]}` : ui.next[lang]}</span>
         <span class="p-next__row">
           <span class="display p-next__title">{L(next.title)}</span>
-          <span class="p-next__thumb"><Img id={next.cover.id} alt="" sizes="320px" reveal={false} ratio="4 / 5" /></span>
+          <span class="p-next__thumb"><Img id={next.cover.id} alt="" sizes="320px" reveal={false} ratio={categoryOf(next).frame} focus={next.cover.focus} /></span>
         </span>
         <span class="muted">{L(next.subtitle)}</span>
       </a>

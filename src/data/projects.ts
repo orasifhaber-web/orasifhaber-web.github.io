@@ -7,7 +7,7 @@ import type { T } from '../i18n';
 import projectData from '../content/projects.json';
 import categoryData from '../content/categories.json';
 
-export type Img = { id: string; alt: T };
+export type Img = { id: string; alt: T; focus?: string }; // focus: object-position when the image is cropped
 export type Detail = { label: T; body: T; colors?: string[] };
 
 export type Project = {
@@ -28,7 +28,8 @@ export type Project = {
   behance: string;
 };
 
-export type Category = { slug: string; title: T; intro: T };
+// frame: the one aspect ratio every cover in the category is shown at on the home page ('1 / 1', '10 / 7')
+export type Category = { slug: string; title: T; intro: T; frame: string };
 
 const all = projectData as Project[];
 export const categories = categoryData as Category[];
