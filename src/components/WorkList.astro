@@ -2,7 +2,7 @@
 // Work list on /work/ and the category pages — every project uses the same template and the same scroll behaviour:
 // a sticky info column beside the cover image, which unmasks as it enters the viewport. Numbered within the list.
 import Img from './Img.astro';
-import type { Project } from '../data/projects';
+import { coverFrame, type Project } from '../data/projects';
 import { ui, url, fwd, type Lang } from '../i18n';
 
 interface Props { lang: Lang; items: Project[]; level?: 2 | 3 } // level: heading level of the project titles
@@ -12,7 +12,7 @@ const n = (k: number) => String(k + 1).padStart(2, '0');
 ---
 <ol class="work__list" role="list">
     {items.map((p, k) => (
-      <li class="w wrap" style={`--wa:${p.accent}`}>
+      <li class="w wrap lit" style={`--wa:${p.accent}`}>
         <div class="w__info">
           <p class="label w__no" data-reveal><bdi dir="ltr">{n(k)} / {n(items.length - 1)}</bdi></p>
           <H class="h1 w__title" data-reveal style="--i:1">
@@ -29,7 +29,7 @@ const n = (k: number) => String(k + 1).padStart(2, '0');
           </a>
         </div>
         <a href={url(lang, `/work/${p.slug}/`)} class="w__media" tabindex="-1" aria-hidden="true">
-          <Img id={p.cover.id} alt="" sizes="(min-width: 900px) 62vw, 92vw" class="w__img" />
+          <Img id={p.cover.id} alt="" ratio={coverFrame} focus={p.cover.focus} sizes="(min-width: 900px) 62vw, 92vw" class="w__img" />
         </a>
       </li>
     ))}
@@ -51,9 +51,10 @@ const n = (k: number) => String(k + 1).padStart(2, '0');
   .w__meta dd { color: var(--ink-2); font-size: var(--t-small); }
   .w__cta { justify-self: start; }
 
-  .w__media { display: flex; justify-content: center; align-items: flex-start; background: var(--bg-2); padding: clamp(var(--s-4), 3vw, var(--s-7)); }
+  /* every cover in Behance's frame, edge to edge — the same rectangle for every project */
+  .w__media { display: block; }
   .w__media :global(.w__img) { width: 100%; }
-  .w__media :global(img) { transition: transform 1.2s var(--ease-out), clip-path 1.1s var(--ease-out); }
+  .w__media :global(img) { transition: transform 1.2s var(--ease-out), clip-path 1.1s var(--ease-out), filter 0.7s var(--ease-out); }
   .w__media:hover :global(img) { transform: scale(1.02); }
 
   /* Mobile: image first, then the info */
@@ -61,10 +62,7 @@ const n = (k: number) => String(k + 1).padStart(2, '0');
 
   @media (min-width: 900px) {
     .w { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); padding-block: var(--s-9); }
-    .w__media { order: 0; grid-column: 5 / -1; min-height: 70svh; align-items: center; }
-    /* Same rule for every cover: as large as fits, never taller than the viewport */
-    .w__media :global(.w__img) { width: auto; max-width: 100%; max-height: 78svh; aspect-ratio: auto !important; }
-    .w__media :global(.w__img img) { width: auto; max-width: 100%; max-height: 78svh; height: auto; }
+    .w__media { order: 0; grid-column: 5 / -1; align-self: start; }
     .w__info { grid-column: 1 / span 4; grid-row: 1; position: sticky; top: 96px; align-self: start; padding-inline-end: var(--s-5); }
   }
 </style>

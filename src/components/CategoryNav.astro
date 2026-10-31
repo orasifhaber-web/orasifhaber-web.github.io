@@ -1,15 +1,15 @@
 ---
-// The category links on /work/ and on every category page: "All" plus one link per category, each with its count.
+// The category links on /work/ and on every category page: "All" plus one link per category.
 // Plain links to real pages (shareable, the back button works, crawlable) rather than a JS filter. The row wraps
 // instead of scrolling, so no category is ever hidden.
-import { categories, inCategory, projects } from '../data/projects';
+import { categories } from '../data/projects';
 import { ui, url, type Lang } from '../i18n';
 
 interface Props { lang: Lang; current?: string } // current: a category slug; none = "All"
 const { lang, current } = Astro.props;
 const links = [
-  { href: url(lang, '/work/'), label: ui.allWork[lang], n: projects.length, active: !current },
-  ...categories.map((c) => ({ href: url(lang, `/work/${c.slug}/`), label: c.title[lang], n: inCategory(c.slug).length, active: current === c.slug })),
+  { href: url(lang, '/work/'), label: ui.allWork[lang], active: !current },
+  ...categories.map((c) => ({ href: url(lang, `/work/${c.slug}/`), label: c.title[lang], active: current === c.slug })),
 ];
 ---
 <nav class="cnav" aria-label={ui.categories[lang]}>
@@ -17,7 +17,7 @@ const links = [
     {links.map((l) => (
       <li>
         <a href={l.href} class="cnav__link" aria-current={l.active ? 'page' : undefined}>
-          <span class="cnav__t">{l.label}</span><sup class="cnav__n">{l.n}</sup>
+          <span class="cnav__t">{l.label}</span>
         </a>
       </li>
     ))}
@@ -46,5 +46,4 @@ const links = [
   /* the current page: full ink plus a signal-colour underline, so it never relies on colour alone */
   .cnav__link[aria-current='page'] { color: var(--ink); }
   .cnav__link[aria-current='page'] .cnav__t { text-decoration-color: var(--signal); }
-  .cnav__n { font-family: var(--f-mono); font-size: 0.75rem; margin-inline-start: 0.3em; align-self: flex-start; padding-top: 0.6em; }
 </style>

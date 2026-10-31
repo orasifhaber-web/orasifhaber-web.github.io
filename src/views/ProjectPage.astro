@@ -6,7 +6,7 @@ import '@fontsource/pirata-one/400.css';
 import Base from '../layouts/Base.astro';
 import Img from '../components/Img.astro';
 import Gallery from '../components/Gallery.astro';
-import { projects, inCategory, categoryOf, type Project } from '../data/projects';
+import { projects, inCategory, categoryOf, coverFrame, type Project } from '../data/projects';
 import { site } from '../data/site';
 import { ui, url, fwd, back, type Lang } from '../i18n';
 
@@ -48,7 +48,7 @@ const ink = (hex: string) => {
   <article class="project">
     <header class="p-hero wrap">
       <nav class="p-hero__crumbs label" aria-label={ui.breadcrumb[lang]}>
-        <a href={url(lang, '/work/')} class="link">{ui.work[lang]}</a>
+        <a href={url(lang, '/') + '#work'} class="link">{ui.work[lang]}</a>
         <span aria-hidden="true">/</span>
         <a href={catHref} class="link">{cat.title[lang]}</a>
         <span aria-hidden="true">/</span>
@@ -98,18 +98,17 @@ const ink = (hex: string) => {
     </section>
 
     <nav class="p-next" aria-label={ui.moreProjects[lang]}>
-      <a href={url(lang, `/work/${next.slug}/`)} class="p-next__link wrap" style={`--next-accent:${next.accent}`}>
+      <a href={url(lang, `/work/${next.slug}/`)} class="p-next__link wrap lit" style={`--next-accent:${next.accent}`}>
         <span class="label">{nextCat ? `${ui.nextCategory[lang]}: ${nextCat.title[lang]}` : ui.next[lang]}</span>
         <span class="p-next__row">
           <span class="display p-next__title">{L(next.title)}</span>
-          <span class="p-next__thumb"><Img id={next.cover.id} alt="" sizes="320px" reveal={false} ratio={categoryOf(next).frame} focus={next.cover.focus} /></span>
+          <span class="p-next__thumb"><Img id={next.cover.id} alt="" sizes="320px" reveal={false} ratio={coverFrame} focus={next.cover.focus} /></span>
         </span>
         <span class="muted">{L(next.subtitle)}</span>
       </a>
       <div class="wrap p-next__aux">
         <a href={url(lang, `/work/${prev.slug}/`)} class="label link"><span aria-hidden="true">{back(lang)}</span> {L(prev.title)}</a>
-        <a href={catHref} class="label link">{cat.title[lang]}</a>
-        <a href={url(lang, '/work/')} class="label link">{ui.allProjects[lang]} <span aria-hidden="true">{fwd(lang)}</span></a>
+        <a href={catHref} class="label link">{cat.title[lang]} <span aria-hidden="true">{fwd(lang)}</span></a>
       </div>
     </nav>
   </article>

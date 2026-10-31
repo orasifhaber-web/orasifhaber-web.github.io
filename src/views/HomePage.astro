@@ -1,10 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
-import CategorySection from '../components/CategorySection.astro';
+import CategoryWheel from '../components/CategoryWheel.astro';
 import PortraitReveal from '../components/PortraitReveal.astro';
 import HeroCosmos from '../components/HeroCosmos.astro';
 import { site } from '../data/site';
-import { categories } from '../data/projects';
 import { ui, url, fwd, type Lang } from '../i18n';
 
 interface Props { lang: Lang }
@@ -12,8 +11,11 @@ const { lang } = Astro.props;
 const [l1, l2] = ui.nameLines[lang];
 ---
 <Base lang={lang}>
+  <!-- The home page as stacked "pages": each one rises over the one before, in its own tone, while the one beneath dims
+       and sinks back a little — and each arrives its own way (data-enter, see the script below). -->
+  <div class="hp">
   <!-- Poster hero: the cut-out portrait stands beside (and slightly in front of) the name; hover / tap reveals the artworks -->
-  <section class="hero" aria-labelledby="hero-title">
+  <section class="hero hp__panel hp__panel--stick" aria-labelledby="hero-title">
     <div class="hero__top label">
       <span>{ui.role[lang]} — {ui.location[lang]}</span>
       <span class="hero__years">{ui.hero.years[lang]}</span>
@@ -26,22 +28,27 @@ const [l1, l2] = ui.nameLines[lang];
     <div class="hero__bottom">
       <p class="hero__statement">{ui.hero.statement[lang]}</p>
       <ul class="hero__cta">
-        <li><a href="#work" class="label link">{ui.hero.toWork[lang]} <span class="arrow" aria-hidden="true">↓</span></a></li>
-        <li><a href="#contact" class="label link">{ui.hero.toContact[lang]} <span class="arrow" aria-hidden="true">{fwd(lang)}</span></a></li>
+        <li><a href="#work" class="btn btn--primary">{ui.hero.toWork[lang]} <span class="arrow" aria-hidden="true">↓</span></a></li>
+        <li><a href="#contact" class="btn btn--ghost">{ui.hero.toContact[lang]} <span class="arrow" aria-hidden="true">{fwd(lang)}</span></a></li>
       </ul>
     </div>
+    <div class="hp__shade" aria-hidden="true"></div>
   </section>
 
-  <!-- the work, one section per category (not all twelve projects at once) -->
-  <div id="work">
-    {categories.map((c, n) => <CategorySection lang={lang} c={c} n={n} />)}
-  </div>
+  <!-- the work: a wheel of categories, one card each (not every project at once) -->
+  <section id="work" class="hp__panel hp__panel--stick hp__work" data-enter="melt" aria-labelledby="work-title">
+    <div class="wrap"><CategoryWheel lang={lang} /></div>
+    <a href="#about" class="label hp__next">{ui.about.label[lang]} <span aria-hidden="true">↓</span></a>
+    <div class="hp__shade" aria-hidden="true"></div>
+  </section>
+  <!-- a pause: the portfolio stays put for most of a screen of scrolling before the next page starts to rise -->
+  <div class="hp__dwell" aria-hidden="true"></div>
 
-  <section class="about-pre section wrap grid" aria-labelledby="about-pre-title">
+  <section id="about" class="about-pre hp__panel hp__about section wrap grid" data-enter="tilt" aria-labelledby="about-pre-title">
     <h2 id="about-pre-title" class="label about-pre__label">{ui.about.label[lang]}</h2>
     <div class="about-pre__body">
       <p class="lead" data-reveal>{ui.about.preview[lang]}</p>
-      <a href={url(lang, '/about/')} class="label link" data-reveal style="--i:1">{ui.about.more[lang]} <span class="arrow" aria-hidden="true">{fwd(lang)}</span></a>
+      <a href={url(lang, '/about/')} class="btn btn--ghost" data-reveal style="--i:1">{ui.about.more[lang]} <span class="arrow" aria-hidden="true">{fwd(lang)}</span></a>
     </div>
     <div class="about-pre__with">
       <p class="label">{ui.about.workedWith[lang]}</p>
@@ -50,7 +57,86 @@ const [l1, l2] = ui.nameLines[lang];
       </ul>
     </div>
   </section>
+  </div>
 </Base>
+
+<script>
+  // Stacked pages: a panel that is taller than the screen sticks by its foot, so all of it can be read before the next
+  // one covers it; as the next panel rises, the one beneath dims and sinks back a little (scrubbed to the scroll).
+  // Each page arrives its own way, scrubbed too:
+  //  · melt — opening → portfolio: the page slides up with a soft, feathered top edge that melts into the opening,
+  //    and the wheel inside floats up a little and fades in; done by 80% of the way, so it is whole while it settles;
+  //  · tilt — portfolio → about: the page rises with a gently slanted edge, high on the reading side, that levels out.
+  // After the portfolio comes a pause (.hp__dwell): it stays put for a while so there is time to choose a category.
+  // Nothing moves or clips with reduced motion; everything is undone before a page swap.
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(ScrollTrigger);
+
+  let mm: gsap.MatchMedia | undefined;
+  let ro: ResizeObserver | undefined;
+
+  const setup = () => {
+    const panels = [...document.querySelectorAll<HTMLElement>('.hp__panel--stick')];
+    if (!panels.length) return;
+    const stick = () => panels.forEach((p) => { p.style.top = `${Math.min(0, innerHeight - p.offsetHeight)}px`; });
+    ro = new ResizeObserver(() => { stick(); ScrollTrigger.refresh(); });
+    panels.forEach((p) => ro!.observe(p));
+    stick();
+
+    mm = gsap.matchMedia();
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      panels.forEach((p) => {
+        let next = p.nextElementSibling as HTMLElement | null;
+        while (next && !next.classList.contains('hp__panel')) next = next.nextElementSibling as HTMLElement | null;
+        if (!next) return;
+        gsap.timeline({ scrollTrigger: { trigger: next, start: 'top bottom', end: 'top top', scrub: true } })
+          .to(p.querySelector('.hp__shade'), { opacity: 0.45, ease: 'none' }, 0)
+          .to(p, { scale: 0.97, ease: 'none' }, 0);
+      });
+
+      const rtl = document.documentElement.dir === 'rtl';
+      const inOut = (t: number) => -(Math.cos(Math.PI * t) - 1) / 2;
+      const entrances: Record<string, (el: HTMLElement, t: number) => void> = {
+        melt: (el, t) => {
+          const k = inOut(Math.min(1, t / 0.8));
+          // the top edge feathers over 260px at first and sharpens as the page settles
+          const feather = (1 - k) * 260;
+          el.style.maskImage = el.style.webkitMaskImage = k >= 1 ? '' : `linear-gradient(to bottom, transparent, #000 ${feather}px)`;
+          const inner = el.querySelector<HTMLElement>(':scope > .wrap');
+          if (inner) {
+            inner.style.transform = k >= 1 ? '' : `translateY(${(1 - k) * 48}px)`;
+            inner.style.opacity = k >= 1 ? '' : String(0.25 + 0.75 * k);
+          }
+        },
+        tilt: (el, t) => {
+          // the slanted leading edge: 12% lower on the far side at first, level by the end
+          const drop = (1 - inOut(t)) * 12;
+          el.style.clipPath = t >= 1 ? '' : rtl
+            ? `polygon(0 ${drop}%, 100% 0, 100% 100%, 0 100%)`
+            : `polygon(0 0, 100% ${drop}%, 100% 100%, 0 100%)`;
+        },
+      };
+      const entering = [...document.querySelectorAll<HTMLElement>('.hp [data-enter]')];
+      entering.forEach((el) => {
+        const enter = entrances[el.dataset.enter!];
+        if (!enter) return;
+        el.classList.add(`is-${el.dataset.enter}`);
+        const run = (self: ScrollTrigger) => enter(el, self.progress);
+        ScrollTrigger.create({ trigger: el, start: 'top bottom', end: 'top top', onUpdate: run, onRefresh: run });
+      });
+      return () => entering.forEach((el) => {
+        el.classList.remove(`is-${el.dataset.enter}`);
+        el.style.clipPath = el.style.maskImage = el.style.webkitMaskImage = '';
+        el.querySelector<HTMLElement>(':scope > .wrap')?.removeAttribute('style');
+      });
+    });
+  };
+  const teardown = () => { mm?.revert(); ro?.disconnect(); mm = undefined; ro = undefined; };
+
+  document.addEventListener('astro:page-load', setup);
+  document.addEventListener('astro:before-swap', teardown);
+</script>
 
 <style>
   /* ---------- hero (poster) ----------
@@ -98,7 +184,7 @@ const [l1, l2] = ui.nameLines[lang];
   .hero__bottom { position: relative; z-index: 3; display: grid; gap: var(--s-5); padding: var(--s-6) var(--margin) var(--s-8); }
   .hero__statement { font-size: clamp(1.25rem, 2.3vw, 2.2rem); line-height: 1.25; letter-spacing: -0.015em; max-width: 30ch; font-variation-settings: 'wdth' 92; }
   :global([lang='he']) .hero__statement { letter-spacing: 0; line-height: 1.35; }
-  .hero__cta { display: flex; gap: var(--s-6); }
+  .hero__cta { display: flex; flex-wrap: wrap; gap: var(--s-3); }
 
   @media (min-width: 900px) {
     .hero {
@@ -146,10 +232,51 @@ const [l1, l2] = ui.nameLines[lang];
     @keyframes fade { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
   }
 
+  /* ---------- stacked pages ---------- */
+  .hp__panel { position: relative; background: var(--bg); }
+  .hp__panel--stick { position: sticky; top: 0; transform-origin: 50% 0; }
+  .hp__shade { position: absolute; inset: 0; z-index: 20; background: #000; opacity: 0; pointer-events: none; }
+  /* the light line now marks one passage only: from the last page into the contact */
+  :global(main:has(.hp) + .contact)::before {
+    content: '';
+    position: absolute; inset: 0 0 auto; height: 160px; z-index: 0;
+    background:
+      linear-gradient(90deg, transparent 4%, rgb(255 246 226) 50%, transparent 96%) top / 100% 2px no-repeat,
+      linear-gradient(90deg, transparent 10%, rgb(255 240 210 / 0.22) 50%, transparent 90%) top / 100% 18px no-repeat,
+      radial-gradient(55% 100% at 50% 0, rgb(255 240 210 / 0.11), transparent 72%);
+    -webkit-mask: linear-gradient(to bottom, #000 2px, rgb(0 0 0 / 0.6) 3px, transparent);
+    mask: linear-gradient(to bottom, #000 2px, rgb(0 0 0 / 0.6) 3px, transparent);
+    pointer-events: none;
+  }
+  :global(main:has(.hp) + .contact) { position: relative; background: var(--bg); }
+  /* the pause after the portfolio: empty, see-through scroll room while the portfolio stays stuck in place */
+  .hp__dwell { height: 75svh; pointer-events: none; }
+  /* a quiet way on, at the foot of the portfolio */
+  .hp__next {
+    position: absolute; z-index: 2; left: 50%; bottom: var(--s-5); transform: translateX(-50%);
+    display: inline-flex; align-items: center; gap: var(--s-2); min-height: 44px; padding-inline: var(--s-3);
+    color: var(--ink-3); transition: color var(--d-base) var(--ease-out);
+  }
+  .hp__next:hover, .hp__next:focus-visible { color: var(--ink); }
+  @media (prefers-reduced-motion: no-preference) {
+    .hp__next span { display: inline-block; animation: hp-nudge 2.6s var(--ease-in-out) infinite; }
+    @keyframes hp-nudge { 0%, 60%, 100% { transform: none; } 30% { transform: translateY(4px); } }
+  }
+  /* the work page: a stage of its own (the wheel lights it in the colour of the category at its centre) */
+  .hp__work {
+    min-height: 100svh;
+    display: grid; align-content: center;
+    padding-block: calc(72px + var(--s-6)) calc(var(--s-7) + 44px);
+    background: #12110e;
+    overflow: hidden;
+  }
+  .hp__work > .wrap { position: relative; z-index: 1; }
+  .hp__about { background: #151411; z-index: 1; }
+
   .about-pre { row-gap: var(--s-6); }
   :where(.about-pre > *) { grid-column: 1 / -1; }
   .about-pre__body { display: grid; gap: var(--s-5); max-width: 860px; }
-  .about-pre__body .link { justify-self: start; }
+  .about-pre__body .btn { justify-self: start; }
   .about-pre__list { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-5); margin-top: var(--s-3); font-family: var(--f-display); font-weight: 700; font-variation-settings: 'wdth' 62; text-transform: uppercase; font-size: clamp(1.6rem, 3vw, 2.6rem); line-height: 1; }
   .about-pre__list li:not(:last-child)::after { content: '/'; margin-inline-start: var(--s-5); color: var(--ink-3); font-weight: 400; }
   @media (min-width: 900px) {

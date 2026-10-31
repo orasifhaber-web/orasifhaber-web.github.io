@@ -25,11 +25,11 @@ const jsonld = {
 <Base lang={lang} title={c.title[lang]} description={c.intro[lang]} image={`/img/${items[0].cover.id}-1280.webp`} jsonld={jsonld}>
   <section class="ca-hero wrap">
     <nav class="label ca-hero__crumbs" aria-label={ui.breadcrumb[lang]}>
-      <a href={url(lang, '/work/')} class="link">{ui.work[lang]}</a>
+      <a href={url(lang, '/') + '#work'} class="link">{ui.work[lang]}</a>
       <span aria-hidden="true">/</span>
       <span aria-current="page">{c.title[lang]}</span>
     </nav>
-    <h1 class="h1 ca-hero__title">{c.title[lang]}<sup class="ca-hero__n">{items.length}</sup></h1>
+    <h1 class="h1 ca-hero__title">{c.title[lang]}</h1>
     <p class="lead ca-hero__intro">{c.intro[lang]}</p>
     <CategoryNav lang={lang} current={c.slug} />
   </section>
@@ -50,7 +50,6 @@ const jsonld = {
   .ca-hero__crumbs { display: flex; gap: var(--s-3); align-items: center; }
   .ca-hero__crumbs .link { min-height: 0; }
   .ca-hero__title { display: flex; align-items: flex-start; }
-  .ca-hero__n { font-family: var(--f-mono); font-size: 1rem; font-weight: 400; letter-spacing: 0; margin-inline-start: 0.4em; color: var(--ink-3); }
   .ca-hero__intro { max-width: 34ch; color: var(--ink-2); }
   .ca-next { margin-top: var(--section); border-top: 1px solid var(--line); }
   .ca-next__link { display: grid; gap: var(--s-4); padding-block: var(--s-8); }

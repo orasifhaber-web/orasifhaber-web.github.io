@@ -28,8 +28,11 @@ export type Project = {
   behance: string;
 };
 
-// frame: the one aspect ratio every cover in the category is shown at on the home page ('1 / 1', '10 / 7')
-export type Category = { slug: string; title: T; intro: T; frame: string };
+// lead: the project whose cover stands for the category on the home page's category wheel
+export type Category = { slug: string; title: T; intro: T; lead: string };
+
+/** Every cover on the site is shown in Behance's project-cover frame (808 × 632); `cover.focus` picks what a crop keeps. */
+export const coverFrame = '808 / 632';
 
 const all = projectData as Project[];
 export const categories = categoryData as Category[];
@@ -57,10 +60,12 @@ export const projects = categories.flatMap((c) => inCategory(c.slug));
 
 export const bySlug = (slug: string) => projects.find((p) => p.slug === slug);
 export const categoryOf = (p: Project) => categories.find((c) => c.slug === p.category)!;
+export const leadOf = (c: Category) => bySlug(c.lead)!;
 
 // Fail the build on content mistakes the CMS can't prevent.
 for (const p of all) if (!categories.some((c) => c.slug === p.category)) throw new Error(`Project "${p.slug}" has an unknown category "${p.category}"`);
 for (const c of categories) {
   if (all.some((p) => p.slug === c.slug)) throw new Error(`Category "${c.slug}" has the same address as a project (/work/${c.slug}/)`);
   if (!all.some((p) => p.category === c.slug)) throw new Error(`Category "${c.slug}" has no projects`);
+  if (!all.some((p) => p.slug === c.lead && p.category === c.slug)) throw new Error(`Category "${c.slug}": its lead "${c.lead}" is not one of its projects`);
 }

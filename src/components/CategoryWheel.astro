@@ -1,0 +1,159 @@
+---
+// Home page: the work as one wheel of categories instead of every project at once — so the page stays short and anyone
+// after one kind of work picks it in a second. Each card is the category's lead project (`lead` in categories.json),
+// in the site's single cover frame, a little dimmed, with the category's name set large on it. The card at the centre
+// "switches on" — a short neon-tube flicker up to light — as it arrives, and goes fully bright under the pointer.
+// Clicking the centre card opens the category page; a side card comes to the centre. Under the wheel: the category's
+// line and which project the picture is from, then the controls. The rack itself is <cover-flow> (lib/cover-flow.ts).
+import Img from './Img.astro';
+import { categories, leadOf, coverFrame } from '../data/projects';
+import { ui, url, fwd, back, dir, type Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const start = Math.floor((categories.length - 1) / 2);
+const [fw, fh] = coverFrame.split('/').map(Number);
+---
+<div class="cw">
+  <div class="cw__head">
+    <h2 id="work-title" class="label cw__title">{ui.work[lang]}</h2>
+  </div>
+
+  <cover-flow class="cf" data-start={start} data-rtl={dir(lang) === 'rtl' ? '' : undefined} style={`--frame:${(fw / fh).toFixed(4)}`} role="region" aria-roledescription="carousel" aria-labelledby="work-title">
+    <div class="cf__stage">
+      <ul class="cf__track" role="list">
+        {categories.map((c) => {
+          const p = leadOf(c);
+          return (
+            <li class="cf__card" style={`--wa:${p.accent}`} data-title={c.intro[lang]} data-sub={`${ui.pictured[lang]}: ${p.title[lang]}`}>
+              <a href={url(lang, `/work/${c.slug}/`)} class="cf__link cw__link" draggable="false" aria-label={`${c.title[lang]} — ${c.intro[lang]}`}>
+                <Img id={p.cover.id} alt="" reveal={false} ratio={coverFrame} focus={p.cover.focus} sizes="(min-width: 900px) 40vw, 86vw" class="cw__img" />
+                <span class="cw__name" aria-hidden="true">{c.title[lang]}</span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+
+    <div class="cf__bar" aria-hidden="true">
+      <p class="cf__cap">
+        <span class="cf__name">{categories[start].intro[lang]}</span>
+        <span class="label cf__sub">{ui.pictured[lang]}: {leadOf(categories[start]).title[lang]}</span>
+      </p>
+      <div class="cf__ctrl">
+        <button type="button" class="cf__btn" data-step="-1" tabindex="-1" title={ui.carousel.prev[lang]}>{back(lang)}</button>
+        <button type="button" class="cf__btn" data-step="1" tabindex="-1" title={ui.carousel.next[lang]}>{fwd(lang)}</button>
+        <button type="button" class="cf__btn cf__play" tabindex="-1" title={ui.carousel.pause[lang]} data-pause={ui.carousel.pause[lang]} data-play={ui.carousel.play[lang]}>
+          <svg class="cf__i-pause" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 2h3v12H4zM9 2h3v12H9z" fill="currentColor" /></svg>
+          <svg class="cf__i-play" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 2l10 6-10 6z" fill="currentColor" /></svg>
+        </button>
+      </div>
+    </div>
+  </cover-flow>
+</div>
+
+<script>
+  import '../lib/cover-flow';
+</script>
+
+<style>
+  .cw { display: grid; gap: var(--s-5); }
+  .cw__head { display: flex; justify-content: space-between; align-items: center; gap: var(--s-5); }
+  .cw__title { color: var(--ink); }
+
+  .cf { display: block; position: relative; isolation: isolate; --card: min(84vw, 380px); transition: --wa 1.4s var(--ease-in-out); }
+  /* ambient light behind the wheel, in the colour of the category at its centre; it shifts as the wheel turns */
+  .cf::before {
+    content: ''; position: absolute; inset: -18% -40% -10%; z-index: -1; pointer-events: none;
+    background: radial-gradient(42% 46% at 50% 42%, color-mix(in srgb, var(--wa) 22%, transparent), transparent 72%);
+  }
+
+  /* no JS: a plain sideways-scrolling row */
+  .cf__stage { margin-inline: calc(-1 * var(--margin)); overflow-x: auto; scrollbar-width: none; }
+  .cf__stage::-webkit-scrollbar { display: none; }
+  .cf__track { display: flex; gap: var(--s-4); padding-inline: var(--margin); }
+  .cf__card { flex: 0 0 auto; width: var(--card); }
+  .cf__bar { display: none; }
+
+  /* the card: the lead project's cover, dimmed, the category name over it */
+  .cw__link { position: relative; display: block; overflow: hidden; }
+  .cw__link :global(img) { -webkit-user-drag: none; user-select: none; filter: brightness(0.42) saturate(0.8); transition: filter 0.6s var(--ease-out); }
+  /* the name sits centred near the foot of the picture, so the middle — where the work usually carries its title or
+     face — stays clear; only a shadow hugging the letters keeps it legible, nothing covers the picture itself */
+  .cw__name {
+    position: absolute; z-index: 2; inset: auto 0 0; height: 30%;
+    display: grid; place-items: center; padding: 0 var(--s-5) var(--s-2); text-align: center;
+    font-family: var(--f-display); font-weight: 800; font-variation-settings: 'wdth' 62; text-transform: uppercase;
+    font-size: clamp(1.8rem, 3.4vw, 3rem); line-height: 0.9; color: var(--ink);
+    text-shadow: 0 1px 2px rgb(0 0 0 / 0.7), 0 2px 12px rgb(0 0 0 / 0.65), 0 0 36px rgb(0 0 0 / 0.55);
+  }
+  :global([lang='he']) .cw__name { font-weight: 700; line-height: 1; }
+
+  /* light on: the centre card switches on as it arrives (a little dimmed still, for the name); fully bright to the touch */
+  .cf__card.is-active .cw__link :global(img) { filter: brightness(0.74) saturate(1); }
+  .cf__card.is-active .cw__link:hover :global(img), .cf__card.is-active .cw__link:focus-visible :global(img) { filter: brightness(1.03) saturate(1.05); }
+  /* the light itself: a warm glow from above that fades in with it */
+  .cw__link :global(.media)::after { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(110% 70% at 50% -10%, rgb(255 242 210 / 0.22), transparent 62%); opacity: 0; transition: opacity 0.8s var(--ease-out); mix-blend-mode: screen; }
+  .cf__card.is-active .cw__link :global(.media)::after { opacity: 0.6; }
+  .cf__card.is-active .cw__link:hover :global(.media)::after { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .cf__card.is-active .cw__link :global(img) { animation: cw-ignite 1s linear both; }
+    @keyframes cw-ignite {
+      0% { filter: brightness(0.42) saturate(0.8); }
+      9% { filter: brightness(0.9) saturate(1); }
+      15% { filter: brightness(0.5) saturate(0.85); }
+      26% { filter: brightness(0.86) saturate(1); }
+      34% { filter: brightness(0.6) saturate(0.9); }
+      62%, 100% { filter: brightness(0.74) saturate(1); }
+    }
+    /* under the pointer the animation gives way to the brighter state */
+    .cf__card.is-active .cw__link:hover :global(img), .cf__card.is-active .cw__link:focus-visible :global(img) { animation: none; }
+  }
+
+  /* the rack */
+  .cf.is-on .cf__stage {
+    overflow: hidden;
+    perspective: calc(var(--card) * 3);
+    padding-block: var(--s-5);
+    cursor: grab;
+    touch-action: pan-y; /* sideways drags are ours; the page keeps its vertical scroll */
+    user-select: none;
+  }
+  .cf.is-dragging .cf__stage { cursor: grabbing; }
+  /* the side cards sit behind the track's plane (negative Z), so the track must not catch their clicks */
+  .cf.is-on .cf__track { position: relative; height: calc(var(--card) / var(--frame, 1)); padding: 0; transform-style: preserve-3d; pointer-events: none; }
+  .cf.is-on .cf__card { position: absolute; top: 0; left: 50%; will-change: transform; pointer-events: auto; }
+  .cf.is-on .cf__card.is-active .cf__link { cursor: pointer; }
+  .cf.is-dragging .cf__link { pointer-events: none; }
+  .cf__link:focus-visible { outline: 2px solid var(--signal); outline-offset: 4px; }
+
+  /* under the centre card: the category's line and where the picture is from, then the controls */
+  .cf.is-on .cf__bar { display: grid; justify-items: center; gap: var(--s-4); text-align: center; }
+  .cf__cap { display: grid; gap: var(--s-2); width: min(100%, calc(var(--card) * 1.1)); min-height: 4.4em; align-content: start; }
+  .cf__name { font-size: var(--t-body); line-height: 1.45; color: var(--ink-2); }
+  .cf__sub { color: var(--ink-3); }
+  @media (prefers-reduced-motion: no-preference) {
+    .cf__cap.is-new > * { animation: cf-cap 0.9s var(--ease-in-out) both; }
+    .cf__cap.is-new > .cf__sub { animation-delay: 80ms; }
+    @keyframes cf-cap { from { opacity: 0; } to { opacity: 1; } }
+  }
+  .cf__ctrl { display: flex; align-items: center; gap: var(--s-2); }
+  .cf__btn {
+    width: 44px; height: 44px;
+    display: grid; place-items: center;
+    border: 1px solid var(--line); border-radius: 50%;
+    background: none; color: var(--ink); font: inherit; font-size: 1.1rem;
+    cursor: pointer;
+    transition: border-color var(--d-fast) var(--ease-out), opacity var(--d-fast) var(--ease-out);
+  }
+  .cf__btn:hover:not(:disabled) { border-color: var(--ink); }
+  .cf__btn:disabled { opacity: 0.3; cursor: default; }
+  .cf__play { margin-inline-start: var(--s-3); }
+  .cf__i-play, .cf__play.is-stopped .cf__i-pause { display: none; }
+  .cf__play.is-stopped .cf__i-play { display: block; }
+
+  @media (min-width: 900px) {
+    .cf { --card: clamp(340px, 34vw, 580px); }
+  }
+</style>

@@ -424,7 +424,8 @@
       "alt": {
         "he": "פוסטר Changa Crew Russian Edition: שלושה דובים באימוניות אדומות מנגנים בסינתיסייזרים ליד אגם בלילה.",
         "en": "Changa Crew Russian Edition poster: three bears in red tracksuits playing synthesizers by a lake at night."
-      }
+      },
+      "focus": "50% 0%"
     },
     "hero": {
       "id": "02/01",

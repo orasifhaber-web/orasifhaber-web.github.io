@@ -9,7 +9,7 @@
       "he": "עולם חזותי שלם לאירוע אחד: פוסטר ליינאפ, פוסטים לרשתות ומיתוג המסיבה.",
       "en": "A whole visual world for one event: the line-up poster, social posts and the party’s branding."
     },
-    "frame": "1 / 1"
+    "lead": "changa-crew-russian-edition"
   },
   {
     "slug": "posters-covers",
@@ -21,7 +21,7 @@
       "he": "יצירה אחת לאמן או ללייבל: עטיפת אלבום, פוסטר ליינאפ או פוסטר לסיבוב הופעות.",
       "en": "A single piece for an artist or a label: cover art, a line-up poster or a tour poster."
     },
-    "frame": "10 / 7"
+    "lead": "codex-saltus"
   },
   {
     "slug": "brand-identity",
@@ -33,6 +33,6 @@
       "he": "לוגו, זהות, קמפיין ומוצר — גם מחוץ לרחבה.",
       "en": "Logos, identities, campaigns and products — beyond the dance floor."
     },
-    "frame": "10 / 7"
+    "lead": "trance-tribe"
   }
 ]

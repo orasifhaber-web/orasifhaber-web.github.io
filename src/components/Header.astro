@@ -5,16 +5,15 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const path = basePath(Astro.url.pathname);
 const other: Lang = lang === 'he' ? 'en' : 'he';
+// Just the name, the two places and the language. "Portfolio" is the category wheel on the home page.
 const nav = [
-  { href: url(lang, '/work/'), label: ui.nav.work[lang], active: path.startsWith('/work') },
+  { href: url(lang, '/') + '#work', label: ui.nav.work[lang], active: path.startsWith('/work') },
   { href: url(lang, '/about/'), label: ui.nav.about[lang], active: path.startsWith('/about') },
-  { href: '#contact', label: ui.nav.contact[lang], active: false },
 ];
 ---
 <header class="hdr">
   <div class="hdr__in wrap">
     <a href={url(lang, '/')} class="hdr__name">{ui.name[lang]}</a>
-    <p class="hdr__status label" aria-hidden="true"><span class="dot"></span>{ui.available[lang]}</p>
     <nav aria-label={lang === 'he' ? 'ראשי' : 'Main'}>
       <ul class="hdr__nav">
         {nav.map((n) => (
@@ -44,15 +43,12 @@ const nav = [
     font-size: 1.35rem; letter-spacing: 0.01em; line-height: 1; white-space: nowrap;
   }
   :global([lang='he']) .hdr__name { font-size: 1.6rem; font-weight: 700; }
-  .hdr__status { color: inherit; display: none; align-items: center; gap: var(--s-2); margin-inline: var(--s-7) auto; }
-  .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
   .hdr__nav { display: flex; gap: clamp(var(--s-3), 2.4vw, var(--s-6)); }
   .hdr__nav .label { color: inherit; white-space: nowrap; }
   .hdr__nav [aria-current='page']::after { transform: scaleX(1); }
   .hdr__lang { padding-inline-start: clamp(var(--s-3), 2.4vw, var(--s-6)); border-inline-start: 1px solid currentColor; }
   .hdr__lang::after { display: none; }
   .hdr__lang:hover { text-decoration: underline; text-underline-offset: 4px; }
-  @media (min-width: 900px) { .hdr__status { display: inline-flex; } }
   @media (max-width: 420px) {
     .hdr__in { gap: var(--s-3); }
     .hdr__nav { gap: var(--s-3); }

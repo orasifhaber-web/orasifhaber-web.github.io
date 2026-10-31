@@ -31,16 +31,16 @@
   },
   "nav": {
     "work": {
-      "he": "עבודות",
-      "en": "Work"
+      "he": "פורטפוליו",
+      "en": "Portfolio"
     },
     "about": {
-      "he": "אודות",
-      "en": "About"
+      "he": "קצת עליי",
+      "en": "About me"
     },
     "contact": {
-      "he": "צור קשר",
-      "en": "Contact"
+      "he": "בואו נעבוד יחד",
+      "en": "Let’s work together"
     }
   },
   "switchTo": {
@@ -69,8 +69,8 @@
       "en": "Selected work"
     },
     "toContact": {
-      "he": "השאירו פרטים",
-      "en": "Get in touch"
+      "he": "בואו נעבוד יחד",
+      "en": "Let’s work together"
     },
     "portrait": {
       "he": "דיוקן של אור אסיף-חבר",
@@ -78,8 +78,8 @@
     }
   },
   "work": {
-    "he": "עבודות",
-    "en": "Work"
+    "he": "פורטפוליו",
+    "en": "Portfolio"
   },
   "workTitle": {
     "he": "הפרויקטים שלי",
@@ -149,8 +149,8 @@
   },
   "about": {
     "label": {
-      "he": "אודות",
-      "en": "About"
+      "he": "קצת עליי",
+      "en": "About me"
     },
     "preview": {
       "he": "מעצב גרפי, הנדסאי תקשורת חזותית (אוניברסיטת אריאל), עובד כפרילנסר מאז 2024. אני עובד ישירות מול הלקוחות מהבריף ועד המסירה — גיבוש הכיוון הקריאייטיבי, עיצוב ותיקונים — כולל עבודה חוזרת עם StoneAge Records, לייבל פסייטראנס שוודי.",
@@ -167,8 +167,8 @@
   },
   "contact": {
     "label": {
-      "he": "צור קשר",
-      "en": "Contact"
+      "he": "בואו נעבוד יחד",
+      "en": "Let’s work together"
     },
     "title": {
       "he": "יש לכם פרויקט?",
@@ -310,5 +310,9 @@
       "he": "הפעלה",
       "en": "Play"
     }
+  },
+  "pictured": {
+    "he": "בתמונה",
+    "en": "Pictured"
   }
 }
