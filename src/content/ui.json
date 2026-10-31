@@ -31,7 +31,7 @@
   },
   "nav": {
     "work": {
-      "he": "פורטפוליו",
+      "he": "תיק העבודות",
       "en": "Portfolio"
     },
     "about": {
@@ -65,8 +65,8 @@
       "en": "Selected work 2024–2026"
     },
     "toWork": {
-      "he": "לעבודות",
-      "en": "Selected work"
+      "he": "לתיק העבודות",
+      "en": "View portfolio"
     },
     "toContact": {
       "he": "בואו נעבוד יחד",
@@ -78,7 +78,7 @@
     }
   },
   "work": {
-    "he": "פורטפוליו",
+    "he": "תיק העבודות",
     "en": "Portfolio"
   },
   "workTitle": {
@@ -132,8 +132,8 @@
     "en": "Next project"
   },
   "allProjects": {
-    "he": "כל העבודות",
-    "en": "All projects"
+    "he": "תיק העבודות",
+    "en": "Portfolio"
   },
   "of": {
     "he": "מתוך",
@@ -273,8 +273,8 @@
       "en": "This page doesn’t exist — the work does."
     },
     "cta": {
-      "he": "לכל העבודות",
-      "en": "See all projects"
+      "he": "לתיק העבודות",
+      "en": "View portfolio"
     }
   },
   "allWork": {

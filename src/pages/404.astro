@@ -8,7 +8,7 @@ import { categories } from '../data/projects';
     <p class="label">404</p>
     <h1 class="mega">{ui.notFound.title.he}</h1>
     <p class="lead muted">{ui.notFound.body.he}</p>
-    <a href="/work/" class="label link">{ui.notFound.cta.he} <span class="arrow" aria-hidden="true">←</span></a>
+    <a href="/#work" class="label link">{ui.notFound.cta.he} <span class="arrow" aria-hidden="true">←</span></a>
     <ul class="nf__cats" role="list">
       {categories.map((c) => <li><a href={`/work/${c.slug}/`} class="link">{c.title.he}</a></li>)}
     </ul>

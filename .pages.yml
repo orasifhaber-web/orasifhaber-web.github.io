@@ -385,7 +385,7 @@ content:
         label: "קישור הפרויקט הבא"
         component: "bi"
       - name: "allProjects"
-        label: "קישור כל העבודות"
+        label: "שם תיק העבודות (כותרת עמוד /work/)"
         component: "bi"
       - name: "of"
         label: "המילה מתוך"

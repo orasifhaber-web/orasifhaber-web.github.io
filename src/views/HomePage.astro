@@ -41,7 +41,7 @@ const [l1, l2] = ui.nameLines[lang];
     <a href="#about" class="label hp__next">{ui.about.label[lang]} <span aria-hidden="true">↓</span></a>
     <div class="hp__shade" aria-hidden="true"></div>
   </section>
-  <!-- a pause: the portfolio stays put for most of a screen of scrolling before the next page starts to rise -->
+  <!-- a short pause: the portfolio stays put while it eases away (drifts up, dims a touch) before the next page rises -->
   <div class="hp__dwell" aria-hidden="true"></div>
 
   <section id="about" class="about-pre hp__panel hp__about section wrap grid" data-enter="tilt" aria-labelledby="about-pre-title">
@@ -67,7 +67,8 @@ const [l1, l2] = ui.nameLines[lang];
   //  · melt — opening → portfolio: the page slides up with a soft, feathered top edge that melts into the opening,
   //    and the wheel inside floats up a little and fades in; done by 80% of the way, so it is whole while it settles;
   //  · tilt — portfolio → about: the page rises with a gently slanted edge, high on the reading side, that levels out.
-  // After the portfolio comes a pause (.hp__dwell): it stays put for a while so there is time to choose a category.
+  // After the portfolio comes a short pause (.hp__dwell): it stays in place, still usable, but answers the scroll —
+  // the wheel drifts up a little and dims a touch, the cue below it fades — so scrolling never looks like nothing.
   // Nothing moves or clips with reduced motion; everything is undone before a page swap.
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -94,6 +95,14 @@ const [l1, l2] = ui.nameLines[lang];
           .to(p.querySelector('.hp__shade'), { opacity: 0.45, ease: 'none' }, 0)
           .to(p, { scale: 0.97, ease: 'none' }, 0);
       });
+
+      const dwell = document.querySelector<HTMLElement>('.hp__dwell');
+      const work = document.getElementById('work');
+      if (dwell && work) {
+        gsap.timeline({ scrollTrigger: { trigger: dwell, start: 'top bottom', end: 'bottom bottom', scrub: true } })
+          .to(work.querySelector(':scope > .wrap'), { y: () => -innerHeight * 0.05, opacity: 0.82, ease: 'none' }, 0)
+          .to(work.querySelector('.hp__next'), { opacity: 0, ease: 'none' }, 0);
+      }
 
       const rtl = document.documentElement.dir === 'rtl';
       const inOut = (t: number) => -(Math.cos(Math.PI * t) - 1) / 2;
@@ -250,7 +259,7 @@ const [l1, l2] = ui.nameLines[lang];
   }
   :global(main:has(.hp) + .contact) { position: relative; background: var(--bg); }
   /* the pause after the portfolio: empty, see-through scroll room while the portfolio stays stuck in place */
-  .hp__dwell { height: 75svh; pointer-events: none; }
+  .hp__dwell { height: 40svh; pointer-events: none; }
   /* a quiet way on, at the foot of the portfolio */
   .hp__next {
     position: absolute; z-index: 2; left: 50%; bottom: var(--s-5); transform: translateX(-50%);
@@ -264,6 +273,9 @@ const [l1, l2] = ui.nameLines[lang];
   }
   /* the work page: a stage of its own (the wheel lights it in the colour of the category at its centre) */
   .hp__work {
+    /* "לתיק העבודות" (and the menu) land with the wheel flush at the top, fully in: cancel the page's 80px
+       scroll-padding, which is there for headings under the fixed header — this page has its own top padding */
+    scroll-margin-top: -80px;
     min-height: 100svh;
     display: grid; align-content: center;
     padding-block: calc(72px + var(--s-6)) calc(var(--s-7) + 44px);
@@ -271,7 +283,8 @@ const [l1, l2] = ui.nameLines[lang];
     overflow: hidden;
   }
   .hp__work > .wrap { position: relative; z-index: 1; }
-  .hp__about { background: #151411; z-index: 1; }
+  /* about me: a lighter, warmer surface than the black before it, so the page is seen rising from its first pixel */
+  .hp__about { background: #201e19; z-index: 1; }
 
   .about-pre { row-gap: var(--s-6); }
   :where(.about-pre > *) { grid-column: 1 / -1; }
