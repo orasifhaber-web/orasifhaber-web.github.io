@@ -1,0 +1,39 @@
+---
+// A calm grid of covers — the way into a category (and into all the work on /work/). Like a Behance profile: every
+// cover in the same Behance frame, with only the project's name and year beneath it; client, discipline and tools
+// wait inside the project. One column on a phone, two from 700px, three from 1100px. Each card "switches on" (.lit)
+// under the pointer or keyboard focus.
+import Img from './Img.astro';
+import { coverFrame, type Project } from '../data/projects';
+import { url, type Lang } from '../i18n';
+
+interface Props { lang: Lang; items: Project[]; level?: 2 | 3 } // level: heading level of the project names
+const { lang, items, level = 3 } = Astro.props;
+const H = level === 2 ? 'h2' : 'h3';
+---
+<ul class="wg wrap" role="list">
+  {items.map((p, k) => (
+    <li style={`--wa:${p.accent}`}>
+      <a href={url(lang, `/work/${p.slug}/`)} class="wg__card lit">
+        <Img id={p.cover.id} alt="" ratio={coverFrame} focus={p.cover.focus} i={k % 3} sizes="(min-width: 1100px) 31vw, (min-width: 700px) 46vw, 92vw" />
+        <span class="wg__cap">
+          <H class="wg__name" transition:name={`title-${p.slug}`}>{p.title[lang]}</H>
+          <span class="label wg__year">{p.year}</span>
+        </span>
+      </a>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .wg { display: grid; gap: var(--s-7) var(--gutter); }
+  @media (min-width: 700px) { .wg { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1100px) { .wg { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+  .wg__card { display: grid; gap: var(--s-3); }
+  .wg__cap { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s-4); }
+  .wg__name { font-size: var(--t-lead); font-weight: 600; line-height: 1.25; transition: color var(--d-base) var(--ease-out); }
+  .wg__card:hover .wg__name, .wg__card:focus-visible .wg__name { color: var(--wa); }
+  .wg__year { color: var(--ink-3); flex-shrink: 0; }
+  .wg__card:focus-visible { outline: 2px solid var(--signal); outline-offset: 6px; }
+</style>

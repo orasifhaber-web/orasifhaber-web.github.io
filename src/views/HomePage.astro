@@ -245,19 +245,6 @@ const [l1, l2] = ui.nameLines[lang];
   .hp__panel { position: relative; background: var(--bg); }
   .hp__panel--stick { position: sticky; top: 0; transform-origin: 50% 0; }
   .hp__shade { position: absolute; inset: 0; z-index: 20; background: #000; opacity: 0; pointer-events: none; }
-  /* the light line now marks one passage only: from the last page into the contact */
-  :global(main:has(.hp) + .contact)::before {
-    content: '';
-    position: absolute; inset: 0 0 auto; height: 160px; z-index: 0;
-    background:
-      linear-gradient(90deg, transparent 4%, rgb(255 246 226) 50%, transparent 96%) top / 100% 2px no-repeat,
-      linear-gradient(90deg, transparent 10%, rgb(255 240 210 / 0.22) 50%, transparent 90%) top / 100% 18px no-repeat,
-      radial-gradient(55% 100% at 50% 0, rgb(255 240 210 / 0.11), transparent 72%);
-    -webkit-mask: linear-gradient(to bottom, #000 2px, rgb(0 0 0 / 0.6) 3px, transparent);
-    mask: linear-gradient(to bottom, #000 2px, rgb(0 0 0 / 0.6) 3px, transparent);
-    pointer-events: none;
-  }
-  :global(main:has(.hp) + .contact) { position: relative; background: var(--bg); }
   /* the pause after the portfolio: empty, see-through scroll room while the portfolio stays stuck in place */
   .hp__dwell { height: 40svh; pointer-events: none; }
   /* a quiet way on, at the foot of the portfolio */

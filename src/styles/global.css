@@ -164,6 +164,20 @@ p { text-wrap: pretty; }
 .link:hover::after, .link:focus-visible::after { transform-origin: left; transform: scaleX(1); }
 .arrow { display: inline-block; transition: transform var(--d-base) var(--ease-out); }
 
+/* the light line: the one passage it marks is the step into the contact form, on the home page and about me */
+main:has(.hp, .ab) + .contact::before {
+  content: '';
+  position: absolute; inset: 0 0 auto; height: 160px; z-index: 0;
+  background:
+    linear-gradient(90deg, transparent 4%, rgb(255 246 226) 50%, transparent 96%) top / 100% 2px no-repeat,
+    linear-gradient(90deg, transparent 10%, rgb(255 240 210 / 0.22) 50%, transparent 90%) top / 100% 18px no-repeat,
+    radial-gradient(55% 100% at 50% 0, rgb(255 240 210 / 0.11), transparent 72%);
+  -webkit-mask: linear-gradient(to bottom, #000 2px, rgb(0 0 0 / 0.6) 3px, transparent);
+  mask: linear-gradient(to bottom, #000 2px, rgb(0 0 0 / 0.6) 3px, transparent);
+  pointer-events: none;
+}
+main:has(.hp, .ab) + .contact { position: relative; background: var(--bg); }
+
 /* ---------- buttons ----------
    A real button for the actions that matter: a solid rectangle (the site's square language), not a text link.
    .btn--primary: light fill that turns signal green with a glow on hover, and a band of light sweeps across it.

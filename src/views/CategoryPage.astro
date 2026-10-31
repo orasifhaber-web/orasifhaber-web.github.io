@@ -1,8 +1,8 @@
 ---
-// One category: its name, the line on what it holds, the category links, then its work list. The same template for
+// One category: its name, the line on what it holds, the category links, then its projects as a calm grid of covers. The same template for
 // every category; at the bottom, the way on to the next category (wrapping round).
 import Base from '../layouts/Base.astro';
-import WorkList from '../components/WorkList.astro';
+import WorkGrid from '../components/WorkGrid.astro';
 import CategoryNav from '../components/CategoryNav.astro';
 import { categories, inCategory, type Category } from '../data/projects';
 import { site } from '../data/site';
@@ -29,12 +29,14 @@ const jsonld = {
       <span aria-hidden="true">/</span>
       <span aria-current="page">{c.title[lang]}</span>
     </nav>
-    <h1 class="h1 ca-hero__title">{c.title[lang]}</h1>
+    <h1 id="ca-title" class="h1 ca-hero__title">{c.title[lang]}</h1>
     <p class="lead ca-hero__intro">{c.intro[lang]}</p>
     <CategoryNav lang={lang} current={c.slug} />
   </section>
 
-  <WorkList lang={lang} items={items} level={2} />
+  <section class="ca-grid" aria-labelledby="ca-title">
+    <WorkGrid lang={lang} items={items} level={2} />
+  </section>
 
   <nav class="ca-next" aria-label={ui.nextCategory[lang]}>
     <a href={url(lang, `/work/${next.slug}/`)} class="ca-next__link wrap">
@@ -46,7 +48,8 @@ const jsonld = {
 </Base>
 
 <style>
-  .ca-hero { padding-top: clamp(120px, 20vh, 220px); padding-bottom: var(--s-7); display: grid; gap: var(--s-5); border-bottom: 1px solid var(--line); }
+  .ca-hero { padding-top: clamp(120px, 20vh, 220px); padding-bottom: var(--s-7); display: grid; gap: var(--s-5); }
+  .ca-grid { padding-top: var(--s-5); }
   .ca-hero__crumbs { display: flex; gap: var(--s-3); align-items: center; }
   .ca-hero__crumbs .link { min-height: 0; }
   .ca-hero__title { display: flex; align-items: flex-start; }

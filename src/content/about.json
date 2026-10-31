@@ -48,7 +48,8 @@
       "body": {
         "he": "עולם ויזואלי לכל אירוע, שעובר לפוסטר, ליינאפ, טיימטייבל, הכרזות אמנים ורשתות.",
         "en": "A visual world per event, carried across poster, line-up, timetable, artist cards and social."
-      }
+      },
+      "category": "party-branding"
     },
     {
       "title": {
@@ -58,7 +59,8 @@
       "body": {
         "he": "רצפי הכרזות ופורמטי סטורי שמשאירים ליינאפים ארוכים קריאים.",
         "en": "Announcement sequences and story formats that keep long line-ups legible."
-      }
+      },
+      "category": "party-branding"
     },
     {
       "title": {
@@ -68,7 +70,8 @@
       "body": {
         "he": "עטיפות שעובדות בגודל מלא וגם כתמונה ממוזערת בשירותי סטרימינג.",
         "en": "Album and release artwork that holds up from full size down to a streaming thumbnail."
-      }
+      },
+      "category": "posters-covers"
     },
     {
       "title": {
@@ -78,7 +81,8 @@
       "body": {
         "he": "סמלים, ניירת וקמפיינים למותגים מחוץ לסצנה.",
         "en": "Marks, stationery and campaigns for brands outside the scene."
-      }
+      },
+      "category": "brand-identity"
     },
     {
       "title": {
@@ -88,7 +92,8 @@
       "body": {
         "he": "ביגוד, אריזות ודפוס ללייבלים, קרו ואירועים.",
         "en": "Apparel, packaging and print for labels, crews and events."
-      }
+      },
+      "category": "brand-identity"
     }
   ],
   "background": [

@@ -237,6 +237,17 @@ content:
           - name: "body"
             label: "תיאור"
             component: "bitext"
+          - name: "category"
+            label: "קטגוריה בתיק העבודות (קישור)"
+            type: "select"
+            options:
+              values:
+                - value: "party-branding"
+                  label: "מיתוג מסיבות"
+                - value: "posters-covers"
+                  label: "פוסטרים ועטיפות"
+                - value: "brand-identity"
+                  label: "זהות מותג ומוצר"
       - name: "background"
         label: "רקע — השכלה וניסיון"
         type: "object"
