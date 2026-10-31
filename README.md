@@ -1,6 +1,6 @@
 # Or Asif-Haber — Portfolio
 
-Static portfolio site built with Astro 5. Hebrew is the default language (`/`, RTL); English lives under `/en/`. All texts live in `src/content/*.json` (every text field is `{ he, en }`) and can be edited in Pages CMS (below); page templates in `src/views/`, design tokens in `src/styles/global.css` (see `design-system/MASTER.md`).
+Static portfolio site built with Astro 5. Hebrew is the default language (`/`, RTL); English lives under `/en/`. All texts live in `src/content/*.json` (every text field is `{ he, en }`) and can be edited in Pages CMS (below); page templates in `src/views/`, design tokens in `src/styles/global.css` (see `design-system/MASTER.md`). The full site spec (goals, pages, behaviour, open items) is in `SPEC.md` (Hebrew).
 
 ## Editing texts (Pages CMS)
 
@@ -33,9 +33,13 @@ npm run images -- "../‏‏Behance Portfolio - עותק/Behance Portfolio"
 
 Existing outputs are skipped; delete `public/img` to rebuild everything.
 
+## Categories
+
+Every project has a `category` (slug from `src/content/categories.json`: `party-branding`, `posters-covers`, `brand-identity`). The order on the site is computed in `src/data/projects.ts` (`inCategory`): newest year first, several projects for the same client kept together; the order in `projects.json` only breaks ties. The build fails if a project has an unknown category, a category is empty, or a category slug equals a project slug (both live under `/work/`). Category names and lines are editable in Pages CMS (**קטגוריות**). Full rules: `SPEC.md` §4.
+
 ## Adding or editing a project
 
-Edit `src/content/projects.json` (or the **פרויקטים** section in Pages CMS); types are in `src/data/projects.ts`. Every project uses the same template: metadata, an intro, optional `details` (label + text, optional colour swatches) and a `gallery` list. The gallery lays itself out — wide images run full width, tall and square images are grouped into rows of 2–3. Order in the array = order on the site.
+Edit `src/content/projects.json` (or the **פרויקטים** section in Pages CMS); types are in `src/data/projects.ts`. Give it a `category`. Every project uses the same template: metadata, an intro, optional `details` (label + text, optional colour swatches) and a `gallery` list. The gallery lays itself out — wide images run full width, tall and square images are grouped into rows of 2–3. The array order only breaks ties within a category (see above).
 
 ## Contact form
 

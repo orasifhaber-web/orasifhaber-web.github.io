@@ -6,7 +6,7 @@ Synthesised from the ui-ux-pro-max skill (style: Dark Mode / Swiss editorial; ty
 Graphic designer building the visual worlds around psytrance parties, record labels and artists — line-up posters, party branding, cover art — plus brand identities outside the scene.
 
 ## Concept
-The site is a neutral, dark frame; the saturated work carries the colour. The full work index is set as a party **line-up / timetable** — the format Or designs most.
+The site is a neutral, dark frame; the saturated work carries the colour. The work is never shown all at once: it is sorted into three categories (party branding / posters & covers / brand & product — see `SPEC.md` §4), each with the same template.
 
 ## Colour
 | Token | Value | Use |
@@ -51,5 +51,7 @@ Pre-processed by `scripts/images.mjs` → WebP at 640 / 1280 / 2000 (capped at t
 - Text contrast ≥ 4.5:1 throughout
 
 ## Templates
-- **Home work list** (`WorkList.astro`): one identical row per project — sticky info column (number, title, subtitle, client/year/discipline, link) beside the cover, which unmasks on scroll.
+- **Home category section** (`CategorySection.astro`): category name at `.h2` with its count in mono, the category line and a link to its page; then the covers as a "poster wall" — one justified row at equal height (column widths = image ratios, row capped at ~62svh tall), more than four covers split into balanced rows of up to three. Below 900px the wall is a sideways strip inside the section with the next cover peeking in. No cards, borders or shadows; hover only turns the title the project's accent.
+- **Category links** (`CategoryNav.astro`): "All" + each category as plain text links at `--t-lead`, count in mono; inactive `--ink-3`, current `--ink` with a 2px `--signal` underline under the name only. Wraps, never scrolls. On `/work/` and every category page.
+- **Work list** (`WorkList.astro`, on `/work/` and category pages): one identical row per project — sticky info column (number within the list, title, subtitle, client/year/discipline, link) beside the cover, which unmasks on scroll.
 - **Case study** (`views/ProjectPage.astro`): hero → cover → overview → details (optional) → gallery (`Gallery.astro`, automatic rows) → next project. Same order and behaviour for every project.

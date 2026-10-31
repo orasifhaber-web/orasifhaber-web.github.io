@@ -1,0 +1,35 @@
+[
+  {
+    "slug": "party-branding",
+    "title": {
+      "he": "מיתוג מסיבות",
+      "en": "Party branding"
+    },
+    "intro": {
+      "he": "עולם חזותי שלם לאירוע אחד: פוסטר ליינאפ, פוסטים לרשתות ומיתוג המסיבה.",
+      "en": "A whole visual world for one event: the line-up poster, social posts and the party’s branding."
+    }
+  },
+  {
+    "slug": "posters-covers",
+    "title": {
+      "he": "פוסטרים ועטיפות",
+      "en": "Posters & covers"
+    },
+    "intro": {
+      "he": "יצירה אחת לאמן או ללייבל: עטיפת אלבום, פוסטר ליינאפ או פוסטר לסיבוב הופעות.",
+      "en": "A single piece for an artist or a label: cover art, a line-up poster or a tour poster."
+    }
+  },
+  {
+    "slug": "brand-identity",
+    "title": {
+      "he": "זהות מותג ומוצר",
+      "en": "Brand & product"
+    },
+    "intro": {
+      "he": "לוגו, זהות, קמפיין ומוצר — גם מחוץ לרחבה.",
+      "en": "Logos, identities, campaigns and products — beyond the dance floor."
+    }
+  }
+]

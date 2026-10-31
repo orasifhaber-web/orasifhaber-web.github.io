@@ -1,20 +1,39 @@
 ---
-// All projects as a list — the full work list (one identical row per project), reached from the home gallery's
-// "all projects" button and from every project page.
+// All work: the category links, then each category in site order with its full work list (one identical row per
+// project). Reached from the main menu and from every project page.
 import Base from '../layouts/Base.astro';
 import WorkList from '../components/WorkList.astro';
-import { ui, type Lang } from '../i18n';
+import CategoryNav from '../components/CategoryNav.astro';
+import { categories, inCategory } from '../data/projects';
+import { ui, url, fwd, type Lang } from '../i18n';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 ---
 <Base lang={lang} title={ui.allProjects[lang]}>
   <section class="wi-hero wrap">
-    <h1 class="h1">{ui.allProjects[lang]}</h1>
+    <h1 class="h1">{ui.work[lang]}</h1>
+    <CategoryNav lang={lang} />
   </section>
-  <WorkList lang={lang} />
+
+  {categories.map((c) => (
+    <section class="wi-cat" aria-labelledby={`wi-${c.slug}`}>
+      <div class="wrap wi-cat__head">
+        <h2 id={`wi-${c.slug}`} class="h2">
+          <a href={url(lang, `/work/${c.slug}/`)}>{c.title[lang]}</a>
+        </h2>
+        <p class="muted wi-cat__intro">{c.intro[lang]}</p>
+        <a href={url(lang, `/work/${c.slug}/`)} class="label link">{ui.categoryPage[lang]} <span class="arrow" aria-hidden="true">{fwd(lang)}</span></a>
+      </div>
+      <WorkList lang={lang} items={inCategory(c.slug)} />
+    </section>
+  ))}
 </Base>
 
 <style>
-  .wi-hero { padding-top: clamp(120px, 20vh, 220px); }
+  .wi-hero { padding-top: clamp(120px, 20vh, 220px); display: grid; gap: var(--s-6); }
+  .wi-cat { padding-top: var(--section); }
+  .wi-cat__head { display: grid; gap: var(--s-3); justify-items: start; padding-bottom: var(--s-5); border-bottom: 1px solid var(--line); }
+  .wi-cat__head h2 a:hover { color: var(--signal); }
+  .wi-cat__intro { max-width: 46ch; }
 </style>

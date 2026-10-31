@@ -1,28 +1,23 @@
 ---
-// Home page work list — every project uses the same template and the same scroll behaviour:
-// a sticky info column beside the cover image, which unmasks as it enters the viewport.
+// Work list on /work/ and the category pages — every project uses the same template and the same scroll behaviour:
+// a sticky info column beside the cover image, which unmasks as it enters the viewport. Numbered within the list.
 import Img from './Img.astro';
-import { projects } from '../data/projects';
+import type { Project } from '../data/projects';
 import { ui, url, fwd, type Lang } from '../i18n';
 
-interface Props { lang: Lang }
-const { lang } = Astro.props;
+interface Props { lang: Lang; items: Project[]; level?: 2 | 3 } // level: heading level of the project titles
+const { lang, items, level = 3 } = Astro.props;
+const H = level === 2 ? 'h2' : 'h3';
 const n = (k: number) => String(k + 1).padStart(2, '0');
 ---
-<section id="work" class="work" aria-labelledby="work-title">
-  <div class="wrap work__head">
-    <h2 id="work-title" class="label">{ui.work[lang]}</h2>
-    <p class="label">{projects.length} {ui.projects[lang]}</p>
-  </div>
-
-  <ol class="work__list" role="list">
-    {projects.map((p, k) => (
+<ol class="work__list" role="list">
+    {items.map((p, k) => (
       <li class="w wrap" style={`--wa:${p.accent}`}>
         <div class="w__info">
-          <p class="label w__no" data-reveal><bdi dir="ltr">{n(k)} / {String(projects.length).padStart(2, '0')}</bdi></p>
-          <h3 class="h1 w__title" data-reveal style="--i:1">
+          <p class="label w__no" data-reveal><bdi dir="ltr">{n(k)} / {n(items.length - 1)}</bdi></p>
+          <H class="h1 w__title" data-reveal style="--i:1">
             <a href={url(lang, `/work/${p.slug}/`)} transition:name={`title-${p.slug}`}>{p.title[lang]}</a>
-          </h3>
+          </H>
           <p class="w__sub" data-reveal style="--i:2">{p.subtitle[lang]}</p>
           <dl class="w__meta" data-reveal style="--i:3">
             <div><dt class="label">{ui.meta.client[lang]}</dt><dd>{p.client[lang]}</dd></div>
@@ -38,14 +33,9 @@ const n = (k: number) => String(k + 1).padStart(2, '0');
         </a>
       </li>
     ))}
-  </ol>
-</section>
+</ol>
 
 <style>
-  .work { padding-top: var(--s-9); }
-  .work__head { display: flex; justify-content: space-between; padding-bottom: var(--s-4); border-bottom: 1px solid var(--line); }
-  .work__head h2 { color: var(--ink); }
-
   .w {
     display: grid; gap: var(--s-6);
     padding-block: var(--s-8);

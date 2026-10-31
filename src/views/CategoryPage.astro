@@ -1,0 +1,59 @@
+---
+// One category: its name, the line on what it holds, the category links, then its work list. The same template for
+// every category; at the bottom, the way on to the next category (wrapping round).
+import Base from '../layouts/Base.astro';
+import WorkList from '../components/WorkList.astro';
+import CategoryNav from '../components/CategoryNav.astro';
+import { categories, inCategory, type Category } from '../data/projects';
+import { site } from '../data/site';
+import { ui, url, fwd, type Lang } from '../i18n';
+
+interface Props { lang: Lang; c: Category }
+const { lang, c } = Astro.props;
+const items = inCategory(c.slug);
+const next = categories[(categories.indexOf(c) + 1) % categories.length];
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: c.title[lang],
+  description: c.intro[lang],
+  inLanguage: lang,
+  author: { '@type': 'Person', name: site.name },
+  hasPart: items.map((p) => ({ '@type': 'CreativeWork', name: p.title[lang], url: new URL(url(lang, `/work/${p.slug}/`), Astro.site).toString() })),
+};
+---
+<Base lang={lang} title={c.title[lang]} description={c.intro[lang]} image={`/img/${items[0].cover.id}-1280.webp`} jsonld={jsonld}>
+  <section class="ca-hero wrap">
+    <nav class="label ca-hero__crumbs" aria-label={ui.breadcrumb[lang]}>
+      <a href={url(lang, '/work/')} class="link">{ui.work[lang]}</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{c.title[lang]}</span>
+    </nav>
+    <h1 class="h1 ca-hero__title">{c.title[lang]}<sup class="ca-hero__n">{items.length}</sup></h1>
+    <p class="lead ca-hero__intro">{c.intro[lang]}</p>
+    <CategoryNav lang={lang} current={c.slug} />
+  </section>
+
+  <WorkList lang={lang} items={items} level={2} />
+
+  <nav class="ca-next" aria-label={ui.nextCategory[lang]}>
+    <a href={url(lang, `/work/${next.slug}/`)} class="ca-next__link wrap">
+      <span class="label">{ui.nextCategory[lang]}</span>
+      <span class="display ca-next__title">{next.title[lang]} <span class="arrow" aria-hidden="true">{fwd(lang)}</span></span>
+      <span class="muted">{next.intro[lang]}</span>
+    </a>
+  </nav>
+</Base>
+
+<style>
+  .ca-hero { padding-top: clamp(120px, 20vh, 220px); padding-bottom: var(--s-7); display: grid; gap: var(--s-5); border-bottom: 1px solid var(--line); }
+  .ca-hero__crumbs { display: flex; gap: var(--s-3); align-items: center; }
+  .ca-hero__crumbs .link { min-height: 0; }
+  .ca-hero__title { display: flex; align-items: flex-start; }
+  .ca-hero__n { font-family: var(--f-mono); font-size: 1rem; font-weight: 400; letter-spacing: 0; margin-inline-start: 0.4em; color: var(--ink-3); }
+  .ca-hero__intro { max-width: 34ch; color: var(--ink-2); }
+  .ca-next { margin-top: var(--section); border-top: 1px solid var(--line); }
+  .ca-next__link { display: grid; gap: var(--s-4); padding-block: var(--s-8); }
+  .ca-next__title { transition: color var(--d-base) var(--ease-out); }
+  .ca-next__link:hover .ca-next__title, .ca-next__link:focus-visible .ca-next__title { color: var(--signal); }
+</style>

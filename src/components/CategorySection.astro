@@ -1,0 +1,93 @@
+---
+// Home page: one section per category, the same template for all three — the category name set large with its count,
+// a line on what it holds, and its covers as one "poster wall": a justified row at equal height where every cover keeps
+// its own proportions (column widths follow the image ratios); more than four covers split into balanced rows of up to
+// three, so landscape covers don't shrink to thumbnails. Below 900px the wall becomes a strip that scrolls
+// sideways inside the section, the next cover peeking in at the edge. Order within the category: see inCategory().
+import Img from './Img.astro';
+import { inCategory, type Category } from '../data/projects';
+import { image } from '../lib/img';
+import { ui, url, fwd, type Lang } from '../i18n';
+
+interface Props { lang: Lang; c: Category }
+const { lang, c } = Astro.props;
+const items = inCategory(c.slug).map((p, k) => ({ p, k, r: image(p.cover.id).ratio }));
+const perRow = Math.ceil(items.length / Math.ceil(items.length / (items.length > 4 ? 3 : 4)));
+const rows = Array.from({ length: Math.ceil(items.length / perRow) }, (_, n) => items.slice(n * perRow, (n + 1) * perRow));
+const sum = (row: typeof items) => row.reduce((s, x) => s + x.r, 0);
+const id = `cat-${c.slug}`;
+---
+<section id={c.slug} class="cs wrap" aria-labelledby={id}>
+  <div class="cs__head">
+    <h2 id={id} class="h2 cs__title" data-reveal>{c.title[lang]}<sup class="cs__n">{items.length}</sup></h2>
+    <div class="cs__side" data-reveal style="--i:1">
+      <p class="muted cs__intro">{c.intro[lang]}</p>
+      <a href={url(lang, `/work/${c.slug}/`)} class="label link">{ui.categoryPage[lang]} <span class="arrow" aria-hidden="true">{fwd(lang)}</span></a>
+    </div>
+  </div>
+  <div class="cs__wall">
+    {rows.map((row) => (
+    <ul class="cs__row" role="list" style={`grid-template-columns:${row.map((x) => `${x.r.toFixed(3)}fr`).join(' ')};--sum:${sum(row).toFixed(3)};--n:${row.length}`}>
+    {row.map(({ p, r, k }) => (
+      <li class="cs__item" style={`--r:${r.toFixed(3)};--wa:${p.accent}`}>
+        <a href={url(lang, `/work/${p.slug}/`)} class="cs__card">
+          <Img id={p.cover.id} alt="" i={k} sizes="(min-width: 900px) 34vw, 80vw" />
+          <span class="cs__cap">
+            <h3 class="cs__name" transition:name={`title-${p.slug}`}>{p.title[lang]}</h3>
+            <span class="label cs__year">{p.year}</span>
+          </span>
+        </a>
+      </li>
+    ))}
+    </ul>
+    ))}
+  </div>
+</section>
+
+<style>
+  .cs { padding-top: var(--s-10); }
+  .cs:first-child { padding-top: var(--section); }
+
+  .cs__head { display: grid; gap: var(--s-4); padding-bottom: var(--s-6); }
+  .cs__title { display: flex; align-items: flex-start; }
+  .cs__n { font-family: var(--f-mono); font-size: 0.875rem; font-weight: 400; letter-spacing: 0; margin-inline-start: 0.4em; color: var(--ink-3); }
+  .cs__side { display: grid; gap: var(--s-3); justify-items: start; }
+  .cs__intro { max-width: 46ch; }
+
+  /* the wall — mobile: a sideways strip that runs to the screen edges */
+  .cs__wall {
+    --h: min(54vw, 50svh);
+    display: flex;
+    gap: var(--s-4);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--margin);
+    margin-inline: calc(-1 * var(--margin));
+    padding-inline: var(--margin);
+    padding-bottom: var(--s-2);
+    scrollbar-width: none;
+  }
+  .cs__wall::-webkit-scrollbar { display: none; }
+  .cs__row { display: contents; } /* one strip on mobile, whatever the rows */
+  .cs__item { flex: 0 0 auto; width: calc(var(--r) * var(--h)); scroll-snap-align: start; }
+
+  .cs__card { display: grid; gap: var(--s-3); }
+  .cs__card :global(.media) { width: 100%; }
+  .cs__card :global(img) { transition: transform 1.2s var(--ease-out), clip-path 1.1s var(--ease-out); }
+  .cs__card:hover :global(img) { transform: scale(1.02); }
+  .cs__cap { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s-3); }
+  .cs__name { font-size: var(--t-body); font-weight: 600; line-height: 1.25; transition: color var(--d-base) var(--ease-out); }
+  .cs__card:hover .cs__name, .cs__card:focus-visible .cs__name { color: var(--wa); }
+  .cs__year { color: var(--ink-3); flex-shrink: 0; }
+
+  @media (min-width: 900px) {
+    .cs__head { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); align-items: end; padding-bottom: var(--s-7); }
+    .cs__title { grid-column: 1 / span 7; }
+    .cs__side { grid-column: 8 / -1; }
+    /* one justified row: fr = image ratio, so every cover ends up the same height; capped so a short row never grows
+       taller than ~62% of the screen */
+    .cs__wall { display: grid; gap: var(--s-7) var(--gutter); overflow: visible; margin-inline: 0; padding: 0; }
+    .cs__row { display: grid; gap: var(--gutter); max-width: calc(var(--sum) * 62svh + (var(--n) - 1) * var(--gutter)); }
+    .cs__item { width: auto; }
+  }
+</style>

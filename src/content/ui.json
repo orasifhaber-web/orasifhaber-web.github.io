@@ -109,6 +109,10 @@
     "tools": {
       "he": "כלים",
       "en": "Tools"
+    },
+    "category": {
+      "he": "קטגוריה",
+      "en": "Category"
     }
   },
   "overview": {
@@ -272,5 +276,21 @@
       "he": "לכל העבודות",
       "en": "See all projects"
     }
+  },
+  "allWork": {
+    "he": "הכול",
+    "en": "All"
+  },
+  "categories": {
+    "he": "קטגוריות",
+    "en": "Categories"
+  },
+  "nextCategory": {
+    "he": "קטגוריה הבאה",
+    "en": "Next category"
+  },
+  "categoryPage": {
+    "he": "לעמוד הקטגוריה",
+    "en": "Category page"
   }
 }

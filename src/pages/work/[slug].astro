@@ -1,8 +1,13 @@
 ---
+// /work/<slug>/ serves both the project pages and the category pages (slugs never collide — see data/projects.ts).
 import ProjectPage from '../../views/ProjectPage.astro';
-import { projects, type Project } from '../../data/projects';
+import CategoryPage from '../../views/CategoryPage.astro';
+import { projects, categories, type Project, type Category } from '../../data/projects';
 
-export const getStaticPaths = () => projects.map((p) => ({ params: { slug: p.slug }, props: { p } }));
-const { p } = Astro.props as { p: Project };
+export const getStaticPaths = () => [
+  ...projects.map((p) => ({ params: { slug: p.slug }, props: { p } })),
+  ...categories.map((c) => ({ params: { slug: c.slug }, props: { c } })),
+];
+const { p, c } = Astro.props as { p?: Project; c?: Category };
 ---
-<ProjectPage lang="he" p={p} />
+{p ? <ProjectPage lang="he" p={p} /> : <CategoryPage lang="he" c={c!} />}

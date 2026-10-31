@@ -6,7 +6,7 @@ const { lang } = Astro.props;
 const path = basePath(Astro.url.pathname);
 const other: Lang = lang === 'he' ? 'en' : 'he';
 const nav = [
-  { href: url(lang, '/') + '#work', label: ui.nav.work[lang], active: path.startsWith('/work') },
+  { href: url(lang, '/work/'), label: ui.nav.work[lang], active: path.startsWith('/work') },
   { href: url(lang, '/about/'), label: ui.nav.about[lang], active: path.startsWith('/about') },
   { href: '#contact', label: ui.nav.contact[lang], active: false },
 ];

@@ -1,9 +1,10 @@
 ---
 import Base from '../layouts/Base.astro';
-import WorkReel from '../components/WorkReel.astro';
+import CategorySection from '../components/CategorySection.astro';
 import PortraitReveal from '../components/PortraitReveal.astro';
 import HeroCosmos from '../components/HeroCosmos.astro';
 import { site } from '../data/site';
+import { categories } from '../data/projects';
 import { ui, url, fwd, type Lang } from '../i18n';
 
 interface Props { lang: Lang }
@@ -31,7 +32,10 @@ const [l1, l2] = ui.nameLines[lang];
     </div>
   </section>
 
-  <WorkReel lang={lang} />
+  <!-- the work, one section per category (not all twelve projects at once) -->
+  <div id="work">
+    {categories.map((c) => <CategorySection lang={lang} c={c} />)}
+  </div>
 
   <section class="about-pre section wrap grid" aria-labelledby="about-pre-title">
     <h2 id="about-pre-title" class="label about-pre__label">{ui.about.label[lang]}</h2>
