@@ -20,7 +20,7 @@ const nav = [
           <li><a href={n.href} class="link label" aria-current={n.active ? 'page' : undefined}>{n.label}</a></li>
         ))}
         <li>
-          <a href={url(other, path.startsWith('/404') ? '/' : path)} class="link label hdr__lang" hreflang={other} lang={other} aria-label={ui.switchLabel[lang]}>
+          <a href={url(other, path.startsWith('/404') || path.startsWith('/lab') ? '/' : path)} class="link label hdr__lang" hreflang={other} lang={other} aria-label={ui.switchLabel[lang]}>
             {ui.switchTo[lang]}
           </a>
         </li>

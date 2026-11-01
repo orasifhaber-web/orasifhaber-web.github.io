@@ -1,0 +1,247 @@
+---
+// An orb of energy — abstract, organic, alive. One WebGL fragment shader, no library: a glowing core, plasma that keeps
+// folding inside it (domain-warped noise), a rim that ripples and breathes, a soft halo and faint filaments around it.
+// It drifts from side to side on its own, easing in and out and turning back at new points each time, never quite the
+// same path twice (GSAP tweens to random targets); it stretches a little along its motion. Near the pointer it is drawn
+// towards it like a soft magnet, and grows brighter and more restless; it lets go when the pointer leaves.
+// Touch screens: it just drifts. Off screen: paused. Reduced motion: one still frame. No WebGL: a CSS glow.
+// Colours default to those already sampled from Or's artworks for the hero's nebulae (violet, teal, amber, warm core).
+// Size it from outside (it fills its parent's box). Tunable at runtime through `el.params` (used by the lab page).
+interface Props { class?: string }
+const { class: className } = Astro.props;
+---
+<energy-orb class:list={['orb', className]} aria-hidden="true"><canvas></canvas></energy-orb>
+
+<style>
+  .orb { display: block; position: relative; width: 100%; height: 100%; background: var(--bg); }
+  .orb canvas { display: block; width: 100%; height: 100%; }
+  /* no WebGL: a still glow in the same colours */
+  .orb.is-fallback canvas { display: none; }
+  .orb.is-fallback { background: radial-gradient(circle at 50% 50%, #f6dec8 0, #c6925480 8%, #78366355 18%, #286d7f22 30%, transparent 45%), var(--bg); }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+
+  type RGB = [number, number, number];
+  const PALETTES: Record<string, { core: RGB; a: RGB; b: RGB; c: RGB }> = {
+    // the hero nebulae's colours, sampled from the artworks
+    art: { core: [255, 236, 214], a: [150, 62, 168], b: [44, 156, 182], c: [226, 160, 82] },
+    // the site's signal green with teal
+    signal: { core: [246, 255, 226], a: [40, 120, 110], b: [96, 200, 170], c: [212, 238, 99] },
+    // cold and electric
+    cold: { core: [235, 245, 255], a: [70, 60, 200], b: [40, 170, 230], c: [170, 120, 255] },
+  };
+
+  const VERT = `attribute vec2 p; void main(){ gl_Position = vec4(p, 0.0, 1.0); }`;
+  const FRAG = `
+precision highp float;
+uniform vec2 uRes; uniform float uTime; uniform vec2 uOrb; uniform vec2 uVel; uniform float uR;
+uniform float uEnergy; uniform float uNear; uniform vec3 uCore; uniform vec3 uA; uniform vec3 uB; uniform vec3 uC; uniform vec3 uBg;
+
+// 3D simplex noise (Ashima Arts / Stefan Gustavson, MIT) — smooth, no grid artefacts
+vec3 mod289(vec3 x){ return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec4 mod289(vec4 x){ return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec4 permute(vec4 x){ return mod289(((x * 34.0) + 1.0) * x); }
+vec4 taylorInvSqrt(vec4 r){ return 1.79284291400159 - 0.85373472095314 * r; }
+float snoise(vec3 v){
+  const vec2 C = vec2(1.0 / 6.0, 1.0 / 3.0); const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+  vec3 i = floor(v + dot(v, C.yyy)); vec3 x0 = v - i + dot(i, C.xxx);
+  vec3 g = step(x0.yzx, x0.xyz); vec3 l = 1.0 - g; vec3 i1 = min(g.xyz, l.zxy); vec3 i2 = max(g.xyz, l.zxy);
+  vec3 x1 = x0 - i1 + C.xxx; vec3 x2 = x0 - i2 + C.yyy; vec3 x3 = x0 - D.yyy;
+  i = mod289(i);
+  vec4 p = permute(permute(permute(i.z + vec4(0.0, i1.z, i2.z, 1.0)) + i.y + vec4(0.0, i1.y, i2.y, 1.0)) + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+  float n_ = 0.142857142857; vec3 ns = n_ * D.wyz - D.xzx;
+  vec4 j = p - 49.0 * floor(p * ns.z * ns.z); vec4 x_ = floor(j * ns.z); vec4 y_ = floor(j - 7.0 * x_);
+  vec4 x = x_ * ns.x + ns.yyyy; vec4 y = y_ * ns.x + ns.yyyy; vec4 h = 1.0 - abs(x) - abs(y);
+  vec4 b0 = vec4(x.xy, y.xy); vec4 b1 = vec4(x.zw, y.zw);
+  vec4 s0 = floor(b0) * 2.0 + 1.0; vec4 s1 = floor(b1) * 2.0 + 1.0; vec4 sh = -step(h, vec4(0.0));
+  vec4 a0 = b0.xzyw + s0.xzyw * sh.xxyy; vec4 a1 = b1.xzyw + s1.xzyw * sh.zzww;
+  vec3 p0 = vec3(a0.xy, h.x); vec3 p1 = vec3(a0.zw, h.y); vec3 p2 = vec3(a1.xy, h.z); vec3 p3 = vec3(a1.zw, h.w);
+  vec4 norm = taylorInvSqrt(vec4(dot(p0, p0), dot(p1, p1), dot(p2, p2), dot(p3, p3)));
+  p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+  vec4 m = max(0.6 - vec4(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3)), 0.0); m = m * m;
+  return 42.0 * dot(m * m, vec4(dot(p0, x0), dot(p1, x1), dot(p2, x2), dot(p3, x3)));
+}
+float fbm(vec3 p){ float v = 0.0, a = 0.5; for (int i = 0; i < 4; i++) { v += a * (0.5 + 0.5 * snoise(p)); p = p * 2.02 + 7.3; a *= 0.5; } return v / 0.9375; }
+
+void main(){
+  vec2 p = (gl_FragCoord.xy - uOrb) / uR;          // orb space: the rim sits near r = 1
+  float sp = length(uVel);                          // stretch a little along the motion
+  if (sp > 0.001) { vec2 d = uVel / sp; float al = dot(p, d); vec2 pe = p - al * d; p = pe * (1.0 + 0.18 * sp) + d * al / (1.0 + 0.45 * sp); }
+  float t = uTime;
+  float r = length(p);
+  float ang = atan(p.y, p.x);
+
+  // a rim that ripples and breathes
+  // two broad lobes, no fine detail, so the edge stays round and liquid rather than spiky
+  float wob = 0.65 * snoise(vec3(cos(ang) * 0.9, sin(ang) * 0.9, t * 0.3)) + 0.35 * snoise(vec3(cos(ang) * 1.8, sin(ang) * 1.8, t * 0.45 + 4.0));
+  float edge = 1.0 + wob * (0.1 + 0.12 * uEnergy) + 0.03 * sin(t * 1.3);
+  float d = r / edge;
+
+  // plasma folding inside (domain warping)
+  vec2 q = p * 0.95;
+  float n1 = fbm(vec3(q, t * 0.22));
+  float n2 = fbm(vec3(q + 1.8 * n1 + vec2(1.7, 9.2), t * 0.3));
+  float pl = fbm(vec3(q + 2.0 * n2, t * 0.18));
+
+  // light: a soft volume first (core and plasma), a gentle rim second, then the halo
+  float body = smoothstep(1.05, 0.2, d);
+  float core = exp(-d * d * 5.0);
+  float rim = exp(-pow((d - 0.95) * 5.0, 2.0));
+  float halo = exp(-max(d - 0.9, 0.0) * 3.2) * smoothstep(0.6, 1.0, d);
+
+  vec3 inner = mix(uA, uB, smoothstep(0.3, 0.75, pl));
+  inner = mix(inner, uC, smoothstep(0.58, 0.9, n2) * 0.8);
+
+  // contrast in the plasma keeps the colours deep instead of washing to white
+  float pc = smoothstep(0.25, 0.85, pl);
+  vec3 c = inner * (0.15 + 1.25 * pc) * body;
+  c += uCore * core * (0.35 + 0.35 * uNear + 0.15 * uEnergy) * (0.5 + 0.7 * pc);
+  c += mix(uB, uC, n1) * rim * (0.12 + 0.3 * uEnergy + 0.25 * uNear);
+  c += mix(uA, uB, 0.5) * halo * (0.1 + 0.18 * uNear);
+
+  // faint, smooth wisps drifting off it
+  float fil = fbm(vec3(p * 1.8 + vec2(t * 0.12, -t * 0.08), t * 0.3));
+  c += mix(uB, uC, fil) * smoothstep(0.55, 0.8, fil) * exp(-max(d - 0.9, 0.0) * 2.6) * smoothstep(0.85, 1.1, d) * (0.18 + 0.45 * uNear + 0.25 * uEnergy);
+
+  c = 1.0 - exp(-c * 1.1);                          // soft tone map
+  gl_FragColor = vec4(uBg + c * (1.0 - uBg), 1.0);
+}`;
+
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+  const rand = gsap.utils.random;
+  const c255 = (c: number[]) => c.map((v) => v / 255);
+
+  class EnergyOrb extends HTMLElement {
+    params = { size: 0.17, speed: 1, energy: 0.6, pull: 0.35, palette: 'art' };
+    private gl?: WebGLRenderingContext;
+    private u: Record<string, WebGLUniformLocation | null> = {};
+    private w = 0; private h = 0; private dpr = 1;
+    private base = { x: 0.35, y: 0.5 };             // where it is heading on its own (0..1 of the box)
+    private pos = { x: 0.35, y: 0.5 }; private vel = { x: 0, y: 0 };
+    private mouse = { x: 0, y: 0, in: false };
+    private near = 0; private t = 0; private running = false;
+    private wander?: gsap.core.Tween;
+    private ro?: ResizeObserver; private io?: IntersectionObserver;
+
+    connectedCallback() {
+      const canvas = this.querySelector('canvas')!;
+      const gl = canvas.getContext('webgl', { antialias: false, premultipliedAlpha: false });
+      if (!gl) { this.classList.add('is-fallback'); return; }
+      this.gl = gl;
+      const sh = (type: number, src: string) => { const s = gl.createShader(type)!; gl.shaderSource(s, src); gl.compileShader(s); return s; };
+      const prog = gl.createProgram()!;
+      gl.attachShader(prog, sh(gl.VERTEX_SHADER, VERT));
+      gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FRAG));
+      gl.linkProgram(prog);
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { this.classList.add('is-fallback'); return; }
+      gl.useProgram(prog);
+      gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+      const loc = gl.getAttribLocation(prog, 'p');
+      gl.enableVertexAttribArray(loc);
+      gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+      for (const n of ['uRes', 'uTime', 'uOrb', 'uVel', 'uR', 'uEnergy', 'uNear', 'uCore', 'uA', 'uB', 'uC', 'uBg']) this.u[n] = gl.getUniformLocation(prog, n);
+      const bg = getComputedStyle(this).backgroundColor.match(/\d+/g)?.slice(0, 3).map(Number) ?? [14, 14, 12];
+      gl.uniform3fv(this.u.uBg, c255(bg));
+      this.setPalette(this.params.palette);
+
+      this.ro = new ResizeObserver(() => this.resize());
+      this.ro.observe(this);
+      this.resize();
+
+      this.addEventListener('pointermove', this.onMove);
+      this.addEventListener('pointerleave', this.onLeave);
+
+      if (still.matches) { this.t = 8; this.pos = { x: 0.5, y: 0.5 }; this.draw(); return; }
+      this.next();
+      this.io = new IntersectionObserver(([e]) => (e.isIntersecting ? this.start() : this.stop()));
+      this.io.observe(this);
+    }
+
+    disconnectedCallback() {
+      this.stop(); this.wander?.kill(); this.ro?.disconnect(); this.io?.disconnect();
+      this.removeEventListener('pointermove', this.onMove);
+      this.removeEventListener('pointerleave', this.onLeave);
+    }
+
+    setPalette(name: string) {
+      const pal = PALETTES[name] ?? PALETTES.art;
+      this.params.palette = name;
+      if (!this.gl) return;
+      this.gl.uniform3fv(this.u.uCore, c255(pal.core));
+      this.gl.uniform3fv(this.u.uA, c255(pal.a));
+      this.gl.uniform3fv(this.u.uB, c255(pal.b));
+      this.gl.uniform3fv(this.u.uC, c255(pal.c));
+      if (!this.running) this.draw();
+    }
+
+    // its own path: from one point to the next, easing in and out, always heading back across the middle
+    private next = () => {
+      const fromLeft = this.base.x < 0.5;
+      const x = fromLeft ? rand(0.6, 0.82) : rand(0.18, 0.4);
+      const y = rand(0.36, 0.64);
+      this.wander = gsap.to(this.base, { x, y, duration: rand(3, 5.2) / this.params.speed, ease: 'sine.inOut', onComplete: this.next });
+    };
+
+    private onMove = (e: PointerEvent) => {
+      const r = this.getBoundingClientRect();
+      this.mouse = { x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height, in: true };
+    };
+    private onLeave = () => { this.mouse.in = false; };
+
+    private resize() {
+      const gl = this.gl; if (!gl) return;
+      this.dpr = Math.min(devicePixelRatio || 1, 1.5);
+      this.w = this.clientWidth; this.h = this.clientHeight;
+      const canvas = gl.canvas as HTMLCanvasElement;
+      canvas.width = Math.max(1, Math.round(this.w * this.dpr));
+      canvas.height = Math.max(1, Math.round(this.h * this.dpr));
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      if (!this.running) this.draw();
+    }
+
+    private start() { if (this.running) return; this.running = true; this.wander?.resume(); gsap.ticker.add(this.tick); }
+    private stop() { if (!this.running) return; this.running = false; this.wander?.pause(); gsap.ticker.remove(this.tick); }
+
+    private tick = (_t: number, dtMs: number) => {
+      const dt = Math.min(dtMs / 1000, 0.05);
+      const { speed, pull, size } = this.params;
+      // the pointer draws it in when close, and stirs it
+      const R = size * Math.min(this.w, this.h) / Math.max(this.w, 1);
+      const dx = this.mouse.x - this.base.x, dy = (this.mouse.y - this.base.y) * (this.h / Math.max(this.w, 1));
+      const dist = Math.hypot(dx, dy);
+      const prox = this.mouse.in ? gsap.utils.clamp(0, 1, 1 - dist / (R * 5)) : 0;
+      this.near += (prox - this.near) * (1 - Math.exp(-dt * 3));
+      const tx = this.base.x + (this.mouse.x - this.base.x) * pull * prox;
+      const ty = this.base.y + (this.mouse.y - this.base.y) * pull * prox;
+      const k = 1 - Math.exp(-dt * 3.2);
+      const px = this.pos.x, py = this.pos.y;
+      this.pos.x += (tx - this.pos.x) * k;
+      this.pos.y += (ty - this.pos.y) * k;
+      // velocity in radii per second, smoothed, for the stretch
+      const vx = ((this.pos.x - px) * this.w) / Math.max(dt, 1e-3) / (R * this.w);
+      const vy = (-(this.pos.y - py) * this.h) / Math.max(dt, 1e-3) / (R * this.w);
+      this.vel.x += (vx - this.vel.x) * 0.15; this.vel.y += (vy - this.vel.y) * 0.15;
+      this.t += dt * speed * (1 + this.near * 1.4);
+      this.draw();
+    };
+
+    private draw() {
+      const gl = this.gl; if (!gl || !this.w) return;
+      const { size, energy } = this.params;
+      const rpx = size * Math.min(this.w, this.h) * this.dpr;
+      gl.uniform2f(this.u.uRes, this.w * this.dpr, this.h * this.dpr);
+      gl.uniform1f(this.u.uTime, this.t);
+      gl.uniform2f(this.u.uOrb, this.pos.x * this.w * this.dpr, (1 - this.pos.y) * this.h * this.dpr);
+      gl.uniform2f(this.u.uVel, gsap.utils.clamp(-3, 3, this.vel.x), gsap.utils.clamp(-3, 3, this.vel.y));
+      gl.uniform1f(this.u.uR, rpx);
+      gl.uniform1f(this.u.uEnergy, energy);
+      gl.uniform1f(this.u.uNear, this.near);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+  }
+
+  if (!customElements.get('energy-orb')) customElements.define('energy-orb', EnergyOrb);
+</script>

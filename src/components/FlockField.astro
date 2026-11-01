@@ -1,0 +1,320 @@
+---
+// A murmuration: a few thousand small particles that fly as one body, like a huge flock of starlings. The body
+// keeps changing shape — it stretches, folds, twists along its length and turns in depth (edge-on it thins into a dense
+// ribbon, face-on it opens into a wide cloud), with a wave that runs through it. Each bird follows its place on a spring
+// of its own, so changes ripple through the flock instead of moving it like a rigid shape. The whole flock sweeps from
+// side to side (GSAP tweens to random targets), and the pointer is a falcon: the birds near it scatter and close again.
+// Every few seconds the flock gathers into a formation — a spiral galaxy, a ring, a long wave, a sphere — holds it a
+// moment, and loosens back into a free flock or straight into the next one; the springs make each form build up out of
+// the birds rather than switch.
+// It listens for the pointer on its parent, so it can sit behind other content (with pointer-events: none).
+// `avoid` (a selector inside the same parent, e.g. a portrait) keeps most of its path on the open side of that element,
+// or above it when it fills the width (a phone); `size` and `count` override the tuned values for a placement.
+//
+// Every few seconds it moves to the next colour mood and hands that mood to the page: it writes `--mood-a`, `--mood-b`
+// (the birds) and `--mood-glow-1`, `--mood-glow-2` (the atmosphere) as "r g b" on the nearest `[data-mood-scope]`
+// (or <html>), so the surroundings can tint with it — `rgb(var(--mood-glow-1) / 0.3)`. A `moodchange` event names it.
+//
+// Canvas 2D, no library beyond GSAP. Off screen: paused. Reduced motion: one still frame and one mood. Phones: fewer
+// birds. Size it from outside (it fills its parent's box). Tunable at runtime through `el.params` (used by the lab page).
+interface Props { class?: string; size?: number; count?: number; avoid?: string }
+const { class: className, size, count, avoid } = Astro.props;
+---
+<flock-field class:list={['flock', className]} data-size={size} data-count={count} data-avoid={avoid} aria-hidden="true"><canvas></canvas></flock-field>
+
+<style>
+  .flock { display: block; position: relative; width: 100%; height: 100%; }
+  .flock canvas { display: block; width: 100%; height: 100%; }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+
+  type RGB = [number, number, number];
+  type Mood = { a: RGB; b: RGB; g1: RGB; g2: RGB };
+  // a: the nearest birds, b: the farthest; g1, g2: the light the mood casts on the page
+  const MOODS: Record<string, Mood> = {
+    dusk: { a: [255, 218, 178], b: [232, 112, 104], g1: [214, 96, 60], g2: [120, 40, 90] },
+    sea: { a: [184, 238, 242], b: [72, 150, 226], g1: [20, 112, 142], g2: [34, 48, 150] },
+    signal: { a: [228, 246, 150], b: [120, 200, 130], g1: [112, 150, 30], g2: [24, 92, 72] },
+    violet: { a: [236, 208, 255], b: [164, 112, 255], g1: [112, 52, 192], g2: [176, 40, 122] },
+    gold: { a: [255, 238, 186], b: [226, 162, 72], g1: [172, 112, 30], g2: [96, 52, 22] },
+  };
+  const ORDER = Object.keys(MOODS);
+  const flat = (m: Mood) => {
+    const o: Record<string, number> = {};
+    (['a', 'b', 'g1', 'g2'] as const).forEach((k) => m[k].forEach((v, i) => { o[k + '_' + i] = v; }));
+    return o;
+  };
+
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+  const rand = gsap.utils.random;
+  const MAX = 6000;
+  const FORMS = 5;                                  // 0 the free flock, 1 galaxy, 2 ring, 3 wave, 4 sphere
+  // four depth layers, far to near: dot size and opacity
+  const LAYER_SIZE = [0.7, 1, 1.35, 1.8];
+  const LAYER_ALPHA = [0.32, 0.55, 0.8, 1];
+
+  class FlockField extends HTMLElement {
+    // tuned with Or in the lab
+    params = { count: 3600, size: 0.25, speed: 1, flee: 1.5, dot: 1.3, interval: 9, auto: true, mood: 'dusk' };
+    private ctx?: CanvasRenderingContext2D;
+    private home = new Float32Array(MAX * 3);       // each bird's place in the flock (unit sphere)
+    private pers = new Float32Array(MAX * 3);       // its own drift frequency, phase and spring stiffness
+    private seed = new Float32Array(MAX * 3);       // its place in the formations: two uniforms and a soft gaussian
+    private form = { from: 0, to: 0, mix: 1 };
+    private forming?: gsap.core.Timeline;
+    private pos = new Float32Array(MAX * 2); private vel = new Float32Array(MAX * 2);
+    private layer = new Uint8Array(MAX);
+    private ready = 0;                              // birds placed so far (new ones start in place, not at 0,0)
+    private w = 0; private h = 0; private dpr = 1;
+    private center = { x: 0.4, y: 0.5 };
+    private shape = { sx: 1.6, sy: 0.5, sz: 0.7, twist: 0.6, bend: 0.2, yaw: 0.4, rot: 0, wave: 0.5 };
+    private col = flat(MOODS.dusk);
+    private mouse = { x: 0, y: 0, in: false };
+    private t = 0; private running = false;
+    private wander?: gsap.core.Tween; private morphing?: gsap.core.Tween;
+    private moodTween?: gsap.core.Tween; private moodTimer?: gsap.core.Tween;
+    private scope: HTMLElement = document.documentElement;
+    private ro?: ResizeObserver; private io?: IntersectionObserver;
+    private host: HTMLElement = this;
+    private tmpA = new Float32Array(3); private tmpB = new Float32Array(3);
+
+    connectedCallback() {
+      this.ctx = this.querySelector('canvas')!.getContext('2d') ?? undefined;
+      if (!this.ctx) return;
+      this.scope = this.closest<HTMLElement>('[data-mood-scope]') ?? document.documentElement;
+      if (this.dataset.size) this.params.size = Number(this.dataset.size);
+      if (this.dataset.count) this.params.count = Number(this.dataset.count);
+      if (matchMedia('(pointer: coarse)').matches || innerWidth < 700) this.params.count = Math.round(this.params.count / 2);
+      for (let i = 0; i < MAX; i++) {
+        let x, y, z;
+        do { x = rand(-1, 1); y = rand(-1, 1); z = rand(-1, 1); } while (x * x + y * y + z * z > 1);
+        this.home.set([x, y, z], i * 3);
+        this.pers.set([rand(0.4, 1.4), rand(0, 6.28), rand(5, 11)], i * 3);
+        this.seed.set([Math.random(), Math.random(), Math.random() + Math.random() + Math.random() - 1.5], i * 3);
+      }
+
+      this.ro = new ResizeObserver(() => this.resize());
+      this.ro.observe(this);
+      this.resize();
+      this.host = this.parentElement ?? this;
+      this.host.addEventListener('pointermove', this.onMove);
+      this.host.addEventListener('pointerleave', this.onLeave);
+
+      this.setMood(this.params.mood, true);
+      const lane = this.lane();                                       // start in its lane
+      this.center = { x: (lane.x[0] + lane.x[1]) / 2, y: (lane.y[0] + lane.y[1]) / 2 };
+      if (still.matches) { this.t = 3; this.step(0); this.draw(); return; }
+      this.sweep(); this.morph(); this.forming = gsap.timeline().to({}, { duration: 3 }).call(this.nextForm);
+      this.pauseAll();
+      this.io = new IntersectionObserver(([e]) => (e.isIntersecting ? this.start() : this.stop()));
+      this.io.observe(this);
+    }
+
+    disconnectedCallback() {
+      this.stop();
+      [this.wander, this.morphing, this.moodTween, this.moodTimer, this.forming].forEach((t) => t?.kill());
+      this.ro?.disconnect(); this.io?.disconnect();
+      this.host.removeEventListener('pointermove', this.onMove);
+      this.host.removeEventListener('pointerleave', this.onLeave);
+      ['--mood-a', '--mood-b', '--mood-glow-1', '--mood-glow-2'].forEach((p) => this.scope.style.removeProperty(p));
+    }
+
+    // move to a mood: the birds and the page's light blend over a few seconds; then the next one is scheduled
+    setMood(name: string, instant = false) {
+      const target = flat(MOODS[name] ?? MOODS.dusk);
+      this.params.mood = MOODS[name] ? name : 'dusk';
+      this.moodTween?.kill();
+      if (instant || still.matches) { Object.assign(this.col, target); this.applyMood(); }
+      else this.moodTween = gsap.to(this.col, { ...target, duration: 3.2, ease: 'sine.inOut', onUpdate: this.applyMood });
+      this.dispatchEvent(new CustomEvent('moodchange', { detail: this.params.mood, bubbles: true }));
+      this.schedule();
+    }
+
+    // the lab calls this after changing `auto` or `interval`
+    schedule() {
+      this.moodTimer?.kill();
+      if (!this.params.auto || still.matches) return;
+      this.moodTimer = gsap.delayedCall(this.params.interval, () => this.setMood(ORDER[(ORDER.indexOf(this.params.mood) + 1) % ORDER.length]));
+      if (!this.running) this.moodTimer.pause();
+    }
+
+    private applyMood = () => {
+      const c = this.col, rgb = (k: string) => `${Math.round(c[k + '_0'])} ${Math.round(c[k + '_1'])} ${Math.round(c[k + '_2'])}`;
+      this.scope.style.setProperty('--mood-a', rgb('a'));
+      this.scope.style.setProperty('--mood-b', rgb('b'));
+      this.scope.style.setProperty('--mood-glow-1', rgb('g1'));
+      this.scope.style.setProperty('--mood-glow-2', rgb('g2'));
+      if (!this.running) this.draw();
+    };
+
+    // the whole flock sweeps across, turning back at a new point each time
+    private sweep = () => {
+      const { x: [lo, hi], y: [ylo, yhi] } = this.lane();
+      const mid = (lo + hi) / 2, edge = (hi - lo) * 0.15;
+      const x = this.center.x < mid ? rand(hi - edge, hi) : rand(lo, lo + edge);   // all the way across each time
+      this.wander = gsap.to(this.center, { x, y: rand(ylo, yhi), duration: rand(5, 8) / this.params.speed, ease: 'sine.inOut', onComplete: this.sweep });
+    };
+
+    // and keeps changing shape: long or round, flat or deep, bent, twisted, turned edge-on
+    // gather into the next formation (never the same twice running; the free flock comes back often), hold it, go on
+    private nextForm = () => {
+      const { form } = this;
+      let to = form.to;
+      while (to === form.to) to = Math.random() < 0.3 ? 0 : Math.floor(rand(1, FORMS));
+      form.from = form.to; form.to = to; form.mix = 0;
+      const sp = this.params.speed;
+      this.forming = gsap.timeline({ onComplete: this.nextForm })
+        .to(form, { mix: 1, duration: 3 / sp, ease: 'power2.inOut' })
+        .to({}, { duration: rand(3, 4.5) / sp });
+      if (!this.running) this.forming.pause();
+    };
+
+    // a formation's place for bird i, in flock units (the free flock is worked out in step())
+    private formAt(k: number, i: number, t: number, out: Float32Array) {
+      const a = this.seed[i * 3], b = this.seed[i * 3 + 1], g = this.seed[i * 3 + 2];
+      if (k === 1) {                                // a spiral galaxy, three arms, seen at a slant
+        const r = 0.12 + Math.sqrt(a) * 1.55, ang = Math.floor(b * 3) * 2.094 + r * 2.4 + t * 0.12 + g * 0.35;
+        const x = Math.cos(ang) * r, zz = Math.sin(ang) * r, y = g * 0.07 * (1.8 - r);
+        out[0] = x; out[1] = y * 0.41 - zz * 0.91; out[2] = y * 0.91 + zz * 0.41;
+      } else if (k === 2) {                         // a ring that turns slowly, its edge breathing
+        const ang = a * 6.2832 + t * 0.18, rr = 1.3 + g * 0.1 + 0.06 * Math.sin(5 * ang - t);
+        out[0] = Math.cos(ang) * rr; out[1] = Math.sin(ang) * rr * 0.92; out[2] = g * 0.12 + 0.22 * Math.sin(3 * ang + t);
+      } else if (k === 3) {                         // a long wave, rolling through
+        const x = (a * 2 - 1) * 2.3;
+        out[0] = x; out[1] = 0.38 * Math.sin(2.1 * x - t * 1.4) + g * 0.1; out[2] = 0.45 * Math.cos(1.4 * x - t * 0.9) + (b - 0.5) * 0.2;
+      } else {                                      // a sphere's shell, turning
+        const hx = this.home[i * 3], hy = this.home[i * 3 + 1], hz = this.home[i * 3 + 2];
+        const l = Math.hypot(hx, hy, hz) || 1, c = Math.cos(t * 0.25), s = Math.sin(t * 0.25);
+        const x = (hx / l) * 1.05, z = (hz / l) * 1.05;
+        out[0] = x * c + z * s; out[1] = (hy / l) * 1.05; out[2] = -x * s + z * c;
+      }
+    }
+
+    private morph = () => {
+      this.morphing = gsap.to(this.shape, {
+        sx: rand(1, 2.2), sy: rand(0.28, 0.85), sz: rand(0.35, 1), twist: rand(-1.8, 1.8), bend: rand(-0.9, 0.9),
+        yaw: rand(-1.35, 1.35), rot: rand(-0.45, 0.45), wave: rand(0.2, 1),
+        duration: rand(3.5, 6) / this.params.speed, ease: 'sine.inOut', onComplete: this.morph,
+      });
+    };
+
+    // where its centre may sweep (0..1 of its box): nearly edge to edge; beside `avoid`, from the open edge to just behind
+    // it; when `avoid` spans the width (a phone's stacked layout, the portrait in the middle), the band above it
+    private lane(): { x: [number, number]; y: [number, number] } {
+      const wide = { x: [0.22, 0.78] as [number, number], y: [0.38, 0.62] as [number, number] };
+      const el = this.dataset.avoid ? this.parentElement?.querySelector(this.dataset.avoid) : null;
+      const box = this.getBoundingClientRect();
+      if (!el || !box.width || !box.height) return wide;
+      const r = el.getBoundingClientRect(), above = r.top - box.top;
+      if (r.width > box.width * 0.6) return above > 200 ? { x: wide.x, y: [(above * 0.42) / box.height, (above * 0.7) / box.height] } : wide;
+      // side by side: from the open edge of the screen to just behind the element, so the flock's far side slips behind it
+      const left = r.left - box.left, right = box.right - r.right, reach = r.width * 0.2;
+      const [a, b] = left >= right ? [box.width * 0.12, left + reach] : [box.width - right - reach, box.width * 0.88];
+      return { x: [a / box.width, b / box.width], y: wide.y };
+    }
+
+    private onMove = (e: PointerEvent) => {
+      const r = this.getBoundingClientRect();
+      this.mouse = { x: e.clientX - r.left, y: e.clientY - r.top, in: true };
+    };
+    private onLeave = () => { this.mouse.in = false; };
+
+    private resize() {
+      const canvas = this.ctx?.canvas; if (!canvas) return;
+      this.dpr = Math.min(devicePixelRatio || 1, 1.5);
+      this.w = this.clientWidth; this.h = this.clientHeight;
+      canvas.width = Math.max(1, Math.round(this.w * this.dpr));
+      canvas.height = Math.max(1, Math.round(this.h * this.dpr));
+      if (!this.running) { if (still.matches) this.step(0); this.draw(); }
+    }
+
+    private pauseAll() { [this.wander, this.morphing, this.moodTween, this.moodTimer, this.forming].forEach((t) => t?.pause()); }
+    private start() {
+      if (this.running) return; this.running = true;
+      [this.wander, this.morphing, this.moodTween, this.moodTimer, this.forming].forEach((t) => t?.resume());
+      gsap.ticker.add(this.tick);
+    }
+    private stop() { if (!this.running) return; this.running = false; this.pauseAll(); gsap.ticker.remove(this.tick); }
+
+    private tick = (_t: number, dtMs: number) => {
+      const dt = Math.min(dtMs / 1000, 0.05);
+      this.t += dt * this.params.speed;
+      this.step(dt);
+      this.draw();
+    };
+
+    // every bird: its place in the shaped flock, pushed off by the falcon, reached on its own spring
+    private step(dt: number) {
+      const n = Math.min(this.params.count, MAX);
+      const { sx, sy, sz, twist, bend, yaw, rot, wave } = this.shape;
+      const { home, pers, pos, vel, layer, t } = this;
+      const R = this.params.size * Math.min(this.w, this.h);
+      const cx = this.center.x * this.w, cy = this.center.y * this.h;
+      const cyw = Math.cos(yaw), syw = Math.sin(yaw), cr = Math.cos(rot), sr = Math.sin(rot);
+      const F = 4;
+      const { from, to, mix } = this.form, P = this.tmpA, Q = this.tmpB;
+      const fleeR = Math.max(90, R * 0.85), flee = this.params.flee;
+      const { x: mx, y: my, in: hunting } = this.mouse;
+      for (let i = 0; i < n; i++) {
+        const f = pers[i * 3], ph = pers[i * 3 + 1];
+        const hx = home[i * 3] * sx + 0.035 * Math.sin(t * f + ph);
+        const hy = home[i * 3 + 1] * sy + 0.035 * Math.cos(t * f * 1.3 + ph);
+        const hz = home[i * 3 + 2] * sz;
+        // twisted along its length, bent, with a wave running through it
+        const a = twist * hx, ca = Math.cos(a), sa = Math.sin(a);
+        let y = hy * ca - hz * sa, z = hy * sa + hz * ca;
+        let x = hx;
+        const u = home[i * 3];                      // bend by the place along the body, not its stretched length,
+        y += bend * (u * u - 0.4) + wave * 0.16 * Math.sin(2.6 * u - 2.4 * t);   // so it never leaves the frame
+        z += wave * 0.12 * Math.cos(2 * u - 1.9 * t);
+        // blend from one formation to the next (0 is the free flock just worked out)
+        if (from !== 0 || to !== 0) {
+          if (from === 0) { P[0] = x; P[1] = y; P[2] = z; } else this.formAt(from, i, t, P);
+          if (to === 0) { Q[0] = x; Q[1] = y; Q[2] = z; } else this.formAt(to, i, t, Q);
+          const m = mix;
+          x = P[0] + (Q[0] - P[0]) * m; y = P[1] + (Q[1] - P[1]) * m; z = P[2] + (Q[2] - P[2]) * m;
+        }
+        // turned in depth, then tilted on screen, then seen in perspective
+        const x2 = x * cyw + z * syw, z2 = -x * syw + z * cyw;
+        const x3 = x2 * cr - y * sr, y3 = x2 * sr + y * cr;
+        const s = F / (F + z2);
+        let tx = cx + x3 * s * R, ty = cy + y3 * s * R;
+        layer[i] = Math.max(0, Math.min(3, Math.round(((1.1 - z2) / 2.2) * 3)));
+
+        if (i >= this.ready || dt === 0) { pos[i * 2] = tx; pos[i * 2 + 1] = ty; vel[i * 2] = vel[i * 2 + 1] = 0; continue; }
+        if (hunting && flee > 0) {
+          const dx = pos[i * 2] - mx, dy = pos[i * 2 + 1] - my, d = Math.hypot(dx, dy) || 1;
+          if (d < fleeR) { const p = (1 - d / fleeR) ** 2 * fleeR * 1.2 * flee; tx += (dx / d) * p; ty += (dy / d) * p; }
+        }
+        const k = pers[i * 3 + 2], c = 2 * Math.sqrt(k) * 0.75;
+        vel[i * 2] += ((tx - pos[i * 2]) * k - vel[i * 2] * c) * dt;
+        vel[i * 2 + 1] += ((ty - pos[i * 2 + 1]) * k - vel[i * 2 + 1] * c) * dt;
+        pos[i * 2] += vel[i * 2] * dt;
+        pos[i * 2 + 1] += vel[i * 2 + 1] * dt;
+      }
+      this.ready = Math.max(this.ready, n);
+    }
+
+    private draw() {
+      const ctx = this.ctx; if (!ctx || !this.w) return;
+      const n = Math.min(this.params.count, MAX, this.ready);
+      const { pos, layer, dpr, col } = this;
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      const paths = [new Path2D(), new Path2D(), new Path2D(), new Path2D()];
+      const sizes = LAYER_SIZE.map((v) => v * this.params.dot * dpr);
+      for (let i = 0; i < n; i++) {
+        const l = layer[i], sz = sizes[l];
+        paths[l].rect(pos[i * 2] * dpr - sz / 2, pos[i * 2 + 1] * dpr - sz / 2, sz, sz);
+      }
+      for (let l = 0; l < 4; l++) {
+        const m = l / 3, mix = (k: number) => Math.round(col['b_' + k] + (col['a_' + k] - col['b_' + k]) * m);
+        ctx.fillStyle = `rgb(${mix(0)} ${mix(1)} ${mix(2)} / ${LAYER_ALPHA[l]})`;
+        ctx.fill(paths[l]);
+      }
+    }
+  }
+
+  if (!customElements.get('flock-field')) customElements.define('flock-field', FlockField);
+</script>

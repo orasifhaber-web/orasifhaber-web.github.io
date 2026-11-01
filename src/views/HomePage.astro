@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import CategoryCards from '../components/CategoryCards.astro';
 import PortraitReveal from '../components/PortraitReveal.astro';
-import HeroCosmos from '../components/HeroCosmos.astro';
+import FlockField from '../components/FlockField.astro';
 import { site } from '../data/site';
 import { ui, url, fwd, type Lang } from '../i18n';
 
@@ -15,7 +15,7 @@ const [l1, l2] = ui.nameLines[lang];
        and sinks back a little — and each arrives its own way (data-enter, see the script below). -->
   <div class="hp">
   <!-- Poster hero: the cut-out portrait stands beside (and slightly in front of) the name; hover / tap reveals the artworks -->
-  <section class="hero hp__panel hp__panel--stick" aria-labelledby="hero-title">
+  <section class="hero hp__panel hp__panel--stick" aria-labelledby="hero-title" data-mood-scope>
     <div class="hero__top label">
       <span>{ui.role[lang]} — {ui.location[lang]}</span>
       <span class="hero__years">{ui.hero.years[lang]}</span>
@@ -24,7 +24,7 @@ const [l1, l2] = ui.nameLines[lang];
       <span class="hero__line"><span>{l1}</span></span><span class="hero__sp"> </span><span class="hero__line"><span>{l2}</span></span>
     </h1>
     <p class="label hero__tag">{ui.hero.tagline[lang]}</p>
-    <HeroCosmos class="hero__space" />
+    <FlockField class="hero__space" size={0.34} count={5000} avoid=".hero__portrait" />
     <PortraitReveal class="hero__portrait" alt={ui.hero.portrait[lang]} demoDelay={4200} />
     <div class="hero__bottom">
       <h2 class="hero__pitch">{ui.hero.pitch[lang]}</h2>
@@ -155,7 +155,9 @@ const [l1, l2] = ui.nameLines[lang];
      Phone / tablet: name on two lines, the portrait below it rising a little into the second line, then the text.
      Desktop: the portrait fills the height in its own column, flush with the right edge of the screen (where the photo is
      cropped), below the fixed header; labels, name, statement and links sit together as one block beside it. */
+  /* the flock's current colour mood lights the Hero: two soft glows over the dark ground (FlockField writes the vars) */
   .hero {
+    --mood-glow-1: 214 96 60; --mood-glow-2: 120 40 90;
     position: relative;
     display: grid;
     overflow: hidden;
@@ -183,7 +185,7 @@ const [l1, l2] = ui.nameLines[lang];
     margin: -9vw auto 0;
     background: none;
   }
-  /* the photo has its own dark backdrop: its sides and top fade out, so no rectangle shows against the stars */
+  /* the photo has its own dark backdrop: its sides and top fade out, so no rectangle shows against the background */
   .hero :global(.portrait.hero__portrait) {
     -webkit-mask: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent), linear-gradient(to bottom, transparent, #000 12%);
     -webkit-mask-composite: source-in;
@@ -200,11 +202,16 @@ const [l1, l2] = ui.nameLines[lang];
     background: linear-gradient(to bottom, rgb(14 14 12 / 0), var(--bg) 92%);
     pointer-events: none;
   }
-  /* deep space behind everything in the Hero: its vanishing point is the portrait's head, and it follows the mouse */
+  /* the murmuration behind everything in the Hero; it hears the pointer through the Hero itself, and stays clear of the
+     fixed header, fading out into the next section */
   .hero :global(.hero__space) {
     position: absolute;
     z-index: 0;
     inset: 0;
+    pointer-events: none;
+    opacity: 0.78;                 /* a touch quieter than in the lab, so the text over it reads first */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, transparent 56px, #000 200px, #000 84%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, transparent 56px, #000 200px, #000 84%, transparent 100%);
   }
   .hero__bottom { position: relative; z-index: 3; display: grid; gap: var(--s-5); padding: var(--s-6) var(--margin) var(--s-8); }
   /* the pitch: a short claim, then the line that explains it */
@@ -213,6 +220,8 @@ const [l1, l2] = ui.nameLines[lang];
   .hero__statement { font-size: var(--t-lead); line-height: 1.45; color: var(--ink-2); max-width: 40ch; margin-top: calc(-1 * var(--s-3)); }
   :global([lang='he']) .hero__statement { line-height: 1.55; }
   .hero__cta { display: flex; flex-wrap: wrap; gap: var(--s-3); }
+  /* the flock flies behind the text: a soft shadow of the ground hugs the smaller letters so they always read */
+  .hero__tag, .hero__top, .hero__pitch, .hero__statement { text-shadow: 0 0 3px var(--bg), 0 0 10px var(--bg), 0 0 22px rgb(14 14 12 / 0.8); }
   @media (max-width: 899px) {
     /* taller than the screen on a phone: it scrolls away normally instead of sticking with its top cut off */
     .hero.hp__panel--stick { position: relative; top: auto !important; }
@@ -268,7 +277,7 @@ const [l1, l2] = ui.nameLines[lang];
   }
 
   /* The entrance — one orchestrated sequence, ~2.3s, in the site's light motif:
-     the stars come up out of the dark → the portrait develops from below as the light slowly comes up on it (a smooth
+     the flock comes up out of the dark → the portrait develops from below as the light slowly comes up on it (a smooth
      ramp, no flicker) → the name rises line by line → the tagline under it → the labels, the pitch, its line and the
      two buttons follow → the menu last. The portrait's own "third eye" demo waits a good two seconds more, so the face is seen as itself first.
      Reduced motion: everything is simply there. */
@@ -297,6 +306,12 @@ const [l1, l2] = ui.nameLines[lang];
 
   /* ---------- stacked pages ---------- */
   .hp__panel { position: relative; background: var(--bg); }
+  .hp__panel.hero {
+    background:
+      radial-gradient(60% 55% at 28% 40%, rgb(var(--mood-glow-1) / 0.24), transparent 70%),
+      radial-gradient(55% 55% at 72% 80%, rgb(var(--mood-glow-2) / 0.26), transparent 70%),
+      var(--bg);
+  }
   .hp__panel--stick { position: sticky; top: 0; transform-origin: 50% 0; }
   .hp__shade { position: absolute; inset: 0; z-index: 20; background: #000; opacity: 0; pointer-events: none; }
   /* the pause after the portfolio: empty, see-through scroll room while the portfolio stays stuck in place */

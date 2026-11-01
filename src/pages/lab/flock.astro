@@ -1,0 +1,108 @@
+---
+// Lab page (not linked from the site, kept out of search): the murmuration on its own, full screen, with a few sliders
+// to tune it together before it goes anywhere on the real pages. The page takes its light and accent from the flock's
+// current mood (`data-mood-scope`), so the whole screen changes atmosphere with it.
+import Base from '../../layouts/Base.astro';
+import FlockField from '../../components/FlockField.astro';
+---
+<Base lang="he" title="מעבדה: להקה" description="עמוד בדיקה פנימי ללהקת החלקיקים — לא מקושר מהאתר." noindex>
+  <section class="lab" data-mood-scope>
+    <FlockField class="lab__flock" />
+    <div class="lab__head">
+      <h1 class="label">מעבדה — להקה (אב-טיפוס)</h1>
+      <p class="muted">העכבר הוא הבז: התקרבו והלהקה תתפזר. כל כמה שניות היא עוברת לאווירה חדשה.</p>
+    </div>
+
+    <details class="lab__tune" open>
+      <summary>כוונון</summary>
+      <form class="lab__panel" onsubmit="return false">
+        <label>מספר ציפורים <output data-for="count"></output>
+          <input type="range" name="count" min="400" max="6000" step="100" value="3600" />
+        </label>
+        <label>גודל הלהקה <output data-for="size"></output>
+          <input type="range" name="size" min="0.1" max="0.45" step="0.01" value="0.25" />
+        </label>
+        <label>מהירות <output data-for="speed"></output>
+          <input type="range" name="speed" min="0.3" max="2.5" step="0.1" value="1" />
+        </label>
+        <label>בריחה מהעכבר <output data-for="flee"></output>
+          <input type="range" name="flee" min="0" max="1.5" step="0.05" value="1.5" />
+        </label>
+        <label>גודל נקודה <output data-for="dot"></output>
+          <input type="range" name="dot" min="0.6" max="2.6" step="0.1" value="1.3" />
+        </label>
+        <label>החלפת צבע כל (שניות) <output data-for="interval"></output>
+          <input type="range" name="interval" min="4" max="20" step="1" value="9" />
+        </label>
+        <fieldset>
+          <legend>אווירה</legend>
+          <button type="button" data-mood="dusk" aria-pressed="true">שקיעה</button>
+          <button type="button" data-mood="sea" aria-pressed="false">ים לילי</button>
+          <button type="button" data-mood="signal" aria-pressed="false">ירוק האתר</button>
+          <button type="button" data-mood="violet" aria-pressed="false">סגול</button>
+          <button type="button" data-mood="gold" aria-pressed="false">זהב</button>
+          <label class="lab__check"><input type="checkbox" name="auto" checked /> החלפה אוטומטית</label>
+        </fieldset>
+      </form>
+    </details>
+  </section>
+</Base>
+
+<script>
+  type Flock = HTMLElement & { params: Record<string, number | string | boolean>; setMood: (n: string) => void; schedule: () => void };
+  const setup = () => {
+    const flock = document.querySelector<Flock>('flock-field');
+    const form = document.querySelector<HTMLFormElement>('.lab__panel');
+    if (!flock || !form) return;
+    if (innerWidth < 700) form.closest('details')?.removeAttribute('open');   // on a phone the panel starts closed
+    const show = () => form.querySelectorAll<HTMLOutputElement>('output').forEach((o) => { o.value = String(flock.params[o.dataset.for!]); });
+    form.querySelectorAll<HTMLInputElement>('input[type=range]').forEach((inp) => {
+      inp.value = String(flock.params[inp.name]);
+      inp.addEventListener('input', () => {
+        flock.params[inp.name] = Number(inp.value); show();
+        if (inp.name === 'interval') flock.schedule();
+      });
+    });
+    const auto = form.querySelector<HTMLInputElement>('[name=auto]')!;
+    auto.addEventListener('change', () => { flock.params.auto = auto.checked; flock.schedule(); });
+    form.querySelectorAll<HTMLButtonElement>('[data-mood]').forEach((b) => b.addEventListener('click', () => flock.setMood(b.dataset.mood!)));
+    const mark = (name: string) => form.querySelectorAll('[data-mood]').forEach((x) => x.setAttribute('aria-pressed', String((x as HTMLElement).dataset.mood === name)));
+    flock.addEventListener('moodchange', (e) => mark((e as CustomEvent<string>).detail));
+    mark(String(flock.params.mood));
+    show();
+  };
+  document.addEventListener('astro:page-load', setup);
+</script>
+
+<style>
+  /* the mood's light on the page: two soft glows in its colours over the dark ground; the accent follows it too */
+  .lab {
+    --mood-a: 255 218 178; --mood-glow-1: 214 96 60; --mood-glow-2: 120 40 90;
+    --signal: rgb(var(--mood-a));
+    position: relative; height: 100svh; min-height: 560px; overflow: hidden;
+    background:
+      radial-gradient(70% 60% at 30% 35%, rgb(var(--mood-glow-1) / 0.3), transparent 70%),
+      radial-gradient(60% 60% at 78% 75%, rgb(var(--mood-glow-2) / 0.32), transparent 70%),
+      var(--bg);
+  }
+  .lab :global(.lab__flock) { position: absolute; inset: 0; }
+  .lab__head { position: absolute; z-index: 2; inset: calc(72px + var(--s-4)) var(--margin) auto; display: grid; gap: var(--s-2); pointer-events: none; }
+  .lab__head h1 { color: var(--ink); }
+
+  .lab__tune { position: absolute; z-index: 2; left: var(--margin); bottom: var(--s-4); }
+  .lab__tune summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; padding: 0 var(--s-3); width: max-content; background: rgb(14 14 12 / 0.72); border: 1px solid var(--line); font-size: var(--t-small); }
+  .lab__panel {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-2) var(--s-4); width: min(400px, calc(100vw - 2 * var(--margin)));
+    padding: var(--s-4); background: rgb(14 14 12 / 0.72); border: 1px solid var(--line);
+    font-size: var(--t-small);
+  }
+  .lab__panel label { display: grid; gap: var(--s-1); }
+  .lab__panel output { color: var(--ink-3); font-family: var(--f-mono); margin-inline-start: var(--s-2); }
+  .lab__panel input[type=range] { width: 100%; accent-color: var(--signal); }
+  .lab__panel fieldset { grid-column: 1 / -1; border: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); }
+  .lab__panel legend { float: inline-start; margin-inline-end: var(--s-2); }
+  .lab__panel button { min-height: 36px; padding: 0 var(--s-3); border: 1px solid var(--line); background: none; color: var(--ink); cursor: pointer; font: inherit; }
+  .lab__panel button[aria-pressed='true'] { border-color: var(--signal); color: var(--signal); }
+  .lab__panel .lab__check { display: flex; align-items: center; gap: var(--s-2); margin-inline-start: auto; }
+  .lab__check input { accent-color: var(--signal); }
+</style>

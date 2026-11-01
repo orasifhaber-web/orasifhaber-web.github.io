@@ -1,0 +1,83 @@
+---
+// Lab page (not linked from the site, kept out of search): the energy orb on its own, full screen, with a few sliders
+// to tune it together before it goes anywhere on the real pages. Values shown under the sliders can be quoted back.
+import Base from '../../layouts/Base.astro';
+import EnergyOrb from '../../components/EnergyOrb.astro';
+---
+<Base lang="he" title="מעבדה: כדור אנרגיה" description="עמוד בדיקה פנימי לכדור האנרגיה — לא מקושר מהאתר." noindex>
+  <section class="lab">
+    <EnergyOrb class="lab__orb" />
+    <div class="lab__head">
+      <h1 class="label">מעבדה — כדור אנרגיה (אב-טיפוס)</h1>
+      <p class="muted">הזיזו את העכבר ליד הכדור. בטלפון הוא זז לבד.</p>
+    </div>
+
+    <details class="lab__tune" open>
+      <summary>כוונון</summary>
+    <form class="lab__panel" onsubmit="return false">
+      <label>גודל <output data-for="size"></output>
+        <input type="range" name="size" min="0.08" max="0.32" step="0.01" value="0.17" />
+      </label>
+      <label>מהירות <output data-for="speed"></output>
+        <input type="range" name="speed" min="0.3" max="2.5" step="0.1" value="1" />
+      </label>
+      <label>עוצמה <output data-for="energy"></output>
+        <input type="range" name="energy" min="0" max="1.5" step="0.05" value="0.6" />
+      </label>
+      <label>משיכה לעכבר <output data-for="pull"></output>
+        <input type="range" name="pull" min="0" max="0.8" step="0.05" value="0.35" />
+      </label>
+      <fieldset>
+        <legend>צבעים</legend>
+        <button type="button" data-palette="art" aria-pressed="true">מהיצירות</button>
+        <button type="button" data-palette="signal" aria-pressed="false">ירוק האתר</button>
+        <button type="button" data-palette="cold" aria-pressed="false">קר</button>
+      </fieldset>
+    </form>
+    </details>
+  </section>
+</Base>
+
+<script>
+  const setup = () => {
+    const orb = document.querySelector<HTMLElement & { params: Record<string, number | string>; setPalette: (n: string) => void }>('energy-orb');
+    const form = document.querySelector<HTMLFormElement>('.lab__panel');
+    if (!orb || !form) return;
+    if (innerWidth < 700) form.closest('details')?.removeAttribute('open');   // on a phone the panel starts closed
+    const show = () => form.querySelectorAll<HTMLOutputElement>('output').forEach((o) => { o.value = String(orb.params[o.dataset.for!]); });
+    form.querySelectorAll<HTMLInputElement>('input[type=range]').forEach((inp) => {
+      inp.addEventListener('input', () => { orb.params[inp.name] = Number(inp.value); show(); });
+    });
+    form.querySelectorAll<HTMLButtonElement>('[data-palette]').forEach((b) => {
+      b.addEventListener('click', () => {
+        orb.setPalette(b.dataset.palette!);
+        form.querySelectorAll('[data-palette]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      });
+    });
+    show();
+  };
+  document.addEventListener('astro:page-load', setup);
+</script>
+
+<style>
+  .lab { position: relative; height: 100svh; min-height: 560px; overflow: hidden; }
+  .lab :global(.lab__orb) { position: absolute; inset: 0; }
+  .lab__head { position: absolute; z-index: 2; inset: calc(72px + var(--s-4)) var(--margin) auto; display: grid; gap: var(--s-2); pointer-events: none; }
+  .lab__head h1 { color: var(--ink); }
+
+  /* a compact panel in the bottom-left corner, out of the orb's usual path */
+  .lab__tune { position: absolute; z-index: 2; left: var(--margin); bottom: var(--s-4); }
+  .lab__tune summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; padding: 0 var(--s-3); width: max-content; background: rgb(14 14 12 / 0.72); border: 1px solid var(--line); font-size: var(--t-small); }
+  .lab__panel {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-2) var(--s-4); width: min(380px, calc(100% - 2 * var(--margin)));
+    padding: var(--s-4); background: rgb(14 14 12 / 0.72); border: 1px solid var(--line);
+    font-size: var(--t-small);
+  }
+  .lab__panel label { display: grid; gap: var(--s-1); }
+  .lab__panel output { color: var(--ink-3); font-family: var(--f-mono); margin-inline-start: var(--s-2); }
+  .lab__panel input { width: 100%; accent-color: var(--signal); }
+  .lab__panel fieldset { grid-column: 1 / -1; border: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); }
+  .lab__panel legend { float: inline-start; margin-inline-end: var(--s-2); }
+  .lab__panel button { min-height: 36px; padding: 0 var(--s-3); border: 1px solid var(--line); background: none; color: var(--ink); cursor: pointer; font: inherit; }
+  .lab__panel button[aria-pressed='true'] { border-color: var(--signal); color: var(--signal); }
+</style>

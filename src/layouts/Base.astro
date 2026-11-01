@@ -20,8 +20,9 @@ interface Props {
   accent?: string;
   jsonld?: Record<string, unknown>;
   type?: 'website' | 'article';
+  noindex?: boolean; // keep a page (e.g. a lab test) out of search results
 }
-const { lang, title, description = ui.description[lang], image = '/og.jpg', accent, jsonld, type = 'website' } = Astro.props;
+const { lang, title, description = ui.description[lang], image = '/og.jpg', accent, jsonld, type = 'website', noindex = false } = Astro.props;
 const name = ui.name[lang];
 const fullTitle = title ? `${title} — ${name}` : `${name} — ${ui.role[lang]}`;
 const path = basePath(Astro.url.pathname);
@@ -49,6 +50,7 @@ const person = {
     {langs.map((l) => <link rel="alternate" hreflang={l} href={new URL(url(l, path), Astro.site)} />)}
     <link rel="alternate" hreflang="x-default" href={new URL(url('he', path), Astro.site)} />
     <meta name="theme-color" content="#0e0e0c" />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="sitemap" href="/sitemap.xml" />
 
