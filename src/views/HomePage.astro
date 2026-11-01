@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import CategoryWheel from '../components/CategoryWheel.astro';
+import CategoryCards from '../components/CategoryCards.astro';
 import PortraitReveal from '../components/PortraitReveal.astro';
 import HeroCosmos from '../components/HeroCosmos.astro';
 import { site } from '../data/site';
@@ -23,21 +23,24 @@ const [l1, l2] = ui.nameLines[lang];
     <h1 id="hero-title" class="mega hero__name">
       <span class="hero__line"><span>{l1}</span></span><span class="hero__sp"> </span><span class="hero__line"><span>{l2}</span></span>
     </h1>
+    <p class="label hero__tag">{ui.hero.tagline[lang]}</p>
     <HeroCosmos class="hero__space" />
     <PortraitReveal class="hero__portrait" alt={ui.hero.portrait[lang]} demoDelay={4200} />
     <div class="hero__bottom">
+      <h2 class="hero__pitch">{ui.hero.pitch[lang]}</h2>
       <p class="hero__statement">{ui.hero.statement[lang]}</p>
+      <!-- the pitch leads to leaving details, so that is the main action; the portfolio is the second -->
       <ul class="hero__cta">
-        <li><a href="#work" class="btn btn--primary">{ui.hero.toWork[lang]} <span class="arrow" aria-hidden="true">↓</span></a></li>
-        <li><a href="#contact" class="btn btn--ghost">{ui.hero.toContact[lang]} <span class="arrow" aria-hidden="true">{fwd(lang)}</span></a></li>
+        <li><a href="#contact" class="btn btn--primary">{ui.hero.toContact[lang]} <span class="arrow" aria-hidden="true">{fwd(lang)}</span></a></li>
+        <li><a href="#work" class="btn btn--ghost">{ui.hero.toWork[lang]} <span class="arrow" aria-hidden="true">↓</span></a></li>
       </ul>
     </div>
     <div class="hp__shade" aria-hidden="true"></div>
   </section>
 
-  <!-- the work: a wheel of categories, one card each (not every project at once) -->
+  <!-- the work: three category cards, one per category (not every project at once) -->
   <section id="work" class="hp__panel hp__panel--stick hp__work" data-enter="melt" aria-labelledby="work-title">
-    <div class="wrap"><CategoryWheel lang={lang} /></div>
+    <div class="wrap"><CategoryCards lang={lang} /></div>
     <a href="#about" class="label hp__next">{ui.about.label[lang]} <span aria-hidden="true">↓</span></a>
     <div class="hp__shade" aria-hidden="true"></div>
   </section>
@@ -162,8 +165,15 @@ const [l1, l2] = ui.nameLines[lang];
   .hero__years { display: none; }
   .hero__name { position: relative; z-index: 1; font-size: 22vw; padding-inline: var(--margin); margin-top: var(--s-5); }
   :global([lang='he']) .hero__name { font-size: 30vw; line-height: 0.82; }
+  /* optical alignment: the round "O" sits ~0.03em in from its box, so the first line (the one that starts with it) moves
+     out by that much and the eye reads one straight edge with the tagline and text beneath (measured: O starts 5px in at
+     138px, a D at 1px). The second line starts with an A and needs nothing. */
+  :global([lang='en']) .hero__line:first-child { margin-left: -0.03em; }
   .hero__line { display: block; overflow: hidden; padding-bottom: 0.02em; }
   .hero__line > span { display: block; }
+  /* the tagline — the professional line under the name, like the line under a logo */
+  .hero__tag { position: relative; z-index: 3; padding-inline: var(--margin); margin-top: var(--s-4); color: var(--ink); font-size: clamp(0.8125rem, 1.15vw, 1.0625rem); letter-spacing: 0.12em; }
+  :lang(he) .hero__tag { letter-spacing: 0.04em; font-size: clamp(0.875rem, 1.2vw, 1.125rem); }
   .hero__sp { display: none; }
   /* the PNG is a cut-out on a transparent background */
   .hero :global(.portrait.hero__portrait) {
@@ -197,8 +207,11 @@ const [l1, l2] = ui.nameLines[lang];
     inset: 0;
   }
   .hero__bottom { position: relative; z-index: 3; display: grid; gap: var(--s-5); padding: var(--s-6) var(--margin) var(--s-8); }
-  .hero__statement { font-size: clamp(1.25rem, 2.3vw, 2.2rem); line-height: 1.25; letter-spacing: -0.015em; max-width: 30ch; font-variation-settings: 'wdth' 92; }
-  :global([lang='he']) .hero__statement { letter-spacing: 0; line-height: 1.35; }
+  /* the pitch: a short claim, then the line that explains it */
+  .hero__pitch { font-size: clamp(1.6rem, 2.7vw, 2.7rem); font-weight: 600; line-height: 1.12; letter-spacing: -0.02em; max-width: 20ch; font-variation-settings: 'wdth' 88; }
+  :global([lang='he']) .hero__pitch { letter-spacing: 0; line-height: 1.2; }
+  .hero__statement { font-size: var(--t-lead); line-height: 1.45; color: var(--ink-2); max-width: 40ch; margin-top: calc(-1 * var(--s-3)); }
+  :global([lang='he']) .hero__statement { line-height: 1.55; }
   .hero__cta { display: flex; flex-wrap: wrap; gap: var(--s-3); }
   @media (max-width: 899px) {
     /* taller than the screen on a phone: it scrolls away normally instead of sticking with its top cut off */
@@ -211,19 +224,20 @@ const [l1, l2] = ui.nameLines[lang];
 
   @media (min-width: 900px) {
     .hero {
-      --tuck: 4vw; /* how far the name runs in behind the portrait */
+      --tuck: 0px; /* the name no longer runs in behind the portrait: its edge fades, so the first letter would show past the
+                      alignment line the tagline and text share — the name now starts exactly on that line too */
       min-height: 100svh;
       --fig-w: calc((100svh - 72px) * 1086 / 1448); /* the portrait's width follows the screen height */
       padding-top: 0;
       /* minmax(0, …): a long name never pushes the portrait off screen — it only slides further behind it */
       grid-template-columns: auto minmax(0, 1fr);
-      grid-template-rows: auto 1fr auto auto 1fr;
-      grid-template-areas: 'fig top' 'fig .' 'fig name' 'fig bottom' 'fig .';
+      grid-template-rows: auto 1fr auto auto auto 1fr;
+      grid-template-areas: 'fig top' 'fig .' 'fig name' 'fig tag' 'fig bottom' 'fig .';
     }
     /* English reads left to right, but the portrait stays on the right, where the photo is cropped */
     :global([dir='ltr']) .hero {
       grid-template-columns: minmax(0, 1fr) auto;
-      grid-template-areas: 'top fig' '. fig' 'name fig' 'bottom fig' '. fig';
+      grid-template-areas: 'top fig' '. fig' 'name fig' 'tag fig' 'bottom fig' '. fig';
     }
     .hero :global(.portrait.hero__portrait) {
       -webkit-mask: linear-gradient(to right, transparent, #000 18%);
@@ -235,7 +249,8 @@ const [l1, l2] = ui.nameLines[lang];
       aspect-ratio: 1086 / 1448;
       margin: 0;
     }
-    .hero__top { grid-area: top; padding: 88px var(--margin) 0; padding-right: var(--s-6); }
+    .hero__top { grid-area: top; padding: 88px var(--margin) 0; padding-right: 0; }
+    :global([dir='ltr']) .hero__top { padding-right: var(--s-6); }
     .hero__years { display: inline; }
     .hero__name { grid-area: name; display: flex; white-space: nowrap; margin: 0 calc(-1 * var(--tuck)) 0 0; padding: 0 0 0 var(--margin); }
     .hero__line { flex-shrink: 0; } /* keep each line whole; the overflow tucks behind the portrait */
@@ -244,13 +259,18 @@ const [l1, l2] = ui.nameLines[lang];
     :global([lang='en']) .hero__name { font-size: calc((100vw - var(--fig-w) - var(--margin) + var(--tuck) - 24px) / 5.35); }
     :global([lang='he']) .hero__name { font-size: 11.5vw; }
     :global([lang='he']) .hero__sp { display: block; width: 0.22em; }
-    .hero__bottom { grid-area: bottom; justify-items: start; padding: var(--s-6) var(--s-6) 0 var(--margin); }
+    /* One alignment line: the name comes out from behind the portrait at its edge, and the tagline, the pitch, its line
+       and the buttons all start on that same edge (no inner padding on the portrait's side). */
+    .hero__tag { grid-area: tag; margin: var(--s-1) 0 0; padding: 0 0 0 var(--margin); }
+    .hero__bottom { grid-area: bottom; justify-items: start; padding: var(--s-7) 0 0 var(--margin); }
+    :global([dir='ltr']) .hero__tag { padding: 0 0 0 var(--margin); }
+    :global([dir='ltr']) .hero__bottom { padding: var(--s-7) var(--s-6) 0 var(--margin); }
   }
 
   /* The entrance — one orchestrated sequence, ~2.3s, in the site's light motif:
      the stars come up out of the dark → the portrait develops from below as the light slowly comes up on it (a smooth
-     ramp, no flicker) → the name rises line by line → the labels, the statement and the two buttons follow → the menu
-     last. The portrait's own "third eye" demo waits a good two seconds more, so the face is seen as itself first.
+     ramp, no flicker) → the name rises line by line → the tagline under it → the labels, the pitch, its line and the
+     two buttons follow → the menu last. The portrait's own "third eye" demo waits a good two seconds more, so the face is seen as itself first.
      Reduced motion: everything is simply there. */
   @media (prefers-reduced-motion: no-preference) {
     .hero :global(.hero__space) { animation: fade-in 1.8s var(--ease-in-out) both; }
@@ -258,6 +278,8 @@ const [l1, l2] = ui.nameLines[lang];
     .hero__line > span { animation: rise 1.2s 0.6s var(--ease-out) both; }
     .hero__line:last-child > span { animation-delay: 0.74s; }
     .hero__top { animation: fade 1s 1.15s var(--ease-out) both; }
+    .hero__tag { animation: fade 1s 0.95s var(--ease-out) both; }
+    .hero__pitch { animation: fade 1s 1.15s var(--ease-out) both; }
     .hero__statement { animation: fade 1s 1.3s var(--ease-out) both; }
     .hero__cta li { animation: fade 0.9s 1.5s var(--ease-out) both; }
     .hero__cta li + li { animation-delay: 1.62s; }

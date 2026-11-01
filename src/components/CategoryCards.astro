@@ -1,0 +1,71 @@
+---
+// Home page: the work as three large cards, one per category — all three choices visible at once, so anyone after
+// one kind of work picks it in a second (with only three, a carousel hid more than it showed). Each card is the
+// category's lead project (`lead` in categories.json) in the site's cover frame, its name always set near the foot,
+// and the category's line beneath the card. Under the pointer (or keyboard focus) the picture darkens and
+// "See the work →" appears under the name — the name itself never moves or repeats.
+import Img from './Img.astro';
+import { categories, leadOf, coverFrame } from '../data/projects';
+import { ui, url, fwd, type Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+---
+<div class="cc">
+  <h2 id="work-title" class="label cc__title">{ui.work[lang]}</h2>
+  <ul class="cc__list" role="list">
+    {categories.map((c, k) => {
+      const p = leadOf(c);
+      return (
+        <li data-reveal style={`--wa:${p.accent};--i:${k}`}>
+          <a href={url(lang, `/work/${c.slug}/`)} class="cc__card">
+            <span class="cc__media">
+              <Img id={p.cover.id} alt="" reveal={false} ratio={coverFrame} sizes="(min-width: 900px) 31vw, 92vw" />
+              <span class="cc__foot">
+                <span class="cc__name">{c.title[lang]}</span>
+                <span class="label cc__go" aria-hidden="true">{ui.toCategory[lang]} <span class="arrow">{fwd(lang)}</span></span>
+              </span>
+            </span>
+            <span class="muted cc__intro">{c.intro[lang]}</span>
+          </a>
+        </li>
+      );
+    })}
+  </ul>
+</div>
+
+<style>
+  .cc { display: grid; gap: var(--s-6); }
+  .cc__title { color: var(--ink); }
+  .cc__list { display: grid; gap: var(--s-7) var(--gutter); }
+  @media (min-width: 900px) { .cc__list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+  .cc__card { display: grid; gap: var(--s-4); }
+  .cc__card:focus-visible { outline: 2px solid var(--signal); outline-offset: 6px; }
+  .cc__media { position: relative; display: block; overflow: hidden; box-shadow: 0 30px 60px -30px color-mix(in srgb, var(--wa) 45%, transparent); }
+  .cc__media :global(img) { filter: brightness(0.86); transition: filter 0.6s var(--ease-out); }
+
+  /* the name, always there near the foot of the picture; room is kept under it for the action, so it never moves */
+  .cc__foot {
+    position: absolute; z-index: 2; inset: auto 0 0;
+    display: grid; justify-items: center; gap: var(--s-2);
+    padding: 0 var(--s-5) var(--s-5); text-align: center; pointer-events: none;
+  }
+  .cc__name {
+    font-family: var(--f-display); font-weight: 800; font-variation-settings: 'wdth' 62; text-transform: uppercase;
+    font-size: clamp(1.9rem, 2.9vw, 2.8rem); line-height: 0.95; color: var(--ink);
+    text-shadow: 0 1px 2px rgb(0 0 0 / 0.7), 0 2px 12px rgb(0 0 0 / 0.65), 0 0 36px rgb(0 0 0 / 0.55);
+  }
+  :global([lang='he']) .cc__name { font-weight: 700; line-height: 1.05; }
+  .cc__go { color: var(--ink); opacity: 0; transform: translateY(6px); transition: opacity 0.45s var(--ease-out), transform 0.6s var(--ease-out); }
+  .cc__go .arrow { color: var(--wa); }
+
+  .cc__intro { text-align: center; max-width: 40ch; justify-self: center; font-size: var(--t-small); line-height: 1.5; }
+
+  @media (hover: hover) {
+    .cc__card:hover .cc__media :global(img) { filter: brightness(0.32) saturate(0.85); }
+    .cc__card:hover .cc__go { opacity: 1; transform: none; }
+  }
+  .cc__card:focus-visible .cc__media :global(img) { filter: brightness(0.32) saturate(0.85); }
+  .cc__card:focus-visible .cc__go { opacity: 1; transform: none; }
+</style>

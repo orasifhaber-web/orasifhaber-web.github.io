@@ -57,8 +57,8 @@
   },
   "hero": {
     "statement": {
-      "he": "עולם ויזואלי אחד לכל מה שאתם משיקים — אירוע, אלבום או מותג.",
-      "en": "One visual world for everything you launch — an event, an album or a brand."
+      "he": "אני מפתח קונספטים ושפות חזותיות שמתרגמים את החזון שלכם לעולם ויזואלי ייחודי, עם זהות ברורה, אופי ונוכחות.",
+      "en": "I develop concepts and visual languages that translate your vision into a unique visual world — with a clear identity, character and presence."
     },
     "years": {
       "he": "עבודות נבחרות 2024–2026",
@@ -75,6 +75,14 @@
     "portrait": {
       "he": "דיוקן של אור אסיף-חבר",
       "en": "Portrait of Or Asif-Haber"
+    },
+    "tagline": {
+      "he": "עיצוב, קריאייטיב וחוויות ויזואליות",
+      "en": "Design, creative and visual experiences"
+    },
+    "pitch": {
+      "he": "להפוך חזון לזהות ויזואלית.",
+      "en": "Turning vision into visual identity."
     }
   },
   "work": {
@@ -293,26 +301,8 @@
     "he": "לעמוד הקטגוריה",
     "en": "Category page"
   },
-  "carousel": {
-    "prev": {
-      "he": "הקודם",
-      "en": "Previous"
-    },
-    "next": {
-      "he": "הבא",
-      "en": "Next"
-    },
-    "pause": {
-      "he": "עצירה",
-      "en": "Pause"
-    },
-    "play": {
-      "he": "הפעלה",
-      "en": "Play"
-    }
-  },
-  "pictured": {
-    "he": "בתמונה",
-    "en": "Pictured"
+  "toCategory": {
+    "he": "לכל העבודות",
+    "en": "See the work"
   }
 }

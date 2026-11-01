@@ -99,7 +99,7 @@ const ink = (hex: string) => {
     </section>
 
     <nav class="p-next" aria-label={ui.moreProjects[lang]}>
-      <a href={url(lang, `/work/${next.slug}/`)} class="p-next__link wrap lit" style={`--next-accent:${next.accent}`}>
+      <a href={url(lang, `/work/${next.slug}/`)} class="p-next__link wrap" style={`--next-accent:${next.accent}`}>
         <span class="label">{nextCat ? `${ui.nextCategory[lang]}: ${nextCat.title[lang]}` : ui.next[lang]}</span>
         <span class="p-next__row">
           <span class="display p-next__title">{L(next.title)}</span>
@@ -162,5 +162,8 @@ const ink = (hex: string) => {
   .p-next__thumb { width: clamp(88px, 14vw, 220px); flex: none; transition: transform var(--d-slow) var(--ease-out); }
   .p-next__link:hover .p-next__title, .p-next__link:focus-visible .p-next__title { color: var(--next-accent); }
   .p-next__link:hover .p-next__thumb { transform: rotate(-3deg) scale(1.04); }
+  /* like every project picture: it darkens under the pointer (the name is already beside it, large) */
+  .p-next__thumb :global(img) { transition: filter 0.6s var(--ease-out); }
+  .p-next__link:hover .p-next__thumb :global(img), .p-next__link:focus-visible .p-next__thumb :global(img) { filter: brightness(0.35) saturate(0.85); }
   .p-next__aux { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--s-4); padding-bottom: var(--s-6); }
 </style>
