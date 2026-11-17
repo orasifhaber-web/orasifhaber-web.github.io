@@ -163,6 +163,12 @@ const messages = {
       if (hint.classList.contains('is-error')) checkContact();
     }));
 
+    // FormSubmit's server takes ~20s to answer a cold connection, then a fraction of a second: open that connection as soon
+    // as someone starts on the form, so it is warm by the time they send
+    form.addEventListener('focusin', () => {
+      fetch(new URL(form.action).origin, { mode: 'no-cors', cache: 'no-store' }).catch(() => {});
+    }, { once: true });
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const ok = [checkName(), checkEmail(), checkPhone(), checkContact()];
@@ -172,10 +178,10 @@ const messages = {
         return;
       }
       btn.disabled = true; btnLabel.textContent = m.sending; status.className = 'form__status'; status.textContent = '';
-      // FormSubmit can be slow: say so after a few seconds, and give up after 25 so the button never hangs on "sending"
+      // FormSubmit can be slow: say so after a few seconds, and give up after 45 so the button never hangs on "sending"
       const ctrl = new AbortController();
       const slow = setTimeout(() => { btnLabel.textContent = m.slow; }, 6000);
-      const limit = setTimeout(() => ctrl.abort(), 25000);
+      const limit = setTimeout(() => ctrl.abort(), 45000);
       // the error states end with the address as a link, so the message can still be sent by hand
       const fail = (text: string) => {
         const a = document.createElement('a');
