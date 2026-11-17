@@ -262,6 +262,14 @@
       "error": {
         "he": "משהו השתבש בשליחה. נסו שוב או כתבו ישירות למייל.",
         "en": "Something went wrong. Please try again or email me directly."
+      },
+      "slow": {
+        "he": "עוד רגע…",
+        "en": "Almost there…"
+      },
+      "timeout": {
+        "he": "השליחה לוקחת יותר מדי זמן. כדי שהפנייה לא תלך לאיבוד — כתבו ישירות למייל:",
+        "en": "Sending is taking too long. So your message isn’t lost, please email me directly:"
       }
     }
   },

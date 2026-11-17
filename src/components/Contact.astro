@@ -11,6 +11,7 @@ const endpoint = `https://formsubmit.co/ajax/${site.email}`;
 const messages = {
   errName: f.errName[lang], errEmail: f.errEmail[lang], errPhone: f.errPhone[lang], errContact: f.errContact[lang],
   sending: f.sending[lang], submit: f.submit[lang], success: f.success[lang], error: f.error[lang],
+  slow: f.slow[lang], timeout: f.timeout[lang], email: site.email,
   copied: ui.contact.copied[lang], copy: ui.contact.copy[lang],
 };
 ---
@@ -171,16 +172,27 @@ const messages = {
         return;
       }
       btn.disabled = true; btnLabel.textContent = m.sending; status.className = 'form__status'; status.textContent = '';
+      // FormSubmit can be slow: say so after a few seconds, and give up after 25 so the button never hangs on "sending"
+      const ctrl = new AbortController();
+      const slow = setTimeout(() => { btnLabel.textContent = m.slow; }, 6000);
+      const limit = setTimeout(() => ctrl.abort(), 25000);
+      // the error states end with the address as a link, so the message can still be sent by hand
+      const fail = (text: string) => {
+        const a = document.createElement('a');
+        a.href = `mailto:${m.email}`; a.textContent = m.email; a.dir = 'ltr'; a.className = 'link';
+        status.classList.add('is-err'); status.replaceChildren(`${text} `, a);
+      };
       try {
-        const data = Object.fromEntries(new FormData(form).entries());
-        const res = await fetch(form.action, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data) });
+        // sent as plain form data (not JSON): no CORS preflight, so one round trip instead of two
+        const res = await fetch(form.action, { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(form), signal: ctrl.signal });
         const json = await res.json().catch(() => ({}));
         if (!res.ok || String(json.success) !== 'true') throw new Error(json.message || res.statusText);
         form.reset();
         status.classList.add('is-ok'); status.textContent = m.success;
       } catch {
-        status.classList.add('is-err'); status.textContent = m.error;
+        fail(ctrl.signal.aborted ? m.timeout : m.error);
       } finally {
+        clearTimeout(slow); clearTimeout(limit);
         btn.disabled = false; btnLabel.textContent = m.submit;
       }
     });
