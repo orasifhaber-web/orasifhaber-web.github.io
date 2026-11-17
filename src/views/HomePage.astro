@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import CategoryCards from '../components/CategoryCards.astro';
 import PortraitReveal from '../components/PortraitReveal.astro';
 import FlockField from '../components/FlockField.astro';
+import HeroTuner from '../components/HeroTuner.astro';
 import { site } from '../data/site';
 import { ui, url, fwd, type Lang } from '../i18n';
 
@@ -61,6 +62,7 @@ const [l1, l2] = ui.nameLines[lang];
     </div>
   </section>
   </div>
+  {import.meta.env.DEV && <HeroTuner lang={lang} />}  <!-- local preview only: never built into the live site -->
 </Base>
 
 <script>
@@ -173,9 +175,21 @@ const [l1, l2] = ui.nameLines[lang];
   :global([lang='en']) .hero__line:first-child { margin-left: -0.03em; }
   .hero__line { display: block; overflow: hidden; padding-bottom: 0.02em; }
   .hero__line > span { display: block; }
+  /* --k-name, --k-tag, --tag-gap: hooks for the dev-only HeroTuner (unset on the live site: 1, 1, 0) */
   /* the tagline — the professional line under the name, like the line under a logo */
-  .hero__tag { position: relative; z-index: 3; padding-inline: var(--margin); margin-top: var(--s-4); color: var(--ink); font-size: clamp(0.8125rem, 1.15vw, 1.0625rem); letter-spacing: 0.12em; }
-  :lang(he) .hero__tag { letter-spacing: 0.04em; font-size: clamp(0.875rem, 1.2vw, 1.125rem); }
+  .hero__tag { position: relative; z-index: 3; padding-inline: var(--margin); margin-top: var(--s-4); color: var(--ink); font-size: calc(clamp(0.8125rem, 1.15vw, 1.0625rem) * var(--k-tag, 1)); letter-spacing: 0.12em; }
+  :lang(he) .hero__tag { letter-spacing: 0.04em; font-size: calc(clamp(0.875rem, 1.2vw, 1.125rem) * var(--k-tag, 1)); }
+  /* The tagline is locked to the name, at every size (--name-fs is the name's font size, set per layout), with room
+     measured in the tagline's own letters so the two never touch: its tallest letters (the ל's stem, the capitals) start
+     0.45 of the tagline's size below the line the name stands on (--tag-pull: measured from where it would sit with no
+     margin, per language and layout). In Hebrew it runs from the name's first letter (right edge) to 0.6 of a tagline
+     letter short of the tail of the ף in אסיף, which drops below that line (the tail's outer edge is 2.273 of the name's
+     ems in, measured in Karantina): 2.184 ems, its size following the name's so it always ends there (15.175 = its width
+     in ems with 0.02em tracking). */
+  :global([lang]) .hero .hero__tag { margin-top: calc(var(--tag-pull) * var(--name-fs) + var(--tag-gap, 0px)); }
+  :global([lang='he']) .hero { --tag-pull: -0.0725; }
+  :global([lang='en']) .hero { --tag-pull: -0.065; }
+  :global([lang='he']) .hero .hero__tag { font-size: calc(2.184 * var(--name-fs) / 15.175 * var(--k-tag, 1)); letter-spacing: 0.02em; white-space: nowrap; }
   .hero__sp { display: none; }
   /* the PNG is a cut-out on a transparent background */
   .hero :global(.portrait.hero__portrait) {
@@ -225,10 +239,65 @@ const [l1, l2] = ui.nameLines[lang];
   @media (max-width: 899px) {
     /* taller than the screen on a phone: it scrolls away normally instead of sticking with its top cut off */
     .hero.hp__panel--stick { position: relative; top: auto !important; }
+    .hero { grid-template-columns: minmax(0, 1fr); }   /* nothing inside may widen the column past the screen */
+
+    /* One axis down the middle, the portrait's own: on a phone the face is centred, so the label, the name, the pitch,
+       its line and the buttons are centred on it too (two axes — a centred face, text on the right — read as a
+       misalignment). */
+    .hero__top { justify-content: center; text-align: center; }
+
+    /* The name on one line across the full measure: its size follows the width (--name-em = the name's width in ems,
+       word gap included; measured, so the ink lands on the margins). */
+    .hero { --measure: calc(100vw - 2 * var(--margin)); --name-fs: calc(var(--measure) / var(--name-em) * var(--k-name, 1)); }
+    /* Hebrew, tuned by eye (HeroTuner): the name at 94% of the measure (3.94 / 0.94), the tagline 1.5px closer at 390px */
+    :global([lang='he']) .hero { --name-em: 4.1915; --tag-pull: -0.0901; }
+    :global([lang='en']) .hero { --name-em: 5.353; --tag-pull: -0.06; }   /* the larger tagline on a phone sits differently */
+    :global([lang]) .hero__name {
+      text-align: center; white-space: nowrap; font-size: var(--name-fs);
+    }
+    .hero__line { display: inline-block; vertical-align: top; }
+    :global([lang='he']) .hero__sp { display: inline-block; width: 0.22em; }   /* English breaks at its hyphen: no gap */
+    :global([lang='en']) .hero__line:first-child { margin-left: 0; }   /* the optical nudge is for a left edge only */
+
+    /* The tagline hangs from the name like the line under a logo.
+       Hebrew: from the name's first letter (right edge) to just before the ף of אסיף — 2.2 of the name's ems (the ף
+       starts 2.25 in, measured); its size follows the name so it always ends there (15.175 = its width in ems with
+       0.02em tracking).
+       English: a block the name's full width — spread to exactly that measure (23.4 = its width in ems at no tracking,
+       39 characters), the tracking's trailing space given back at the end so the letters stay centred. */
+    /* the tagline's first letter ends on the ink of the name's first letter (the name is centred, 3.94 ems wide; the
+       side bearings of the א and the ע differ by 0.013 of the name's ems, measured) */
+    :global([lang='he']) .hero .hero__tag { text-align: right; padding-inline: calc(50% - 1.9572 * var(--name-fs)) var(--margin); }
+    :global([lang='en']) .hero .hero__tag {
+      --tag-fs: calc(var(--measure) / 25.74 * var(--k-tag, 1)); --ls: calc((var(--measure) - 23.4 * var(--tag-fs)) / 39);
+      font-size: var(--tag-fs); letter-spacing: var(--ls); white-space: nowrap; text-align: center;
+      padding-inline: var(--margin) calc(var(--margin) + var(--ls));
+    }
+
+    .hero :global(.portrait.hero__portrait) { margin-top: var(--s-5); }   /* the face starts below the lockup, clear of it */
+    /* Hebrew: the face 41px higher, closer to the name; the text over its foot stays where it was */
+    :global([lang='he']) .hero :global(.portrait.hero__portrait) { margin-top: calc(var(--s-5) - 41px); }
+
+    /* The pitch rises onto the foot of the portrait, where the photo has already gone dark, so the message and the
+       buttons come up into the first screen instead of a full screen below the face. */
+    .hero :global(.portrait.hero__portrait)::after { height: 46%; }   /* a longer fade, for the text over it */
+    .hero__bottom {
+      justify-items: center; text-align: center;
+      margin-top: calc(-0.4 * min(92vw, 520px));   /* 30% of the portrait's height (it is 4:3 tall) */
+      padding-top: 0; gap: var(--s-4);
+    }
+    :global([lang='he']) .hero__bottom { margin-top: calc(-0.4 * min(92vw, 520px) + 41px); }   /* stays put as the face rises */
+    .hero__pitch { max-width: 18ch; text-wrap: balance; }
+    .hero__statement { max-width: 34ch; text-wrap: balance; }
     /* the two actions side by side, sharing the row equally */
-    .hero__cta { flex-wrap: nowrap; }
+    .hero__cta { flex-wrap: nowrap; justify-content: center; width: 100%; max-width: 420px; }
     .hero__cta li { flex: 1 1 0; min-width: 0; }
     .hero__cta .btn { width: 100%; padding-inline: var(--s-3); gap: var(--s-2); font-size: 0.9375rem; white-space: nowrap; }
+  }
+  /* the smallest phones (320px): the two buttons no longer fit side by side, so they stack */
+  @media (max-width: 359px) {
+    .hero__cta { flex-wrap: wrap; }
+    .hero__cta li { flex-basis: 100%; }
   }
 
   @media (min-width: 900px) {
@@ -265,12 +334,15 @@ const [l1, l2] = ui.nameLines[lang];
     .hero__line { flex-shrink: 0; } /* keep each line whole; the overflow tucks behind the portrait */
     /* English reads from the left edge, so its size is set to span the free width up to the portrait
        (5.35 = width of "OR ASIF-HABER" in ems); Hebrew starts right at the portrait and keeps a fixed size */
-    :global([lang='en']) .hero__name { font-size: calc((100vw - var(--fig-w) - var(--margin) + var(--tuck) - 24px) / 5.35); }
-    :global([lang='he']) .hero__name { font-size: 11.5vw; }
+    :global([lang='en']) .hero { --name-fs: calc((100vw - var(--fig-w) - var(--margin) + var(--tuck) - 24px) / 5.35 * var(--k-name, 1)); }
+    /* Hebrew, tuned by eye (HeroTuner): the tagline 1% larger and 6px closer to the name at 1440px */
+    :global([lang='he']) .hero { --name-fs: calc(11.5vw * var(--k-name, 1)); --tag-pull: -0.1087; }
+    :global([lang='he']) .hero .hero__tag { font-size: calc(2.206 * var(--name-fs) / 15.175 * var(--k-tag, 1)); }
+    :global([lang]) .hero__name { font-size: var(--name-fs); }
     :global([lang='he']) .hero__sp { display: block; width: 0.22em; }
     /* One alignment line: the name comes out from behind the portrait at its edge, and the tagline, the pitch, its line
        and the buttons all start on that same edge (no inner padding on the portrait's side). */
-    .hero__tag { grid-area: tag; margin: var(--s-1) 0 0; padding: 0 0 0 var(--margin); }
+    .hero__tag { grid-area: tag; padding: 0 0 0 var(--margin); }
     .hero__bottom { grid-area: bottom; justify-items: start; padding: var(--s-7) 0 0 var(--margin); }
     :global([dir='ltr']) .hero__tag { padding: 0 0 0 var(--margin); }
     :global([dir='ltr']) .hero__bottom { padding: var(--s-7) var(--s-6) 0 var(--margin); }

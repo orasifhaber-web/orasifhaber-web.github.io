@@ -9,7 +9,7 @@
 // the birds rather than switch.
 // It listens for the pointer on its parent, so it can sit behind other content (with pointer-events: none).
 // `avoid` (a selector inside the same parent, e.g. a portrait) keeps most of its path on the open side of that element,
-// or above it when it fills the width (a phone); `size` and `count` override the tuned values for a placement.
+// or, when it fills the width (a phone), between the top and its middle; `size` and `count` override the tuned values for a placement.
 //
 // Every few seconds it moves to the next colour mood and hands that mood to the page: it writes `--mood-a`, `--mood-b`
 // (the birds) and `--mood-glow-1`, `--mood-glow-2` (the atmosphere) as "r g b" on the nearest `[data-mood-scope]`
@@ -201,14 +201,14 @@ const { class: className, size, count, avoid } = Astro.props;
     };
 
     // where its centre may sweep (0..1 of its box): nearly edge to edge; beside `avoid`, from the open edge to just behind
-    // it; when `avoid` spans the width (a phone's stacked layout, the portrait in the middle), the band above it
+    // it; when `avoid` spans the width (a phone's stacked layout), from the name above it down behind its middle
     private lane(): { x: [number, number]; y: [number, number] } {
       const wide = { x: [0.22, 0.78] as [number, number], y: [0.38, 0.62] as [number, number] };
       const el = this.dataset.avoid ? this.parentElement?.querySelector(this.dataset.avoid) : null;
       const box = this.getBoundingClientRect();
       if (!el || !box.width || !box.height) return wide;
       const r = el.getBoundingClientRect(), above = r.top - box.top;
-      if (r.width > box.width * 0.6) return above > 200 ? { x: wide.x, y: [(above * 0.42) / box.height, (above * 0.7) / box.height] } : wide;
+      if (r.width > box.width * 0.6) return { x: wide.x, y: [(above * 0.6) / box.height, (above + r.height * 0.55) / box.height] };
       // side by side: from the open edge of the screen to just behind the element, so the flock's far side slips behind it
       const left = r.left - box.left, right = box.right - r.right, reach = r.width * 0.2;
       const [a, b] = left >= right ? [box.width * 0.12, left + reach] : [box.width - right - reach, box.width * 0.88];

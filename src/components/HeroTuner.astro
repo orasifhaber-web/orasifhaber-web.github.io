@@ -1,0 +1,202 @@
+---
+// Dev-only tuning panel for the home Hero (mounted only when `import.meta.env.DEV`, so it never reaches the live site).
+// Sliders move the name, tagline, portrait and text — separately for the desktop layout and the phone layout, and per
+// language — and show it live. "Phone" opens the same page in a phone-sized frame beside the panel; the frame reads the
+// same saved values and follows every change. "Copy values" gives the numbers to bake into HomePage.astro.
+// The size controls drive neutral hooks in the Hero's CSS (--k-name, --k-tag, --tag-gap); the moves are visual
+// `translate`/`scale` only, so they compose with the entrance animations (which use `transform`).
+interface Props { lang: 'he' | 'en' }
+const { lang } = Astro.props;
+---
+<hero-tuner data-lang={lang} data-right hidden>   <!-- starts on the portrait side, clear of the text -->
+  <div class="ht" dir="rtl">
+    <div class="ht__bar">
+      <button type="button" class="ht__toggle" aria-expanded="true">כוונון Hero</button>
+      <div class="ht__modes" role="group" aria-label="איזו תצוגה לכוונן">
+        <button type="button" data-mode="desk" aria-pressed="true">מחשב</button>
+        <button type="button" data-mode="mob" aria-pressed="false">מובייל</button>
+      </div>
+      <button type="button" class="ht__side" title="העבר את הלוח לצד השני">⇄</button>
+    </div>
+    <div class="ht__body">
+      <p class="ht__note" data-note></p>
+      <form class="ht__form" onsubmit="return false"></form>
+      <div class="ht__phone-opts" data-phone-opts hidden>
+        <span>רוחב טלפון</span>
+        <button type="button" data-w="360">360</button>
+        <button type="button" data-w="390" aria-pressed="true">390</button>
+        <button type="button" data-w="430">430</button>
+      </div>
+      <div class="ht__actions">
+        <button type="button" data-act="copy">העתק ערכים</button>
+        <button type="button" data-act="reset">איפוס התצוגה הזו</button>
+      </div>
+      <textarea class="ht__out" readonly rows="6" hidden></textarea>
+    </div>
+  </div>
+  <div class="ht__frame" hidden><iframe title="תצוגת מובייל"></iframe></div>
+</hero-tuner>
+
+<script is:inline>
+(() => {
+  // the panel's own look, injected here so that nothing of it is ever bundled into the live site's CSS
+  const PANEL_CSS = `
+  hero-tuner { position: fixed; inset: auto auto 16px 16px; z-index: 9999; display: flex; align-items: flex-end; gap: 16px; font: 13px/1.4 'IBM Plex Sans Hebrew', system-ui, sans-serif; color: #eceae4; }
+  hero-tuner[data-right] { inset: auto 16px 16px auto; flex-direction: row-reverse; }
+  hero-tuner[hidden], hero-tuner [hidden] { display: none !important; }
+  .ht { width: 300px; max-height: calc(100svh - 32px); overflow: auto; background: rgb(14 14 12 / 0.92); border: 1px solid rgb(255 255 255 / 0.18); backdrop-filter: blur(8px); }
+  .ht__bar { display: flex; gap: 6px; align-items: center; padding: 8px; border-bottom: 1px solid rgb(255 255 255 / 0.12); position: sticky; top: 0; background: inherit; }
+  .ht__toggle { font-weight: 600; margin-inline-end: auto; }
+  .ht__modes { display: flex; }
+  .ht__body { padding: 10px 12px 12px; display: grid; gap: 10px; }
+  .ht__note { color: #b9b6ad; font-size: 12px; margin: 0; }
+  .ht__form { display: grid; gap: 8px; }
+  .ht__form label { display: grid; gap: 2px; }
+  .ht__form label > span { display: flex; justify-content: space-between; gap: 8px; }
+  .ht__form output { font-family: 'JetBrains Mono', monospace; color: #b9b6ad; direction: ltr; }
+  .ht__form input { width: 100%; accent-color: #eceae4; margin: 0; }
+  .ht__phone-opts { display: flex; gap: 6px; align-items: center; }
+  .ht__phone-opts span { margin-inline-end: auto; }
+  .ht__actions { display: flex; gap: 6px; }
+  .ht__actions button { flex: 1; }
+  .ht button { min-height: 32px; padding: 0 10px; background: none; border: 1px solid rgb(255 255 255 / 0.22); color: inherit; font: inherit; cursor: pointer; }
+  .ht button[aria-pressed='true'] { background: #eceae4; color: #0e0e0c; border-color: #eceae4; }
+  .ht button:focus-visible { outline: 2px solid #eceae4; outline-offset: 2px; }
+  .ht__out { width: 100%; background: #000; color: #eceae4; border: 1px solid rgb(255 255 255 / 0.22); font: 11px/1.4 'JetBrains Mono', monospace; direction: rtl; }
+  .ht__frame { position: relative; overflow: hidden; border: 1px solid rgb(255 255 255 / 0.25); border-radius: 18px; box-shadow: 0 10px 40px rgb(0 0 0 / 0.6); background: #0e0e0c; }
+  .ht__frame iframe { position: absolute; top: 0; left: 0; border: 0; transform-origin: 0 0; }
+`;
+  const KEY = 'heroTuner.v1';
+  // [key, label, min, max, step, default, unit]
+  const CONTROLS = [
+    ['name', 'גודל השם', 0.7, 1.3, 0.01, 1, '×'],
+    ['tag', 'גודל התג ליין', 0.6, 1.6, 0.01, 1, '×'],
+    ['gap', 'רווח שם ↔ תג ליין', -20, 40, 0.5, 0, 'px'],
+    ['tagX', 'תג ליין ימינה/שמאלה', -120, 120, 1, 0, 'px'],
+    ['lockY', 'שם + תג ליין למעלה/למטה', -200, 200, 1, 0, 'px'],
+    ['port', 'גודל התמונה', 0.6, 1.4, 0.01, 1, '×'],
+    ['portX', 'תמונה ימינה/שמאלה', -300, 300, 1, 0, 'px'],
+    ['portY', 'תמונה למעלה/למטה', -300, 300, 1, 0, 'px'],
+    ['textY', 'טקסט וכפתורים למעלה/למטה', -300, 300, 1, 0, 'px'],
+    ['flock', 'עוצמת הלהקה', 0, 1, 0.01, 0.78, ''],
+  ];
+  const DEF = Object.fromEntries(CONTROLS.map((c) => [c[0], c[5]]));
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
+  const save = (s) => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {} };
+  const vals = (s, lang, mode) => ({ ...DEF, ...(s[lang] && s[lang][mode]) });
+
+  // the CSS for one layout; the media query keeps desktop values off the phone layout and the other way round.
+  // Only what was moved is written: at the defaults the page is left exactly as it is.
+  const rules = (v, mode) => {
+    const ch = (...k) => k.some((x) => v[x] !== DEF[x]);
+    const origin = mode === 'desk' ? 'bottom right' : 'bottom center';
+    return [
+      ch('name', 'tag', 'gap') && `html body .hero { --k-name: ${v.name}; --k-tag: ${v.tag}; --tag-gap: ${v.gap}px; }`,
+      ch('lockY') && `html body .hero .hero__name { translate: 0 ${v.lockY}px !important; }`,
+      ch('tagX', 'lockY') && `html body .hero .hero__tag { translate: ${v.tagX}px ${v.lockY}px !important; }`,
+      ch('portX', 'portY') && `html body .hero .portrait.hero__portrait { translate: ${v.portX}px ${v.portY}px !important; }`,
+      ch('port') && `html body .hero .portrait.hero__portrait { scale: ${v.port} !important; transform-origin: ${origin}; }`,
+      ch('textY') && `html body .hero .hero__bottom { translate: 0 ${v.textY}px !important; }`,
+      ch('flock') && `html body .hero .hero__space { opacity: ${v.flock} !important; }`,
+    ].filter(Boolean).join('\n');
+  };
+  const css = (s, lang) =>
+    `@media (min-width: 900px) {${rules(vals(s, lang, 'desk'), 'desk')}}\n@media (max-width: 899px) {${rules(vals(s, lang, 'mob'), 'mob')}}`;
+
+  const apply = (doc, lang) => {
+    let st = doc.getElementById('hero-tuner-css');
+    if (!st) { st = doc.createElement('style'); st.id = 'hero-tuner-css'; doc.head.append(st); }
+    st.textContent = css(load(), lang);
+  };
+
+  const lang = document.documentElement.lang === 'en' ? 'en' : 'he';
+  const inFrame = new URLSearchParams(location.search).get('tuner') === 'frame';
+  apply(document, lang);
+  if (customElements.get('hero-tuner')) return;   // a page swap ran this again: the element and listeners already exist
+  // the phone frame (and any other open tab) follows the panel through storage
+  addEventListener('storage', (e) => { if (e.key === KEY) apply(document, lang); });
+  if (inFrame) return;   // inside the phone frame: values only, no panel
+
+  customElements.define('hero-tuner', class extends HTMLElement {
+    connectedCallback() {
+      if (!document.getElementById('hero-tuner-ui')) { const st = document.createElement('style'); st.id = 'hero-tuner-ui'; st.textContent = PANEL_CSS; document.head.append(st); }
+      this.hidden = false;
+      const $ = (q) => this.querySelector(q);
+      const form = $('.ht__form'), note = $('[data-note]'), frameBox = $('.ht__frame'), iframe = $('iframe');
+      const out = $('.ht__out'), phoneOpts = $('[data-phone-opts]');
+      let mode = innerWidth >= 900 ? 'desk' : 'mob';
+      let phoneW = 390;
+
+      form.innerHTML = CONTROLS.map(([k, label, min, max, step]) =>
+        `<label><span>${label} <output data-o="${k}"></output></span>
+          <input type="range" name="${k}" min="${min}" max="${max}" step="${step}" dir="ltr" /></label>`).join('');
+
+      const fmt = (k, v) => { const c = CONTROLS.find((x) => x[0] === k); return `${c[6] === 'px' && v > 0 ? '+' : ''}${v}${c[6]}`; };
+      const show = () => {
+        const v = vals(load(), lang, mode);
+        form.querySelectorAll('input').forEach((i) => { i.value = v[i.name]; form.querySelector(`[data-o="${i.name}"]`).value = fmt(i.name, v[i.name]); });
+        this.querySelectorAll('[data-mode]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
+        const wide = innerWidth >= 900;
+        const phone = mode === 'mob' && wide;
+        frameBox.hidden = !phone; phoneOpts.hidden = !phone;
+        if (phone) {
+          const src = `${location.pathname}?tuner=frame`;
+          if (!iframe.src.endsWith(src)) iframe.src = src;
+          fitFrame();
+        }
+        note.textContent = mode === 'desk' && !wide
+          ? 'המסך צר מדי לתצוגת מחשב — הערכים נשמרים, אבל תראו אותם רק במסך רחב (900px ומעלה).'
+          : mode === 'mob' ? (wide ? 'עורכים את המובייל: התצוגה בטלפון שליד הלוח מתעדכנת בזמן אמת.' : 'עורכים את המובייל ישירות על המסך.')
+          : 'עורכים את המחשב.';
+        note.textContent += lang === 'he' ? ' (עמוד בעברית)' : ' (English page)';
+      };
+      const fitFrame = () => {
+        const h = 844, k = Math.min(1, (innerHeight - 32) / h);
+        iframe.style.width = `${phoneW}px`; iframe.style.height = `${h}px`;
+        frameBox.style.width = `${phoneW * k}px`; frameBox.style.height = `${h * k}px`;
+        iframe.style.scale = String(k);
+      };
+
+      form.addEventListener('input', (e) => {
+        const i = e.target; const s = load();
+        s[lang] = s[lang] || {}; s[lang][mode] = { ...vals(s, lang, mode), [i.name]: Number(i.value) };
+        save(s); apply(document, lang);
+        if (iframe.contentDocument) apply(iframe.contentDocument, lang);   // same origin: no wait for the storage event
+        form.querySelector(`[data-o="${i.name}"]`).value = fmt(i.name, Number(i.value));
+      });
+      this.querySelectorAll('[data-mode]').forEach((b) => b.addEventListener('click', () => { mode = b.dataset.mode; show(); }));
+      phoneOpts.querySelectorAll('[data-w]').forEach((b) => b.addEventListener('click', () => {
+        phoneW = Number(b.dataset.w); fitFrame();
+        phoneOpts.querySelectorAll('[data-w]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      }));
+      $('.ht__toggle').addEventListener('click', (e) => {
+        const open = e.currentTarget.getAttribute('aria-expanded') !== 'true';
+        e.currentTarget.setAttribute('aria-expanded', String(open)); $('.ht__body').hidden = !open;
+      });
+      $('.ht__side').addEventListener('click', () => this.toggleAttribute('data-right'));
+      $('[data-act="reset"]').addEventListener('click', () => {
+        const s = load(); if (s[lang]) delete s[lang][mode]; save(s); apply(document, lang);
+        if (iframe.contentDocument) apply(iframe.contentDocument, lang);
+        show();
+      });
+      $('[data-act="copy"]').addEventListener('click', async () => {
+        const s = load(), names = { he: 'עברית', en: 'English' }, modes = { desk: 'מחשב', mob: 'מובייל' };
+        const lines = [];
+        for (const l of ['he', 'en']) for (const m of ['desk', 'mob']) {
+          const v = vals(s, l, m);
+          const changed = CONTROLS.filter(([k]) => v[k] !== DEF[k]).map(([k, label]) => `${label}: ${fmt(k, v[k])}`);
+          if (changed.length) lines.push(`${names[l]} · ${modes[m]}\n  ${changed.join('\n  ')}`);
+        }
+        const text = (lines.length ? lines.join('\n\n') : 'אין שינויים') + `\n\n${JSON.stringify(s)}`;
+        out.hidden = false; out.value = text; out.select();
+        try { await navigator.clipboard.writeText(text); $('[data-act="copy"]').textContent = 'הועתק ✓'; } catch { $('[data-act="copy"]').textContent = 'העתיקו מהתיבה'; }
+        setTimeout(() => { $('[data-act="copy"]').textContent = 'העתק ערכים'; }, 2000);
+      });
+      addEventListener('resize', show);
+      show();
+      if (innerWidth < 700) $('.ht__toggle').click();   // on a phone it starts folded: the page first, the sliders on demand
+    }
+  });
+})();
+</script>
+
