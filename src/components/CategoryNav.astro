@@ -33,7 +33,7 @@ const links = [
     font-size: var(--t-lead);
     line-height: 1.1;
     color: var(--ink-3);
-    transition: color var(--d-base) var(--ease-out);
+    transition: color var(--d-out) var(--ease-out);
   }
   .cnav__t {
     text-decoration: underline;
@@ -42,7 +42,8 @@ const links = [
     text-underline-offset: 0.3em;
     transition: text-decoration-color var(--d-base) var(--ease-out);
   }
-  .cnav__link:hover { color: var(--ink); }
+  .cnav__link:active { color: var(--ink); }
+  @media (hover: hover) and (pointer: fine) { .cnav__link:hover { color: var(--ink); transition-duration: var(--d-base); } }
   /* the current page: full ink plus a signal-colour underline, so it never relies on colour alone */
   .cnav__link[aria-current='page'] { color: var(--ink); }
   .cnav__link[aria-current='page'] .cnav__t { text-decoration-color: var(--signal); }

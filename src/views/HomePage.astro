@@ -392,9 +392,10 @@ const [l1, l2] = ui.nameLines[lang];
   .hp__next {
     position: absolute; z-index: 2; left: 50%; bottom: var(--s-5); transform: translateX(-50%);
     display: inline-flex; align-items: center; gap: var(--s-2); min-height: 44px; padding-inline: var(--s-3);
-    color: var(--ink-3); transition: color var(--d-base) var(--ease-out);
+    color: var(--ink-3); transition: color var(--d-out) var(--ease-out);
   }
-  .hp__next:hover, .hp__next:focus-visible { color: var(--ink); }
+  .hp__next:focus-visible, .hp__next:active { color: var(--ink); }
+  @media (hover: hover) and (pointer: fine) { .hp__next:hover { color: var(--ink); transition-duration: var(--d-base); } }
   @media (prefers-reduced-motion: no-preference) {
     .hp__next span { display: inline-block; animation: hp-nudge 2.6s var(--ease-in-out) infinite; }
     @keyframes hp-nudge { 0%, 60%, 100% { transform: none; } 30% { transform: translateY(4px); } }

@@ -48,7 +48,8 @@ const nav = [
   .hdr__nav [aria-current='page']::after { transform: scaleX(1); }
   .hdr__lang { padding-inline-start: clamp(var(--s-3), 2.4vw, var(--s-6)); border-inline-start: 1px solid currentColor; }
   .hdr__lang::after { display: none; }
-  .hdr__lang:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .hdr__lang:active { text-decoration: underline; text-underline-offset: 4px; }
+  @media (hover: hover) and (pointer: fine) { .hdr__lang:hover { text-decoration: underline; text-underline-offset: 4px; } }
   @media (max-width: 420px) {
     .hdr__in { gap: var(--s-3); }
     .hdr__nav { gap: var(--s-3); }

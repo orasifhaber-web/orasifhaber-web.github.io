@@ -57,6 +57,7 @@ const jsonld = {
   .ca-hero__intro { max-width: 34ch; color: var(--ink-2); }
   .ca-next { margin-top: var(--section); border-top: 1px solid var(--line); }
   .ca-next__link { display: grid; gap: var(--s-4); padding-block: var(--s-8); }
-  .ca-next__title { transition: color var(--d-base) var(--ease-out); }
-  .ca-next__link:hover .ca-next__title, .ca-next__link:focus-visible .ca-next__title { color: var(--signal); }
+  .ca-next__title { transition: color var(--d-out) var(--ease-out); }
+  .ca-next__link:is(:focus-visible, :active) .ca-next__title { color: var(--signal); }
+  @media (hover: hover) and (pointer: fine) { .ca-next__link:hover .ca-next__title { color: var(--signal); transition-duration: var(--d-base); } }
 </style>

@@ -6,12 +6,16 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const f = ui.contact.form;
 const [user, domain] = site.email.split('@');
-// Form submissions are relayed to the email address by FormSubmit (no account needed; the first submission must be activated from the inbox).
-const endpoint = `https://formsubmit.co/ajax/${site.email}`;
+// Form submissions are relayed to the email address by Web3Forms once its access key is set below (answers in about a
+// second; the key is public by design and only sends to the address it was made for). Without a key the form falls back
+// to FormSubmit, which works but can take close to a minute.
+const WEB3FORMS_KEY = '';
+const endpoint = WEB3FORMS_KEY ? 'https://api.web3forms.com/submit' : `https://formsubmit.co/ajax/${site.email}`;
+const subject = lang === 'he' ? 'פנייה חדשה מהאתר' : 'New enquiry from the portfolio';
 const messages = {
   errName: f.errName[lang], errEmail: f.errEmail[lang], errPhone: f.errPhone[lang], errContact: f.errContact[lang],
   sending: f.sending[lang], submit: f.submit[lang], success: f.success[lang], error: f.error[lang],
-  slow: f.slow[lang], timeout: f.timeout[lang], email: site.email,
+  slow: f.slow[lang], slowNote: f.slowNote[lang], timeout: f.timeout[lang], email: site.email,
   copied: ui.contact.copied[lang], copy: ui.contact.copy[lang],
 };
 ---
@@ -34,26 +38,37 @@ const messages = {
     </div>
 
     <form class="form" action={endpoint} method="post" novalidate data-form data-msg={JSON.stringify(messages)}>
-      <input type="hidden" name="_subject" value={lang === 'he' ? 'פנייה חדשה מהאתר' : 'New enquiry from the portfolio'} />
-      <input type="hidden" name="_template" value="table" />
-      <input type="hidden" name="_captcha" value="false" />
+      {WEB3FORMS_KEY ? (
+        <>
+          <input type="hidden" name="access_key" value={WEB3FORMS_KEY} />
+          <input type="hidden" name="subject" value={subject} />
+          <input type="hidden" name="from_name" value={lang === 'he' ? 'האתר של אור' : 'Or’s portfolio'} />
+          <p class="form__hp" aria-hidden="true"><label>Leave empty <input type="checkbox" name="botcheck" tabindex="-1" /></label></p>
+        </>
+      ) : (
+        <>
+          <input type="hidden" name="_subject" value={subject} />
+          <input type="hidden" name="_template" value="table" />
+          <input type="hidden" name="_captcha" value="false" />
+          <p class="form__hp" aria-hidden="true"><label>Leave empty <input type="text" name="_honey" tabindex="-1" autocomplete="off" /></label></p>
+        </>
+      )}
       <input type="hidden" name="language" value={lang} />
-      <p class="form__hp" aria-hidden="true"><label>Leave empty <input type="text" name="_honey" tabindex="-1" autocomplete="off" /></label></p>
 
       <div class="field">
         <label for="f-name">{f.name[lang]}</label>
-        <input id="f-name" name="name" type="text" autocomplete="name" required aria-describedby="f-name-err" />
+        <input id="f-name" name="name" type="text" autocomplete="name" enterkeyhint="next" required aria-describedby="f-name-err" />
         <p class="field__err" id="f-name-err" aria-live="polite"></p>
       </div>
       <div class="field__pair">
         <div class="field">
           <label for="f-email">{f.email[lang]}</label>
-          <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" dir="ltr" aria-describedby="f-contact-hint f-email-err" />
+          <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" enterkeyhint="next" autocapitalize="none" spellcheck="false" dir="ltr" aria-describedby="f-contact-hint f-email-err" />
           <p class="field__err" id="f-email-err" aria-live="polite"></p>
         </div>
         <div class="field">
           <label for="f-phone">{f.phone[lang]}</label>
-          <input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" dir="ltr" aria-describedby="f-contact-hint f-phone-err" />
+          <input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" enterkeyhint="next" dir="ltr" aria-describedby="f-contact-hint f-phone-err" />
           <p class="field__err" id="f-phone-err" aria-live="polite"></p>
         </div>
       </div>
@@ -81,9 +96,10 @@ const messages = {
     justify-self: start;
     font-family: var(--f-display); font-weight: 800; font-variation-settings: 'wdth' 62; text-transform: uppercase;
     font-size: clamp(1.6rem, 3.4vw, 2.8rem); line-height: 1; overflow-wrap: anywhere;
-    transition: color var(--d-base) var(--ease-out);
+    transition: color var(--d-out) var(--ease-out);
   }
-  .contact__mail:hover { color: var(--signal); }
+  .contact__mail:active { color: var(--signal); }
+  @media (hover: hover) and (pointer: fine) { .contact__mail:hover { color: var(--signal); transition-duration: var(--d-base); } }
   .contact__row { display: flex; flex-wrap: wrap; gap: var(--s-5); }
   [data-copy][data-done] { color: var(--signal); }
   @media (min-width: 900px) {
@@ -104,7 +120,7 @@ const messages = {
   }
   .field textarea { resize: vertical; min-height: 128px; }
   .field input::placeholder, .field textarea::placeholder { color: var(--ink-3); }
-  .field input:hover, .field textarea:hover { border-color: var(--ink-3); }
+  @media (hover: hover) and (pointer: fine) { .field input:hover, .field textarea:hover { border-color: var(--ink-3); } }
   .field input:focus-visible, .field textarea:focus-visible { outline: 2px solid var(--signal); outline-offset: 0; border-color: transparent; }
   .field [aria-invalid='true'] { border-color: #ff7a6b; }
   .field__err { color: #ff9a8e; font-size: var(--t-small); min-height: 1.4em; margin-top: -2px; }
@@ -114,8 +130,10 @@ const messages = {
 
   .form__foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-5); margin-top: var(--s-2); }
   .form__submit { padding: 0 var(--s-7); }
-  .form__submit:hover .arrow { transform: translateX(4px); }
-  :global([dir='rtl']) .form__submit:hover .arrow { transform: translateX(-4px); }
+  @media (hover: hover) and (pointer: fine) {
+    .form__submit:hover .arrow { transform: translateX(4px); transition-duration: var(--d-base); }
+    :global([dir='rtl']) .form__submit:hover .arrow { transform: translateX(-4px); }
+  }
   .form__submit[disabled] { opacity: 0.6; cursor: progress; }
   .form__status { font-size: var(--t-small); color: var(--ink-2); max-width: 44ch; }
   .form__status.is-ok { color: var(--signal); }
@@ -178,10 +196,12 @@ const messages = {
         return;
       }
       btn.disabled = true; btnLabel.textContent = m.sending; status.className = 'form__status'; status.textContent = '';
-      // FormSubmit can be slow: say so after a few seconds, and give up after 45 so the button never hangs on "sending"
+      // FormSubmit is reliable but can take close to a minute (measured): it is never cut short too early. After a few
+      // seconds the button says so, after 15 a line explains the wait; only after two minutes does the form give up.
       const ctrl = new AbortController();
       const slow = setTimeout(() => { btnLabel.textContent = m.slow; }, 6000);
-      const limit = setTimeout(() => ctrl.abort(), 45000);
+      const note = setTimeout(() => { status.textContent = m.slowNote; }, 15000);
+      const limit = setTimeout(() => ctrl.abort(), 120000);
       // the error states end with the address as a link, so the message can still be sent by hand
       const fail = (text: string) => {
         const a = document.createElement('a');
@@ -189,8 +209,9 @@ const messages = {
         status.classList.add('is-err'); status.replaceChildren(`${text} `, a);
       };
       try {
-        // sent as plain form data (not JSON): no CORS preflight, so one round trip instead of two
-        const res = await fetch(form.action, { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(form), signal: ctrl.signal });
+        // sent as plain form data (not JSON): no CORS preflight, so one round trip instead of two;
+        // keepalive: the request still goes through if the visitor leaves the page while it waits
+        const res = await fetch(form.action, { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(form), signal: ctrl.signal, keepalive: true });
         const json = await res.json().catch(() => ({}));
         if (!res.ok || String(json.success) !== 'true') throw new Error(json.message || res.statusText);
         form.reset();
@@ -198,7 +219,7 @@ const messages = {
       } catch {
         fail(ctrl.signal.aborted ? m.timeout : m.error);
       } finally {
-        clearTimeout(slow); clearTimeout(limit);
+        clearTimeout(slow); clearTimeout(note); clearTimeout(limit);
         btn.disabled = false; btnLabel.textContent = m.submit;
       }
     });

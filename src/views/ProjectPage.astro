@@ -20,6 +20,7 @@ const at = projects.indexOf(p);
 const next = projects[(at + 1) % projects.length];
 const prev = projects[(at - 1 + projects.length) % projects.length];
 const nextCat = next.category !== p.category ? categoryOf(next) : undefined;
+const prevCat = prev.category !== p.category ? categoryOf(prev) : undefined;
 const catHref = url(lang, `/work/${cat.slug}/`);
 const L = <K extends { he: string; en: string }>(x: K) => x[lang];
 
@@ -71,7 +72,8 @@ const ink = (hex: string) => {
       <h2 id="overview" class="label p-sec__label">{ui.overview[lang]}</h2>
       <div class="p-sec__body">
         {p.intro.map((x, k) => <p class:list={[k === 0 ? 'lead' : 'prose']} data-reveal style={`--i:${k}`}>{L(x)}</p>)}
-        <a class="label link" href={p.behance} target="_blank" rel="noopener">{ui.behance[lang]} <span class="arrow" aria-hidden="true">↗</span></a>
+        <!-- the way to get in touch, after the project is understood and before the long gallery (the form is at the foot of the page) -->
+        <a href="#contact" class="btn btn--ghost p-sec__cta">{ui.hero.toContact[lang]} <span class="arrow" aria-hidden="true">{fwd(lang)}</span></a>
       </div>
     </section>
 
@@ -108,8 +110,17 @@ const ink = (hex: string) => {
         <span class="muted">{L(next.subtitle)}</span>
       </a>
       <div class="wrap p-next__aux">
-        <a href={url(lang, `/work/${prev.slug}/`)} class="label link"><span aria-hidden="true">{back(lang)}</span> {L(prev.title)}</a>
-        <a href={catHref} class="label link">{cat.title[lang]} <span aria-hidden="true">{fwd(lang)}</span></a>
+        <!-- the way back says what it is, and says so when it crosses into the previous category (as "next" does) -->
+        <a href={url(lang, `/work/${prev.slug}/`)} class="label link p-next__prev">
+          <span aria-hidden="true">{back(lang)}</span>
+          <span>{prevCat ? `${ui.prevCategory[lang]}: ${prevCat.title[lang]}` : ui.prev[lang]}</span>
+          <span aria-hidden="true">·</span>
+          <span class="p-next__prev-title">{L(prev.title)}</span>
+        </a>
+        <span class="p-next__ups">
+          <a href={catHref} class="label link">{cat.title[lang]} <span aria-hidden="true">{fwd(lang)}</span></a>
+          <a href={url(lang, '/work/')} class="label link">{ui.allProjects[lang]} <span aria-hidden="true">{fwd(lang)}</span></a>
+        </span>
       </div>
     </nav>
   </article>
@@ -141,6 +152,7 @@ const ink = (hex: string) => {
   .p-sec__label, .p-sec__body { grid-column: 1 / -1; }
   .p-sec__body { display: grid; gap: var(--s-5); max-width: 820px; }
   .p-sec__body .link { justify-self: start; }
+  .p-sec__cta { justify-self: start; margin-top: var(--s-2); }
   .p-details { display: grid; gap: var(--s-7); padding-bottom: var(--s-8); }
   .p-detail { padding-top: var(--s-5); border-top: 1px solid var(--line); }
   @media (min-width: 900px) {
@@ -158,12 +170,20 @@ const ink = (hex: string) => {
   .p-next { margin-top: var(--section); border-top: 1px solid var(--line); }
   .p-next__link { display: grid; gap: var(--s-4); padding-block: var(--s-8) var(--s-6); }
   .p-next__row { display: flex; align-items: center; justify-content: space-between; gap: var(--s-5); }
-  .p-next__title { transition: color var(--d-base) var(--ease-out), transform var(--d-base) var(--ease-out); }
-  .p-next__thumb { width: clamp(88px, 14vw, 220px); flex: none; transition: transform var(--d-slow) var(--ease-out); }
-  .p-next__link:hover .p-next__title, .p-next__link:focus-visible .p-next__title { color: var(--next-accent); }
-  .p-next__link:hover .p-next__thumb { transform: rotate(-3deg) scale(1.04); }
+  .p-next__title { transition: color var(--d-out) var(--ease-out), transform var(--d-out) var(--ease-out); }
+  .p-next__thumb { width: clamp(88px, 14vw, 220px); flex: none; transition: transform var(--d-out) var(--ease-out); }
+  .p-next__link:is(:focus-visible, :active) .p-next__title { color: var(--next-accent); }
+  @media (hover: hover) and (pointer: fine) {
+    /* slow in, quick out (--d-out on the resting state) */
+    .p-next__link:hover .p-next__title { color: var(--next-accent); transition-duration: var(--d-base); }
+    .p-next__link:hover .p-next__thumb { transform: rotate(-3deg) scale(1.04); transition-duration: var(--d-slow); }
+    .p-next__link:hover .p-next__thumb :global(img) { filter: brightness(0.35) saturate(0.85); transition-duration: 0.6s; }
+  }
   /* like every project picture: it darkens under the pointer (the name is already beside it, large) */
-  .p-next__thumb :global(img) { transition: filter 0.6s var(--ease-out); }
-  .p-next__link:hover .p-next__thumb :global(img), .p-next__link:focus-visible .p-next__thumb :global(img) { filter: brightness(0.35) saturate(0.85); }
+  .p-next__thumb :global(img) { transition: filter var(--d-out) var(--ease-out); }
+  .p-next__link:is(:focus-visible, :active) .p-next__thumb :global(img) { filter: brightness(0.35) saturate(0.85); }
   .p-next__aux { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--s-4); padding-bottom: var(--s-6); }
+  .p-next__prev { flex-wrap: wrap; column-gap: 0.6em; row-gap: 0; }
+  .p-next__prev-title { color: var(--ink); }
+  .p-next__ups { display: flex; flex-wrap: wrap; gap: 0 var(--s-5); }
 </style>

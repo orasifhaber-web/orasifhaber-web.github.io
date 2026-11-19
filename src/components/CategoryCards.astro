@@ -43,7 +43,7 @@ const { lang } = Astro.props;
   .cc__card { display: grid; gap: var(--s-4); }
   .cc__card:focus-visible { outline: 2px solid var(--signal); outline-offset: 6px; }
   .cc__media { position: relative; display: block; overflow: hidden; box-shadow: 0 30px 60px -30px color-mix(in srgb, var(--wa) 45%, transparent); }
-  .cc__media :global(img) { filter: brightness(0.86); transition: filter 0.6s var(--ease-out); }
+  .cc__media :global(img) { filter: brightness(0.86); transition: filter var(--d-out) var(--ease-out); }
 
   /* the name, always there near the foot of the picture; room is kept under it for the action, so it never moves */
   .cc__foot {
@@ -57,15 +57,17 @@ const { lang } = Astro.props;
     text-shadow: 0 1px 2px rgb(0 0 0 / 0.7), 0 2px 12px rgb(0 0 0 / 0.65), 0 0 36px rgb(0 0 0 / 0.55);
   }
   :global([lang='he']) .cc__name { font-weight: 700; line-height: 1.05; }
-  .cc__go { color: var(--ink); opacity: 0; transform: translateY(6px); transition: opacity 0.45s var(--ease-out), transform 0.6s var(--ease-out); }
+  .cc__go { color: var(--ink); opacity: 0; transform: translateY(6px); transition: opacity var(--d-out) var(--ease-out), transform var(--d-out) var(--ease-out); }
   .cc__go .arrow { color: var(--wa); }
 
   .cc__intro { text-align: center; max-width: 40ch; justify-self: center; font-size: var(--t-small); line-height: 1.5; }
 
-  @media (hover: hover) {
-    .cc__card:hover .cc__media :global(img) { filter: brightness(0.32) saturate(0.85); }
-    .cc__card:hover .cc__go { opacity: 1; transform: none; }
+  @media (hover: hover) and (pointer: fine) {
+    /* the slow entry lives on the hover state; leaving it uses the quicker --d-out above */
+    .cc__card:hover .cc__media :global(img) { filter: brightness(0.32) saturate(0.85); transition-duration: 0.6s; }
+    .cc__card:hover .cc__go { opacity: 1; transform: none; transition-duration: 0.45s, 0.6s; }
   }
-  .cc__card:focus-visible .cc__media :global(img) { filter: brightness(0.32) saturate(0.85); }
-  .cc__card:focus-visible .cc__go { opacity: 1; transform: none; }
+  /* keyboard focus, and a finger pressing it on a touchscreen, get the same look */
+  .cc__card:is(:focus-visible, :active) .cc__media :global(img) { filter: brightness(0.32) saturate(0.85); }
+  .cc__card:is(:focus-visible, :active) .cc__go { opacity: 1; transform: none; }
 </style>

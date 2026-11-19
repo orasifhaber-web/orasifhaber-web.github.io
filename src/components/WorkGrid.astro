@@ -41,13 +41,13 @@ const H = level === 2 ? 'h2' : 'h3';
 
   /* the cover, and the action that comes up over it once it darkens */
   .wg__media { position: relative; display: block; overflow: hidden; }
-  .wg__media :global(img) { transition: filter 0.6s var(--ease-out); }
+  .wg__media :global(img) { transition: filter var(--d-out) var(--ease-out); }
   .wg__over {
     position: absolute; inset: 0; z-index: 2;
     display: grid; place-content: center; justify-items: center; gap: var(--s-3);
     padding: var(--s-5); text-align: center; pointer-events: none;
     opacity: 0; transform: translateY(10px);
-    transition: opacity 0.45s var(--ease-out), transform 0.6s var(--ease-out);
+    transition: opacity var(--d-out) var(--ease-out), transform var(--d-out) var(--ease-out);
   }
   .wg__over-go { color: var(--ink); font-size: 0.875rem; }
   .wg__over-go .arrow { color: var(--wa); }
@@ -57,10 +57,12 @@ const H = level === 2 ? 'h2' : 'h3';
   .wg__name { font-size: var(--t-lead); font-weight: 600; line-height: 1.25; }
   .wg__year { color: var(--ink-3); }
 
-  @media (hover: hover) {
-    .wg__card:hover .wg__media :global(img) { filter: brightness(0.3) saturate(0.85); }
-    .wg__card:hover .wg__over { opacity: 1; transform: none; }
+  @media (hover: hover) and (pointer: fine) {
+    /* the slow entry lives on the hover state; leaving it uses the quicker --d-out above */
+    .wg__card:hover .wg__media :global(img) { filter: brightness(0.3) saturate(0.85); transition-duration: 0.6s; }
+    .wg__card:hover .wg__over { opacity: 1; transform: none; transition-duration: 0.45s, 0.6s; }
   }
-  .wg__card:focus-visible .wg__media :global(img) { filter: brightness(0.3) saturate(0.85); }
-  .wg__card:focus-visible .wg__over { opacity: 1; transform: none; }
+  /* keyboard focus, and a finger pressing it on a touchscreen, get the same look */
+  .wg__card:is(:focus-visible, :active) .wg__media :global(img) { filter: brightness(0.3) saturate(0.85); }
+  .wg__card:is(:focus-visible, :active) .wg__over { opacity: 1; transform: none; }
 </style>

@@ -267,9 +267,13 @@
         "he": "עוד רגע…",
         "en": "Almost there…"
       },
+      "slowNote": {
+        "he": "הפנייה בדרך. שירות השליחה איטי לפעמים, וזה יכול לקחת עד דקה.",
+        "en": "Your message is on its way. The mail service is sometimes slow — it can take up to a minute."
+      },
       "timeout": {
-        "he": "השליחה לוקחת יותר מדי זמן. כדי שהפנייה לא תלך לאיבוד — כתבו ישירות למייל:",
-        "en": "Sending is taking too long. So your message isn’t lost, please email me directly:"
+        "he": "לא התקבל אישור משירות השליחה. ייתכן שהפנייה בכל זאת הגיעה — ליתר ביטחון אפשר לכתוב ישירות למייל:",
+        "en": "The mail service didn’t confirm. Your message may still have arrived — to be sure, you can email me directly:"
       }
     }
   },
@@ -304,6 +308,14 @@
   "nextCategory": {
     "he": "קטגוריה הבאה",
     "en": "Next category"
+  },
+  "prev": {
+    "he": "הקודם",
+    "en": "Previous"
+  },
+  "prevCategory": {
+    "he": "קטגוריה קודמת",
+    "en": "Previous category"
   },
   "categoryPage": {
     "he": "לעמוד הקטגוריה",
