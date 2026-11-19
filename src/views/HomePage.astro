@@ -49,7 +49,7 @@ const [l1, l2] = ui.nameLines[lang];
   <div class="hp__dwell" aria-hidden="true"></div>
 
   <section id="about" class="about-pre hp__panel hp__about section wrap grid" data-enter="tilt" aria-labelledby="about-pre-title">
-    <h2 id="about-pre-title" class="label about-pre__label">{ui.about.label[lang]}</h2>
+    <h2 id="about-pre-title" class="sec-title about-pre__label">{ui.about.label[lang]}</h2>
     <div class="about-pre__body">
       <p class="lead" data-reveal>{ui.about.preview[lang]}</p>
       <a href={url(lang, '/about/')} class="btn btn--ghost" data-reveal style="--i:1">{ui.about.more[lang]} <span class="arrow" aria-hidden="true">{fwd(lang)}</span></a>
@@ -199,11 +199,12 @@ const [l1, l2] = ui.nameLines[lang];
     margin: -9vw auto 0;
     background: none;
   }
-  /* the photo has its own dark backdrop: its sides and top fade out, so no rectangle shows against the background */
+  /* The photo is a cut-out (transparent around the hair), so the head and hair stay fully solid — a fade there let the
+     flock show through the hair. Only the body, where the frame crops it at the sides, fades out: the top part of the
+     mask is solid, and the side fade takes over below the shoulders (the two layers add up). */
   .hero :global(.portrait.hero__portrait) {
-    -webkit-mask: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent), linear-gradient(to bottom, transparent, #000 12%);
-    -webkit-mask-composite: source-in;
-    mask: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent) intersect, linear-gradient(to bottom, transparent, #000 12%);
+    -webkit-mask: linear-gradient(to bottom, #000 50%, transparent 66%), linear-gradient(to right, transparent, #000 16%, #000 84%, transparent);
+    mask: linear-gradient(to bottom, #000 50%, transparent 66%), linear-gradient(to right, transparent, #000 16%, #000 84%, transparent);
   }
   /* the photo is cropped at the shoulders: blend that edge into the page colour. An opaque overlay, not a transparency
      mask — so nothing behind the portrait (the geometry) ever shows through the body. */
@@ -287,7 +288,9 @@ const [l1, l2] = ui.nameLines[lang];
       padding-top: 0; gap: var(--s-4);
     }
     :global([lang='he']) .hero__bottom { margin-top: calc(-0.4 * min(92vw, 520px) + 41px); }   /* stays put as the face rises */
-    .hero__pitch { max-width: 18ch; text-wrap: balance; }
+    /* no measure cap: the Hebrew pitch (283px at this size) fits one line on any phone from 320px; English, longer,
+       still breaks into two balanced lines */
+    .hero__pitch { max-width: none; text-wrap: balance; }
     .hero__statement { max-width: 34ch; text-wrap: balance; }
     /* the two actions side by side, sharing the row equally */
     .hero__cta { flex-wrap: nowrap; justify-content: center; width: 100%; max-width: 420px; }
@@ -318,8 +321,9 @@ const [l1, l2] = ui.nameLines[lang];
       grid-template-areas: 'top fig' '. fig' 'name fig' 'tag fig' 'bottom fig' '. fig';
     }
     .hero :global(.portrait.hero__portrait) {
-      -webkit-mask: linear-gradient(to right, transparent, #000 18%);
-      mask: linear-gradient(to right, transparent, #000 18%);
+      /* the inner side fades only where the body meets the frame (the shoulder, low down); the hair above stays solid */
+      -webkit-mask: linear-gradient(to bottom, #000 62%, transparent 80%), linear-gradient(to right, transparent, #000 18%);
+      mask: linear-gradient(to bottom, #000 62%, transparent 80%), linear-gradient(to right, transparent, #000 18%);
       grid-area: fig;
       align-self: end;
       width: auto;
@@ -422,7 +426,8 @@ const [l1, l2] = ui.nameLines[lang];
   .about-pre__list { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-5); margin-top: var(--s-3); font-family: var(--f-display); font-weight: 700; font-variation-settings: 'wdth' 62; text-transform: uppercase; font-size: clamp(1.6rem, 3vw, 2.6rem); line-height: 1; }
   .about-pre__list li:not(:last-child)::after { content: '/'; margin-inline-start: var(--s-5); color: var(--ink-3); font-weight: 400; }
   @media (min-width: 900px) {
-    .about-pre__label { grid-column: 1 / span 3; padding-top: 0.6em; }
+    .about-pre__label { grid-column: 1 / span 3; }
+    .about-pre { align-items: first baseline; }   /* the title and the first line beside it share a baseline */
     .about-pre__body, .about-pre__with { grid-column: 4 / span 9; }
   }
 </style>

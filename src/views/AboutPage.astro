@@ -95,7 +95,7 @@ const facts = background.filter((b) => /\d/.test(b.when)).slice(0, 2);
     <section class="ab-cv ab-tone" style="--from:#12110e;--to:#0e0e0c" aria-label={`${L(copy.bgLabel)} · ${L(copy.toolsLabel)}`}>
       <div class="wrap ab-cv__grid">
         <div>
-          <h2 class="label ab-cv__label">{L(copy.bgLabel)}</h2>
+          <h2 class="sec-title ab-cv__label">{L(copy.bgLabel)}</h2>
           <dl class="ab-cv__items">
             {background.map((b) => (
               <div data-reveal>
@@ -109,7 +109,7 @@ const facts = background.filter((b) => /\d/.test(b.when)).slice(0, 2);
           </dl>
         </div>
         <div>
-          <h2 class="label ab-cv__label">{L(copy.toolsLabel)}</h2>
+          <h2 class="sec-title ab-cv__label">{L(copy.toolsLabel)}</h2>
           <dl class="ab-cv__items ab-cv__tools">
             {about.tools.map((x) => (<div data-reveal><dt class="label">{L(x.label)}</dt><dd dir="ltr">{x.value}</dd></div>))}
           </dl>
@@ -175,7 +175,7 @@ const facts = background.filter((b) => /\d/.test(b.when)).slice(0, 2);
   /* ---------- 5. background and tools ---------- */
   .ab-cv { padding-block: var(--section); }
   .ab-cv__grid { display: grid; gap: var(--s-8); }
-  .ab-cv__label { margin-bottom: var(--s-4); }
+  .ab-cv__label { margin-bottom: var(--s-5); }
   .ab-cv__items > div { display: grid; gap: var(--s-2); padding-block: var(--s-4); border-top: 1px solid var(--line); }
   .ab-cv__items dd { display: grid; gap: var(--s-2); max-width: 60ch; }
   .ab-cv__items dd strong { font-weight: 600; }

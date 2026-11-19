@@ -69,7 +69,7 @@ const ink = (hex: string) => {
     </div>
 
     <section class="p-sec wrap grid" aria-labelledby="overview">
-      <h2 id="overview" class="label p-sec__label">{ui.overview[lang]}</h2>
+      <h2 id="overview" class="sec-title p-sec__label">{ui.overview[lang]}</h2>
       <div class="p-sec__body">
         {p.intro.map((x, k) => <p class:list={[k === 0 ? 'lead' : 'prose']} data-reveal style={`--i:${k}`}>{L(x)}</p>)}
         <!-- the way to get in touch, after the project is understood and before the long gallery (the form is at the foot of the page) -->
@@ -81,7 +81,7 @@ const ink = (hex: string) => {
       <section class="p-details wrap" aria-label={lang === 'he' ? 'פרטים' : 'Details'}>
         {p.details.map((dt) => (
           <div class="p-detail grid">
-            <h2 class="label p-sec__label" data-reveal>{L(dt.label)}</h2>
+            <h2 class="sec-title p-sec__label" data-reveal>{L(dt.label)}</h2>
             <div class="p-sec__body">
               <p class="prose" data-reveal style="--i:1">{L(dt.body)}</p>
               {dt.colors && (
@@ -96,7 +96,7 @@ const ink = (hex: string) => {
     )}
 
     <section class="p-gallery" aria-labelledby="gallery">
-      <h2 id="gallery" class="label wrap p-gallery__label">{ui.gallery[lang]}</h2>
+      <h2 id="gallery" class="sec-title wrap p-gallery__label">{ui.gallery[lang]}</h2>
       <Gallery items={p.gallery} lang={lang} />
     </section>
 
@@ -156,9 +156,10 @@ const ink = (hex: string) => {
   .p-details { display: grid; gap: var(--s-7); padding-bottom: var(--s-8); }
   .p-detail { padding-top: var(--s-5); border-top: 1px solid var(--line); }
   @media (min-width: 900px) {
-    .p-sec__label { grid-column: 1 / span 3; padding-top: 0.6em; }
+    .p-sec__label { grid-column: 1 / span 3; }
+    /* the large section title and the text beside it stand on one line: their first baselines meet, at any width */
+    .p-sec, .p-detail { align-items: first baseline; }
     .p-sec__body { grid-column: 4 / span 8; }
-    .p-detail .p-sec__label { padding-top: 0.2em; }
   }
   .swatches { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
   .swatches li { aspect-ratio: 1; display: flex; align-items: flex-end; padding: var(--s-2); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08); }

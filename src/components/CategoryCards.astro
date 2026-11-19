@@ -12,7 +12,7 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 ---
 <div class="cc">
-  <h2 id="work-title" class="label cc__title">{ui.work[lang]}</h2>
+  <h2 id="work-title" class="sec-title cc__title">{ui.work[lang]}</h2>
   <ul class="cc__list" role="list">
     {categories.map((c, k) => {
       const p = leadOf(c);
@@ -36,7 +36,6 @@ const { lang } = Astro.props;
 
 <style>
   .cc { display: grid; gap: var(--s-6); }
-  .cc__title { color: var(--ink); }
   .cc__list { display: grid; gap: var(--s-7) var(--gutter); }
   @media (min-width: 900px) { .cc__list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
@@ -45,6 +44,12 @@ const { lang } = Astro.props;
   .cc__media { position: relative; display: block; overflow: hidden; box-shadow: 0 30px 60px -30px color-mix(in srgb, var(--wa) 45%, transparent); }
   .cc__media :global(img) { filter: brightness(0.86); transition: filter var(--d-out) var(--ease-out); }
 
+  /* the caption scrim: the foot of the picture goes dark under the name, so it reads on any cover (a busy, bright one
+     too), not only thanks to its own shadow */
+  .cc__media::after {
+    content: ''; position: absolute; z-index: 1; inset: auto 0 0; height: 64%; pointer-events: none;
+    background: linear-gradient(to top, rgb(10 10 9 / 0.88) 0%, rgb(10 10 9 / 0.6) 38%, rgb(10 10 9 / 0) 100%);
+  }
   /* the name, always there near the foot of the picture; room is kept under it for the action, so it never moves */
   .cc__foot {
     position: absolute; z-index: 2; inset: auto 0 0;
